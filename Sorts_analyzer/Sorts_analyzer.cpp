@@ -1,6 +1,9 @@
 ﻿#include <iostream>
 #include <vector>
 #include "Sorts.h"
+#include <gl/glew.h>
+#include <GLFW/glfw3.h>
+#include "GraphicsAPI/GraphicsAPI.h"
 
 
 /*
@@ -160,7 +163,6 @@ void AnalyseSorts(const int maxCount, const int step) {
 
 
 int main() {
-	AnalyseSorts(100, 1);
 	
 	return 0;
 }

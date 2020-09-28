@@ -18,9 +18,21 @@
     <ClCompile Include="Sorts_analyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsApi\BMP_Img\BMP_Img.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsAPI\GraphicsAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sorts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsApi\BMP_Img\BMP_Img.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsAPI\GraphicsAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
