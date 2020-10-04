@@ -21,14 +21,14 @@ namespace GUI {
 
 
 	private:
-		
+
 		char* _what = nullptr;
 	};
 
 
 
 	struct Coordinates {
-		Coordinates();
+		Coordinates() = default;
 
 		Coordinates(int x, int y);
 
@@ -37,9 +37,19 @@ namespace GUI {
 	};
 
 
+	struct WindowCoordinates {
+		WindowCoordinates() = default;
+
+		WindowCoordinates(int x, int y);
+
+		int x = 0;
+		int y = 0;
+	};
+
+
 	struct Size {
 
-		Size();
+		Size() = default;
 
 		Size(size_t width, size_t height);
 
@@ -93,18 +103,127 @@ namespace GUI {
 		float RGB[3] = { 0, 0, 0 };
 	};
 
-	
 
 
 	class Window;
+	class Line;
+	class Polyline;
+	class Rectangle;
+	class Button;
+	class Text;
+
+
+	class Application {
+	public:
+
+		Application();
+
+		Application(const Application& other) = delete;
+
+		Window* CreateWindow(const int width = 640, const int height = 420, const char* name = "Window",
+		                     const Color& backgroundColor = Color(0, 0, 0));
+
+		void ProcessEventsWait() const;
+
+		void ProcessEvents() const;
+
+		~Application();
+
+	private:
+
+		std::vector<Window*> windows;
+	};
+
+
+	class Window {
+	public:
+
+		Window(const int width = 640, const int height = 420, const char* name = "Window",
+		       const Color& backgroundColor = Color(0, 0, 0));
+
+		Window(const Window& other) = delete;
+
+		size_t Width() const;
+
+		size_t Height() const;
+
+
+		Rectangle* CreateRectangle(const Coordinates& pos = Coordinates(0, 0),
+			const Size& size = Size(200, 100), const Color& color = Color(0, 0, 0));
+
+		Button* CreateButton(const Coordinates& pos = Coordinates(0, 0),
+			const Size& size = Size(100, 50), const Color& color = Color(0.5, 0.5, 0.5));
+
+		Line* CreateLine(const Coordinates& begPos = Coordinates(10, 10),
+			const Coordinates& endPos = Coordinates(100, 10),
+			const size_t width = 1, const Color& color = Color(0, 0, 0));
+
+		Polyline* CreatePolyline(const std::vector<Coordinates>& verteces, const size_t width = 1,
+			const Color& color = Color(0, 0, 0));
+
+		Polyline* CreatePolyline(const size_t width = 1, const Color& color = Color(0, 0, 0));
+
+		Text* CreateText(const char* content, const Coordinates& pos = Coordinates(0, 0),
+			const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
+
+
+		void DrawChanges();
+
+		void SetActive() const;
+
+
+		void AddLeftMouseUpListener(void (*Listener)(void*), void* addParam);
+
+
+		WindowCoordinates CursorPos() const;
+
+
+		~Window();
+
+
+	private:
+
+		static void LeftMouseUpCallback(GLFWwindow* glfwWindow, int button, int action, int mods) {
+			assert(glfwWindow != nullptr);
+
+			if (GLFW_MOUSE_BUTTON_LEFT == button && GLFW_RELEASE == action) {
+				Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow));
+				assert(window != nullptr);
+
+				for (int i = 0; i < window->leftMouseUpListeners.size(); ++i) {
+					std::pair<void (*)(void*), void*>& curListener = window->leftMouseUpListeners[i];
+					curListener.first(curListener.second);
+				}
+			}
+		}
+
+
+		GLFWwindow* window = nullptr;
+
+		std::vector<Line*> lines;
+		std::vector<Polyline*> polylines;
+		std::vector<Rectangle*> rectangles;
+		std::vector<Text*> texts;
+		std::vector<Button*> buttons;
+
+		// Second element will be tranfered to listener
+		std::vector<std::pair<void (*)(void*), void*>> leftMouseUpListeners;
+
+		size_t width = 0;
+		size_t height = 0;
+		char* name = nullptr;
+		Color backgroundColor;
+	};
 
 
 	class Line {
 	public:
 
-		Line(const Window& window, const Coordinates& begPos = Coordinates(10, 10),
+		Line(Window& window, const Coordinates& begPos = Coordinates(10, 10),
 		     const Coordinates& endPos = Coordinates(100, 10), const size_t width = 1,
 		     const Color& color = Color(0, 0, 0));
+
+		Line(const Line& other) = delete;
 
 	private:
 
@@ -120,10 +239,12 @@ namespace GUI {
 	class Polyline {
 	public:
 
-		Polyline(const Window& window, const std::vector<Coordinates>& verteces,
+		Polyline(Window& window, const std::vector<Coordinates>& verteces,
 		         const size_t width = 1, const Color& color = Color(0, 0, 0));
 
-		Polyline(const Window& window, const size_t width = 1, const Color& color = Color(0, 0, 0));
+		Polyline(Window& window, const size_t width = 1, const Color& color = Color(0, 0, 0));
+
+		Polyline(const Polyline& other) = delete;
 
 		void AddVertex(const Coordinates& pos);
 
@@ -137,12 +258,14 @@ namespace GUI {
 		Color color;
 	};
 
-	
+
 	class Rectangle {
 	public:
 
-		Rectangle(const Window& window, const Coordinates& pos = Coordinates(0, 0),
+		Rectangle(Window& window, const Coordinates& pos = Coordinates(0, 0),
 		          const Size& size = Size(200, 100), const Color& color = Color(0, 0, 0));
+
+		Rectangle(const Rectangle& other) = delete;
 
 	private:
 
@@ -157,9 +280,11 @@ namespace GUI {
 	class Text {
 	public:
 
-		Text(const Window& window, const char* string,
+		Text(Window& window, const char* string,
 		     const Coordinates& pos = Coordinates(0, 0), const size_t fontSize = 16,
 		     const Color& color = Color(0, 0, 0));
+
+		Text(const Text& other) = delete;
 
 		~Text();
 
@@ -195,94 +320,45 @@ namespace GUI {
 	class Button {
 	public:
 
-		Button(const Window& window, const Coordinates& pos = Coordinates(0, 0),
+		Button(Window& window, const Coordinates& pos = Coordinates(0, 0),
 		       const Size& size = Size(100, 50), const Color& color = Color(0.5, 0.5, 0.5));
+
+		Button(const Button& other) = delete;
+
+
+		void AddLeftMouseUpListener(void (*Listener)(void*), void* addParam);
+
 
 		~Button();
 
 
 	private:
 
+		static void LeftMouseUpCallback(void* buttonArg) {
+			assert(buttonArg != nullptr);
+
+			Button* button = static_cast<Button*>(buttonArg);
+
+			WindowCoordinates cursorPos = button->window.CursorPos();
+			if (cursorPos.x >= button->pos.x && cursorPos.x <= button->pos.x + button->size.width &&
+				cursorPos.y >= button->pos.y && cursorPos.y <= button->pos.y + button->size.height) {
+
+				for (int i = 0; i < button->leftMouseUpListeners.size(); ++i) {
+					std::pair<void (*)(void*), void*>& curListener = button->leftMouseUpListeners[i];
+					curListener.first(curListener.second);
+				}
+			}
+		}
+
+
 		const Window& window;
+
+		std::vector<std::pair<void (*)(void*), void*>> leftMouseUpListeners;
 
 		Coordinates pos;
 		Size size;
 		Color color;
 
 		Rectangle* rectangle;
-	};
-
-
-	class Window {
-	public:
-
-		Window(const int width = 640, const int height = 420, const char* name = "Window",
-		       const Color& backgroundColor = Color(0, 0, 0));
-
-		size_t Width() const;
-
-		size_t Height() const;
-
-
-		Rectangle* CreateRectangle(const Coordinates& pos = Coordinates(0, 0),
-		                           const Size& size = Size(200, 100), const Color& color = Color(0, 0, 0));
-
-		Button* CreateButton(const Coordinates& pos = Coordinates(0, 0),
-		                     const Size& size = Size(100, 50), const Color& color = Color(0.5, 0.5, 0.5));
-
-		Line* CreateLine(const Coordinates& begPos = Coordinates(10, 10),
-		                 const Coordinates& endPos = Coordinates(100, 10),
-		                 const size_t width = 1, const Color& color = Color(0, 0, 0));
-
-		Polyline* CreatePolyline(const std::vector<Coordinates>& verteces, const size_t width = 1,
-		                         const Color& color = Color(0, 0, 0));
-
-		Polyline* CreatePolyline(const size_t width = 1, const Color& color = Color(0, 0, 0));
-
-		Text* CreateText(const char* content, const Coordinates& pos = Coordinates(0, 0),
-		                 const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
-
-
-		void DrawChanges();
-
-		void SetActive() const;
-
-		~Window();
-
-
-	private:
-
-		GLFWwindow* window = nullptr;
-
-		std::vector<Line*> lines;
-		std::vector<Polyline*> polylines;
-		std::vector<Rectangle*> rectangles;
-		std::vector<Text*> texts;
-		std::vector<Button*> buttons;
-
-		size_t width = 0;
-		size_t height = 0;
-		char* name = nullptr;
-		Color backgroundColor;
-	};
-
-
-	class Application {
-	public:
-
-		Application();
-
-		Window* CreateWindow(const int width = 640, const int height = 420, const char* name = "Window",
-		                     const Color& backgroundColor = Color(0, 0, 0));
-
-		void WaitEvents() const;
-
-		void PollEvents() const;
-
-		~Application();
-
-	private:
-
-		std::vector<Window*> windows;
 	};
 }

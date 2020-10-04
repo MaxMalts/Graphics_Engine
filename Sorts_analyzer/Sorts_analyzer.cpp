@@ -163,6 +163,6 @@ void AnalyseSorts(const int maxCount, const int step) {
 
 
 int main() {
-	
+
 	return 0;
 }

@@ -61,12 +61,9 @@ namespace GUI {
 
 	/* Structures */
 
-	Coordinates::Coordinates() = default;
-
 	Coordinates::Coordinates(int x, int y) : x(x), y(y) {}
 
-
-	Size::Size() = default;
+	WindowCoordinates::WindowCoordinates(int x, int y) : x(x), y(y) {}
 
 	Size::Size(size_t width, size_t height) : width(width), height(height) {}
 
@@ -154,9 +151,193 @@ namespace GUI {
 
 
 
+	/* Application implementation */
+
+	Application::Application() {
+		if (!glfwInit())
+			throw bad_init("Error while initializing Application)");
+	}
+
+
+	Window* Application::CreateWindow(const int width, const int height, const char* name, const Color& backgroundColor) {
+		assert(width >= 0);
+		assert(height >= 0);
+		assert(name != nullptr);
+
+		Window* newWindow = new Window(width, height, name, backgroundColor);
+		windows.push_back(newWindow);
+
+		return newWindow;
+	}
+
+
+	void Application::ProcessEventsWait() const {
+		glfwWaitEvents();
+	}
+
+
+	void Application::ProcessEvents() const {
+		glfwPollEvents();
+	}
+
+
+	Application::~Application() {
+		DeleteArrayElements(windows);
+		glfwTerminate();
+	}
+
+
+
+	/* Window Implementation */
+
+	Window::Window(const int width, const int height, const char* name, const Color& backgroundColor)
+		: width(width), height(height), backgroundColor(backgroundColor) {
+
+		assert(width >= 0);
+		assert(height >= 0);
+		assert(name != nullptr);
+
+		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+		window = glfwCreateWindow(width, height, name, NULL, NULL);
+		if (!window) {
+			glfwTerminate();
+			throw bad_init("Error occurred while creating the window");
+		}
+		glfwSetWindowUserPointer(window, this);
+		glfwSetMouseButtonCallback(window, LeftMouseUpCallback);
+
+		this->name = new char[strlen(name) + 1];
+		strcpy(this->name, name);
+
+		SetActive();
+
+		glClearColor(backgroundColor.RedAmt(), backgroundColor.GreenAmt(), backgroundColor.BlueAmt(), 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glfwSwapBuffers(window);
+	}
+
+
+	size_t Window::Width() const {
+		return width;
+	}
+
+
+	size_t Window::Height() const {
+		return height;
+	}
+
+
+	Rectangle* Window::CreateRectangle(const Coordinates& pos, const Size& size, const Color& color) {
+		SetActive();
+
+		Rectangle* newRect = new Rectangle(*this, pos, size, color);
+		rectangles.push_back(newRect);
+
+		return newRect;
+	}
+
+
+	Button* Window::CreateButton(const Coordinates& pos, const Size& size, const Color& color) {
+		SetActive();
+
+		Button* newButton = new Button(*this, pos, size, color);
+		buttons.push_back(newButton);
+
+		return newButton;
+	}
+
+
+	Line* Window::CreateLine(const Coordinates& begPos, const Coordinates& endPos,
+		const size_t width, const Color& color) {
+
+		SetActive();
+
+		Line* newLine = new Line(*this, begPos, endPos, width, color);
+		lines.push_back(newLine);
+
+		return newLine;
+	}
+
+
+	Polyline* Window::CreatePolyline(const std::vector<Coordinates>& verteces,
+		const size_t width, const Color& color) {
+
+		SetActive();
+
+		Polyline* newPolyline = new Polyline(*this, verteces, width, color);
+		polylines.push_back(newPolyline);
+
+		return newPolyline;
+	}
+
+
+	Polyline* Window::CreatePolyline(const size_t width, const Color& color) {
+		SetActive();
+
+		Polyline* newPolyline = new Polyline(*this, width, color);
+		polylines.push_back(newPolyline);
+
+		return newPolyline;
+	}
+
+
+	Text* Window::CreateText(const char* content, const Coordinates& pos,
+		const size_t fontSize, const Color& color) {
+
+		SetActive();
+
+		Text* newText = new Text(*this, content, pos, fontSize, color);
+		texts.push_back(newText);
+
+		return newText;
+	}
+
+
+	void Window::DrawChanges() {
+		glfwSwapBuffers(window);
+	}
+
+
+	void Window::SetActive() const {
+		assert(window != nullptr);
+
+		if (glfwGetCurrentContext() != window) {
+			glfwMakeContextCurrent(window);
+		}
+	}
+
+
+	void Window::AddLeftMouseUpListener(void (*Listener)(void*), void* addParam) {
+		leftMouseUpListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
+	}
+
+
+	WindowCoordinates Window::CursorPos() const {
+		double posX = 0, posY = 0;
+		glfwGetCursorPos(window, &posX, &posY);
+
+		return WindowCoordinates(static_cast<int>(posX), static_cast<int>(posY));
+	}
+
+
+	Window::~Window() {
+		SetActive();
+
+		DeleteArrayElements(lines);
+		DeleteArrayElements(polylines);
+		DeleteArrayElements(rectangles);
+		DeleteArrayElements(texts);
+		DeleteArrayElements(buttons);
+
+		glfwDestroyWindow(window);
+	}
+
+
+
 	/* Line implementation */
 
-	Line::Line(const Window& window, const Coordinates& begPos, const Coordinates& endPos,
+	Line::Line(Window& window, const Coordinates& begPos, const Coordinates& endPos,
 	           const size_t width, const Color& color)
 		: window(window), firstPoint(begPos), secondPoint(endPos), width(width), color(color) {
 
@@ -179,7 +360,7 @@ namespace GUI {
 
 	/* Polyline implementation */
 
-	Polyline::Polyline(const Window& window, const std::vector<Coordinates>& verteces,
+	Polyline::Polyline(Window& window, const std::vector<Coordinates>& verteces,
 	                   const size_t width, const Color& color) 
 		: window(window), verteces(verteces), width(width), color(color) {
 
@@ -199,7 +380,7 @@ namespace GUI {
 	}
 
 
-	Polyline::Polyline(const Window& window, const size_t width, const Color& color)
+	Polyline::Polyline(Window& window, const size_t width, const Color& color)
 		: window(window), verteces(), width(width), color(color) {}
 
 
@@ -227,7 +408,7 @@ namespace GUI {
 
 	/* Rectangle implementation */
 
-	Rectangle::Rectangle(const Window& window, const Coordinates& pos, const Size& size, const Color& color)
+	Rectangle::Rectangle(Window& window, const Coordinates& pos, const Size& size, const Color& color)
 		: window(window), pos(pos), size(size), color(color) {
 
 		GlCoordinates begPosGl = WindowToGlCoords(window, pos);
@@ -254,7 +435,7 @@ namespace GUI {
 	size_t Text::charWidth = 0;
 	size_t Text::charHeight = 0;
 
-	Text::Text(const Window& window, const char* string,
+	Text::Text(Window& window, const char* string,
 	           const Coordinates& pos, const size_t fontSize, const Color& color) 
 		: window(window), pos(pos), fontSize(fontSize), color(color) {
 		
@@ -322,10 +503,6 @@ namespace GUI {
 	void Text::Draw() {
 
 		window.SetActive();
-
-		//glClear(GL_COLOR_BUFFER_BIT);
-		glColor3f(0.0, 0.0, 0.0);
-
 
 		Coordinates curPos(pos.x, pos.y);
 		for (int i = 0; i < strlen(content); ++i) {
@@ -400,186 +577,23 @@ namespace GUI {
 
 	/* Button implementation */
 
-	Button::Button(const Window& window, const Coordinates& pos, const Size& size, const Color& color)
+	Button::Button(Window& window, const Coordinates& pos, const Size& size, const Color& color)
 		: window(window), pos(pos), size(size), color(color) {
 
 		window.SetActive();
+
+		window.AddLeftMouseUpListener(LeftMouseUpCallback, this);
 
 		Rectangle* newRect = new Rectangle(window, pos, size, color);
 		rectangle = newRect;
 	}
 
 
+	void Button::AddLeftMouseUpListener(void(*Listener)(void*), void* addParam) {
+		leftMouseUpListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
+	}
+
 	Button::~Button() {
 		delete rectangle;
-	}
-
-
-
-	/* Window Implementation */
-
-	Window::Window(const int width, const int height, const char* name, const Color& backgroundColor)
-		: width(width), height(height), backgroundColor(backgroundColor) {
-
-		assert(width >= 0);
-		assert(height >= 0);
-		assert(name != nullptr);
-
-		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
-		window = glfwCreateWindow(width, height, name, NULL, NULL);
-		if (!window) {
-			glfwTerminate();
-			throw bad_init("Error occurred while creating the window");
-		}
-
-		this->name = new char[strlen(name) + 1];
-		strcpy(this->name, name);
-
-		SetActive();
-
-		glClearColor(backgroundColor.RedAmt(), backgroundColor.GreenAmt(), backgroundColor.BlueAmt(), 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		glfwSwapBuffers(window);
-	}
-
-
-	size_t Window::Width() const {
-		return width;
-	}
-
-
-	size_t Window::Height() const {
-		return height;
-	}
-
-
-	Rectangle* Window::CreateRectangle(const Coordinates& pos, const Size& size, const Color& color) {
-		SetActive();
-
-		Rectangle* newRect = new Rectangle(*this, pos, size, color);
-		rectangles.push_back(newRect);
-
-		return newRect;
-	}
-
-
-	Button* Window::CreateButton(const Coordinates& pos, const Size& size, const Color& color) {
-		SetActive();
-
-		Button* newButton = new Button(*this, pos, size, color);
-		buttons.push_back(newButton);
-
-		return newButton;
-	}
-
-
-	Line* Window::CreateLine(const Coordinates& begPos, const Coordinates& endPos,
-	                         const size_t width, const Color& color) {
-
-		SetActive();
-
-		Line* newLine = new Line(*this, begPos, endPos, width, color);
-		lines.push_back(newLine);
-
-		return newLine;
-	}
-
-
-	Polyline* Window::CreatePolyline(const std::vector<Coordinates>& verteces,
-                                     const size_t width, const Color& color) {
-
-		SetActive();
-
-		Polyline* newPolyline = new Polyline(*this, verteces, width, color);
-		polylines.push_back(newPolyline);
-
-		return newPolyline;
-	}
-
-
-	Polyline* Window::CreatePolyline(const size_t width, const Color& color) {
-		SetActive();
-
-		Polyline* newPolyline = new Polyline(*this, width, color);
-		polylines.push_back(newPolyline);
-
-		return newPolyline;
-	}
-
-
-	Text* Window::CreateText(const char* content, const Coordinates& pos,
-	                         const size_t fontSize, const Color& color) {
-
-		SetActive();
-
-		Text* newText = new Text(*this, content, pos, fontSize, color);
-		texts.push_back(newText);
-
-		return newText;
-	}
-
-
-	void Window::DrawChanges() {
-		glfwSwapBuffers(window);
-	}
-
-
-	void Window::SetActive() const {
-		assert(window != nullptr);
-
-		if (glfwGetCurrentContext() != window) {
-			glfwMakeContextCurrent(window);
-		}
-	}
-
-
-	Window::~Window() {
-		SetActive();
-
-		DeleteArrayElements(lines);
-		DeleteArrayElements(polylines);
-		DeleteArrayElements(rectangles);
-		DeleteArrayElements(texts);
-		DeleteArrayElements(buttons);
-
-		glfwDestroyWindow(window);
-	}
-
-
-
-	/* Application implementation */
-
-	Application::Application() {
-		if (!glfwInit())
-			throw bad_init("Error while initializing Application)");
-	}
-
-
-	Window* Application::CreateWindow(const int width, const int height, const char* name, const Color& backgroundColor) {
-		assert(width >= 0);
-		assert(height >= 0);
-		assert(name != nullptr);
-
-		Window* newWindow = new Window(width, height, name, backgroundColor);
-		windows.push_back(newWindow);
-
-		return newWindow;
-	}
-
-
-	void Application::WaitEvents() const {
-		glfwWaitEvents();
-	}
-
-
-	void Application::PollEvents() const {
-		glfwPollEvents();
-	}
-
-
-	Application::~Application() {
-		DeleteArrayElements(windows);
-		glfwTerminate();
 	}
 }
