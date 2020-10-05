@@ -227,7 +227,7 @@ namespace GUI {
 
 	private:
 
-		const Window& window;
+		Window& window;
 
 		Coordinates firstPoint;
 		Coordinates secondPoint;
@@ -251,7 +251,7 @@ namespace GUI {
 
 	private:
 
-		const Window& window;
+		Window& window;
 
 		std::vector<Coordinates> verteces;
 		size_t width;
@@ -269,7 +269,7 @@ namespace GUI {
 
 	private:
 
-		const Window& window;
+		Window& window;
 
 		Coordinates pos;
 		Size size;
@@ -304,7 +304,7 @@ namespace GUI {
 
 		char* content = nullptr;
 
-		const Window& window;
+		Window& window;
 
 		Coordinates pos;
 		size_t fontSize;    // width in window pixels
@@ -324,6 +324,9 @@ namespace GUI {
 		       const Size& size = Size(100, 50), const Color& color = Color(0.5, 0.5, 0.5));
 
 		Button(const Button& other) = delete;
+
+		Text* AddLabel(const char* label, const Coordinates& labelPos = Coordinates(10, 10),
+		               const size_t fontSize = 16, const Color& labelColor = Color(0, 0, 0));
 
 
 		void AddLeftMouseUpListener(void (*Listener)(void*), void* addParam);
@@ -351,7 +354,7 @@ namespace GUI {
 		}
 
 
-		const Window& window;
+		Window& window;
 
 		std::vector<std::pair<void (*)(void*), void*>> leftMouseUpListeners;
 
@@ -359,6 +362,7 @@ namespace GUI {
 		Size size;
 		Color color;
 
-		Rectangle* rectangle;
+		Rectangle* rectangle = nullptr;
+		Text* label = nullptr;
 	};
 }

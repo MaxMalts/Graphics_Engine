@@ -439,6 +439,8 @@ namespace GUI {
 	           const Coordinates& pos, const size_t fontSize, const Color& color) 
 		: window(window), pos(pos), fontSize(fontSize), color(color) {
 		
+		assert(string != nullptr);
+
 		if (0 == instanceCount) {
 			const char bitmapFileName[] = "Fonts/ASCII.bmp";
 			const size_t charWidth = 16;
@@ -589,11 +591,23 @@ namespace GUI {
 	}
 
 
+	Text* Button::AddLabel(const char* string, const Coordinates& labelPos,
+	                       const size_t fontSize, const Color& labelColor) {
+
+		assert(string != nullptr);
+		
+		Coordinates globalPos(labelPos.x + pos.x, labelPos.y + pos.y);
+		label = new Text(window, string, globalPos, fontSize, labelColor);
+
+		return label;
+	}
+
 	void Button::AddLeftMouseUpListener(void(*Listener)(void*), void* addParam) {
 		leftMouseUpListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
 	}
 
 	Button::~Button() {
 		delete rectangle;
+		delete label;
 	}
 }
