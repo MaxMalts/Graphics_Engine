@@ -238,16 +238,6 @@ namespace GUI {
 	}
 
 
-	Button* Window::CreateButton(const Coordinates& pos, const Size& size, const Color& color) {
-		SetActive();
-
-		Button* newButton = new Button(*this, pos, size, color);
-		buttons.push_back(newButton);
-
-		return newButton;
-	}
-
-
 	Line* Window::CreateLine(const Coordinates& begPos, const Coordinates& endPos,
 		const size_t width, const Color& color) {
 
@@ -294,6 +284,28 @@ namespace GUI {
 	}
 
 
+	Button* Window::CreateButton(const Coordinates& pos, const Size& size, const Color& color) {
+		SetActive();
+
+		Button* newButton = new Button(*this, pos, size, color);
+		buttons.push_back(newButton);
+
+		return newButton;
+	}
+
+
+	Graph* Window::CreateGraph(const GraphProps& props, const Coordinates& pos,
+	                           const Size& size, const Color& bgColor) {
+
+		SetActive();
+
+		Graph* newGraph = new Graph(*this, props, pos, size, bgColor);
+		graphs.push_back(newGraph);
+
+		return newGraph;
+	}
+
+
 	void Window::DrawChanges() {
 		glfwSwapBuffers(window);
 	}
@@ -329,6 +341,7 @@ namespace GUI {
 		DeleteArrayElements(rectangles);
 		DeleteArrayElements(texts);
 		DeleteArrayElements(buttons);
+		DeleteArrayElements(graphs);
 
 		glfwDestroyWindow(window);
 	}
@@ -610,4 +623,64 @@ namespace GUI {
 		delete rectangle;
 		delete label;
 	}
+
+
+
+	/* Graph implementation */
+
+	GraphProps::GraphProps(const int startX, const int rangeX, const int startY, const int rangeY)
+		: startX(startX), rangeX(rangeX), startY(startY), rangeY(rangeY) {}
+
+
+	Graph::Graph(Window& window, const GraphProps& props, const Coordinates& pos, const Size& size,
+	             const Color& bgColor )
+		: window(window), props(props), pos(pos), size(size), bgColor(bgColor) {
+
+		const size_t axesWidth = 3;
+
+		background = new Rectangle(window, pos, size, bgColor);
+		axes = new Polyline(window, axesWidth, Color(0, 0, 0));
+
+		innerPos = pos;
+		innerSize = size;
+		//DrawAxes();
+	}
+
+
+	int Graph::AddDiagram(const size_t lineWidth, const Color& color) {
+		Polyline* polyline = new Polyline(window, lineWidth, color);
+
+		diagrams.push_back(std::pair<std::vector<DiagramNode>, Polyline*>
+		                   (std::vector<DiagramNode>(), polyline));
+
+		return diagrams.size() - 1;
+	}
+	
+
+	void Graph::AddData(const int diagramInd, int column, int value) {
+		if (diagramInd < 0 || diagramInd >= diagrams.size())
+			throw std::out_of_range("The diagramInd argument out of range.");
+
+		int curVertexX = innerPos.x +
+		                 column / static_cast<float>(props.rangeX) * size.width;
+
+		int curVertexY = innerPos.y + size.height -
+		                 value / static_cast<float>(props.rangeY) * size.height;
+
+		diagrams[diagramInd].first.push_back(DiagramNode(column, value));
+		diagrams[diagramInd].second->AddVertex(Coordinates(curVertexX, curVertexY));
+	}
+
+
+	Graph::~Graph() {
+		for (int i = 0; i < diagrams.size(); ++i) {
+			delete diagrams[i].second;
+		}
+
+		delete axes;
+		delete background;
+	}
+
+
+	Graph::DiagramNode::DiagramNode(int column, int value) : column(column), value(value) {}
 }

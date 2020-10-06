@@ -104,13 +104,26 @@ namespace GUI {
 	};
 
 
+	struct GraphProps {
+
+		GraphProps() = default;
+
+		GraphProps(const int startX, const int rangeX, const int startY, const int rangeY);
+
+		int startX = 0, rangeX = 100, startY = 0, rangeY = 100;
+		size_t fontSize = 20, axesWidth = 3;
+		Color axesColor = Color(0, 0, 0), fontColor = Color(0, 0, 0);
+	};
+
+
 
 	class Window;
 	class Line;
 	class Polyline;
 	class Rectangle;
-	class Button;
 	class Text;
+	class Button;
+	class Graph;
 
 
 	class Application {
@@ -152,7 +165,7 @@ namespace GUI {
 			const Size& size = Size(200, 100), const Color& color = Color(0, 0, 0));
 
 		Button* CreateButton(const Coordinates& pos = Coordinates(0, 0),
-			const Size& size = Size(100, 50), const Color& color = Color(0.5, 0.5, 0.5));
+			const Size& size = Size(100, 50), const Color& color = Color(0.7, 0.7, 0.7));
 
 		Line* CreateLine(const Coordinates& begPos = Coordinates(10, 10),
 			const Coordinates& endPos = Coordinates(100, 10),
@@ -165,6 +178,11 @@ namespace GUI {
 
 		Text* CreateText(const char* content, const Coordinates& pos = Coordinates(0, 0),
 			const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
+
+		Graph* CreateGraph(const GraphProps& props = GraphProps(),
+		                   const Coordinates& pos = Coordinates(0, 0),
+		                   const Size& size = Size(100, 100),
+		                   const Color& bgColor = Color(0.8, 0.8, 0.8));
 
 
 		void DrawChanges();
@@ -205,6 +223,7 @@ namespace GUI {
 		std::vector<Rectangle*> rectangles;
 		std::vector<Text*> texts;
 		std::vector<Button*> buttons;
+		std::vector<Graph*> graphs;
 
 		// Second element will be tranfered to listener
 		std::vector<std::pair<void (*)(void*), void*>> leftMouseUpListeners;
@@ -321,7 +340,7 @@ namespace GUI {
 	public:
 
 		Button(Window& window, const Coordinates& pos = Coordinates(0, 0),
-		       const Size& size = Size(100, 50), const Color& color = Color(0.5, 0.5, 0.5));
+		       const Size& size = Size(100, 50), const Color& color = Color(0.7, 0.7, 0.7));
 
 		Button(const Button& other) = delete;
 
@@ -364,5 +383,55 @@ namespace GUI {
 
 		Rectangle* rectangle = nullptr;
 		Text* label = nullptr;
+	};
+
+
+	class Graph {
+	public:
+
+		Graph(Window& window, const GraphProps& props = GraphProps(),
+		      const Coordinates& pos = Coordinates(0, 0), const Size& size = Size(100, 100),
+		      const Color& bgColor = Color(0.8, 0.8, 0.8));
+
+		Graph(const Graph& other) = delete;
+
+		int AddDiagram(const size_t lineWidth = 1, const Color& color = Color(0, 0, 0));
+
+		void AddData(const int diagramInd, int x, int y);
+
+
+
+		~Graph();
+
+	private:
+
+		void DrawAxes();
+
+
+		Window& window;
+
+
+		struct DiagramNode {
+			DiagramNode() = default;
+
+			DiagramNode(int column, int value);
+
+			int column = 0, value = 0;
+		};
+
+		// Diargrams data with corresponding polylines
+		std::vector<std::pair<std::vector<DiagramNode>, Polyline*>> diagrams;
+
+		GraphProps props;
+
+		Rectangle* background = nullptr;
+		Polyline* axes = nullptr;
+
+		Coordinates pos;
+		Size size;
+		Color bgColor;
+
+		Coordinates innerPos;    // Position without axes and labels
+		Size innerSize;    // Size of graph without axes and labels
 	};
 }
