@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <set>
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 #include "BMP_Img/BMP_Img.h"
@@ -111,7 +112,7 @@ namespace GUI {
 		GraphProps(const int startX, const int rangeX, const int startY, const int rangeY);
 
 		int startX = 0, rangeX = 100, startY = 0, rangeY = 100;
-		size_t fontSize = 20, axesWidth = 3;
+		size_t fontSize = 16, axesWidth = 3, hatchSize = 10;
 		Color axesColor = Color(0, 0, 0), fontColor = Color(0, 0, 0);
 	};
 
@@ -136,6 +137,8 @@ namespace GUI {
 		Window* CreateWindow(const int width = 640, const int height = 420, const char* name = "Window",
 		                     const Color& backgroundColor = Color(0, 0, 0));
 
+		void CloseWindow(Window* window);
+
 		void ProcessEventsWait() const;
 
 		void ProcessEvents() const;
@@ -144,15 +147,15 @@ namespace GUI {
 
 	private:
 
-		std::vector<Window*> windows;
+		std::set<Window*> windows;
 	};
 
 
 	class Window {
 	public:
 
-		Window(const int width = 640, const int height = 420, const char* name = "Window",
-		       const Color& backgroundColor = Color(0, 0, 0));
+		Window(Application& application, const int width = 640, const int height = 420,
+		       const char* name = "Window", const Color& backgroundColor = Color(0, 0, 0));
 
 		Window(const Window& other) = delete;
 
@@ -192,8 +195,12 @@ namespace GUI {
 
 		void AddLeftMouseUpListener(void (*Listener)(void*), void* addParam);
 
+		void AddWindowCloseListener(void (*Listener)(void*), void* addParam);
+
 
 		WindowCoordinates CursorPos() const;
+
+		Application& GetApplication() const;
 
 
 		~Window();
@@ -216,6 +223,21 @@ namespace GUI {
 		}
 
 
+		static void WindowCloseCallback(GLFWwindow* glfwWindow) {
+			assert(glfwWindow != nullptr);
+
+			Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow));
+			assert(window != nullptr);
+
+			for (int i = 0; i < window->leftMouseUpListeners.size(); ++i) {
+				std::pair<void (*)(void*), void*>& curListener = window->windowCloseListeners[i];
+				curListener.first(curListener.second);
+			}
+		}
+
+
+		Application& application;
+
 		GLFWwindow* window = nullptr;
 
 		std::vector<Line*> lines;
@@ -227,6 +249,7 @@ namespace GUI {
 
 		// Second element will be tranfered to listener
 		std::vector<std::pair<void (*)(void*), void*>> leftMouseUpListeners;
+		std::vector<std::pair<void (*)(void*), void*>> windowCloseListeners;
 
 		size_t width = 0;
 		size_t height = 0;
@@ -399,13 +422,15 @@ namespace GUI {
 
 		void AddData(const int diagramInd, int x, int y);
 
-
-
 		~Graph();
 
 	private:
 
-		void DrawAxes();
+		void DrawGraphParts();
+
+		void DrawArrows(const int arrowBackOffset, const int arrowSideOffset);
+
+		void DrawLabels(const int rowLabelsOffset, const int columnLabelsOffset);
 
 
 		Window& window;
@@ -421,6 +446,9 @@ namespace GUI {
 
 		// Diargrams data with corresponding polylines
 		std::vector<std::pair<std::vector<DiagramNode>, Polyline*>> diagrams;
+
+		std::vector<Text*> labels;
+		std::vector<Line*> hatches;
 
 		GraphProps props;
 

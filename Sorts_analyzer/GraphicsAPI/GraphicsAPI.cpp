@@ -58,6 +58,10 @@ namespace GUI {
 	}
 
 
+	constexpr int Log10Compile(const int n) {
+		return ((n < 10) ? 1 : 1 + Log10Compile(n / 10));
+	}
+
 
 	/* Structures */
 
@@ -159,15 +163,28 @@ namespace GUI {
 	}
 
 
-	Window* Application::CreateWindow(const int width, const int height, const char* name, const Color& backgroundColor) {
+	Window* Application::CreateWindow(const int width, const int height, const char* name,
+	                                  const Color& backgroundColor) {
 		assert(width >= 0);
 		assert(height >= 0);
 		assert(name != nullptr);
 
-		Window* newWindow = new Window(width, height, name, backgroundColor);
-		windows.push_back(newWindow);
+		Window* newWindow = new Window(*this, width, height, name, backgroundColor);
+		windows.insert(newWindow);
 
 		return newWindow;
+	}
+
+	void Application::CloseWindow(Window* window) {
+		if (window == nullptr)
+			return;
+
+		std::set<Window*>::iterator windowIter = windows.find(window);
+		if (windows.end() == windowIter)
+			throw std::invalid_argument("Passed window not found.");
+		
+		delete* windowIter;
+		windows.erase(windowIter);
 	}
 
 
@@ -182,7 +199,12 @@ namespace GUI {
 
 
 	Application::~Application() {
-		DeleteArrayElements(windows);
+		std::set<Window*>::iterator windowsIter = windows.begin();
+		while (windowsIter != windows.end()) {
+			delete *windowsIter;
+			++windowsIter;
+		}
+
 		glfwTerminate();
 	}
 
@@ -190,8 +212,9 @@ namespace GUI {
 
 	/* Window Implementation */
 
-	Window::Window(const int width, const int height, const char* name, const Color& backgroundColor)
-		: width(width), height(height), backgroundColor(backgroundColor) {
+	Window::Window(Application& application, const int width, const int height,
+	               const char* name, const Color& backgroundColor)
+		: application(application), width(width), height(height), backgroundColor(backgroundColor) {
 
 		assert(width >= 0);
 		assert(height >= 0);
@@ -205,6 +228,7 @@ namespace GUI {
 		}
 		glfwSetWindowUserPointer(window, this);
 		glfwSetMouseButtonCallback(window, LeftMouseUpCallback);
+		glfwSetWindowCloseCallback(window, WindowCloseCallback);
 
 		this->name = new char[strlen(name) + 1];
 		strcpy(this->name, name);
@@ -325,11 +349,21 @@ namespace GUI {
 	}
 
 
+	void Window::AddWindowCloseListener(void(*Listener)(void*), void* addParam) {
+		windowCloseListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
+	}
+
+
 	WindowCoordinates Window::CursorPos() const {
 		double posX = 0, posY = 0;
 		glfwGetCursorPos(window, &posX, &posY);
 
 		return WindowCoordinates(static_cast<int>(posX), static_cast<int>(posY));
+	}
+
+
+	Application& Window::GetApplication() const {
+		return application;
 	}
 
 
@@ -641,10 +675,13 @@ namespace GUI {
 		background = new Rectangle(window, pos, size, bgColor);
 		axes = new Polyline(window, axesWidth, Color(0, 0, 0));
 
-		innerPos = pos;
-		innerSize = size;
-		//DrawAxes();
+		//innerPos = pos;
+		//innerSize = size;
+		DrawGraphParts();
 	}
+
+
+	Graph::DiagramNode::DiagramNode(int column, int value) : column(column), value(value) {}
 
 
 	int Graph::AddDiagram(const size_t lineWidth, const Color& color) {
@@ -662,10 +699,10 @@ namespace GUI {
 			throw std::out_of_range("The diagramInd argument out of range.");
 
 		int curVertexX = innerPos.x +
-		                 column / static_cast<float>(props.rangeX) * size.width;
+		                 (column - props.startX) / static_cast<float>(props.rangeX) * innerSize.width;
 
-		int curVertexY = innerPos.y + size.height -
-		                 value / static_cast<float>(props.rangeY) * size.height;
+		int curVertexY = innerPos.y + innerSize.height -
+		                 (value - props.startY) / static_cast<float>(props.rangeY) * innerSize.height;
 
 		diagrams[diagramInd].first.push_back(DiagramNode(column, value));
 		diagrams[diagramInd].second->AddVertex(Coordinates(curVertexX, curVertexY));
@@ -677,10 +714,105 @@ namespace GUI {
 			delete diagrams[i].second;
 		}
 
+		DeleteArrayElements(labels);
+		DeleteArrayElements(hatches);
+
 		delete axes;
 		delete background;
 	}
 
 
-	Graph::DiagramNode::DiagramNode(int column, int value) : column(column), value(value) {}
+	void Graph::DrawGraphParts() {
+		constexpr size_t maxIntStrLen = Log10Compile(INT_MAX) + 2;
+		char tempBuf1[maxIntStrLen + 1] = "";
+		char tempBuf2[maxIntStrLen + 1] = "";
+
+		const int innerPadding = size.width / 15;
+		const int arrowFrontOffset = innerPadding / 1.3;
+		const int arrowSideOffset = arrowFrontOffset / 3;
+
+		const int hatchSize = 3;
+
+		const int rowLabelsOffset = props.fontSize + 20;
+		const int columnLabelsOffset = std::max(strlen(itoa(props.startX, tempBuf1, 10)),
+		                               strlen(itoa(props.startX + props.rangeX, tempBuf2, 10))) *
+		                               props.fontSize + props.fontSize * 2;
+
+		innerPos.x = pos.x + std::max(strlen(itoa(props.startY, tempBuf1, 10)),
+		             strlen(itoa(props.startY + props.rangeY, tempBuf2, 10))) * props.fontSize +
+		             props.hatchSize;
+
+		innerSize.width = size.width - (innerPos.x - pos.x) - innerPadding;
+		innerPos.y = pos.y + innerPadding;
+		innerSize.height = size.height - props.fontSize - props.hatchSize - innerPadding;
+
+		DrawArrows(arrowFrontOffset, arrowSideOffset);
+
+		DrawLabels(rowLabelsOffset, columnLabelsOffset);
+	}
+
+
+	void Graph::DrawArrows(const int arrowFrontOffset, const int arrowSideOffset) {
+		Coordinates innerEndPos(innerPos.x + innerSize.width, innerPos.y + innerSize.height);
+
+		axes = new Polyline(window, props.axesWidth, props.axesColor);
+		axes->AddVertex(Coordinates(innerPos.x, innerPos.y));
+		axes->AddVertex(Coordinates(innerPos.x - arrowSideOffset, innerPos.y));
+		axes->AddVertex(Coordinates(innerPos.x, innerPos.y - arrowFrontOffset));
+		axes->AddVertex(Coordinates(innerPos.x + arrowSideOffset, innerPos.y));
+		axes->AddVertex(Coordinates(innerPos.x, innerPos.y));
+		axes->AddVertex(Coordinates(innerPos.x, innerEndPos.y));
+
+		axes->AddVertex(Coordinates(innerEndPos.x, innerEndPos.y));
+		axes->AddVertex(Coordinates(innerEndPos.x, innerEndPos.y - arrowSideOffset));
+		axes->AddVertex(Coordinates(innerEndPos.x + arrowFrontOffset, innerEndPos.y));
+		axes->AddVertex(Coordinates(innerEndPos.x, innerEndPos.y + arrowSideOffset));
+		axes->AddVertex(Coordinates(innerEndPos.x, innerEndPos.y));
+	}
+
+
+	void Graph::DrawLabels(const int rowLabelsOffset, const int columnLabelsOffset) {
+		constexpr size_t maxIntStrLen = Log10Compile(INT_MAX) + 2;
+		char tempBuf[maxIntStrLen + 1] = "";
+
+		int curY = props.fontSize / 2;
+		while (curY < innerSize.height) {
+			int curLabelVal = (curY - props.fontSize / 2) / static_cast<float>(innerSize.height) *
+				props.rangeY + props.startY;
+
+			int curYWindow = innerPos.y + innerSize.height - curY;
+
+			Text* curLabel = new Text(window, itoa(curLabelVal, tempBuf, 10),
+			                          Coordinates(pos.x, curYWindow), props.fontSize, props.fontColor);
+
+			Line* curHatch = new Line(window, Coordinates(innerPos.x, curYWindow + props.fontSize / 2),
+			                          Coordinates(innerPos.x - props.hatchSize, curYWindow + props.fontSize / 2),
+			                          props.axesWidth, props.axesColor);
+
+			labels.push_back(curLabel);
+			hatches.push_back(curHatch);
+
+			curY += rowLabelsOffset;
+		}
+
+
+		int curX = 0;
+		while (curX < innerSize.width) {
+			int curLabelVal = curX / static_cast<float>(innerSize.width) *
+				props.rangeX + props.startX;
+
+			int curXWindow = innerPos.x + curX;
+			Text* curLabel = new Text(window, itoa(curLabelVal, tempBuf, 10),
+			                          Coordinates(curXWindow, pos.y + size.height - props.fontSize),
+			                          props.fontSize, props.fontColor);
+
+			Line* curHatch = new Line(window, Coordinates(curXWindow, innerPos.y + innerSize.height),
+			                          Coordinates(curXWindow, innerPos.y + innerSize.height + props.hatchSize),
+			                          props.axesWidth, props.axesColor);
+
+			labels.push_back(curLabel);
+			hatches.push_back(curHatch);
+			curX += columnLabelsOffset;
+		}
+	}
 }
