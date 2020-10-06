@@ -175,6 +175,12 @@ namespace GUI {
 		return newWindow;
 	}
 
+
+	size_t Application::WindowsOpened() const {
+		return windows.size();
+	}
+
+
 	void Application::CloseWindow(Window* window) {
 		if (window == nullptr)
 			return;

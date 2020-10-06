@@ -137,6 +137,8 @@ namespace GUI {
 		Window* CreateWindow(const int width = 640, const int height = 420, const char* name = "Window",
 		                     const Color& backgroundColor = Color(0, 0, 0));
 
+		size_t WindowsOpened() const;
+
 		void CloseWindow(Window* window);
 
 		void ProcessEventsWait() const;
