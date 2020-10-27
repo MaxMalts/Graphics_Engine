@@ -62,6 +62,12 @@ namespace GUI {
 		return ((n < 10) ? 1 : 1 + Log10Compile(n / 10));
 	}
 
+	
+	int Round(float val) {
+		int floor = static_cast<int>(val);
+		return (val - floor < 0.5) ? floor : floor + 1;
+	}
+
 
 	/* Structures */
 
@@ -90,67 +96,71 @@ namespace GUI {
 
 
 	Color::Color(const char* color) {
-		if (!strcmp(color, "red")) {
-			RGB[0] = 1.0; RGB[1] = 0.0; RGB[2] = 0.0;
+		const std::map<const char*, const RGB_t> strColors{
+			{"black", RGB_t{0.0, 0.0, 0.0}},
+			{"red", RGB_t{1.0, 0.0, 0.0}},
+			{"green", RGB_t{0.0, 1.0, 0.0}},
+			{"blue", RGB_t{0.0, 0.0, 1.0}},
+			{"yellow", RGB_t{1.0, 1.0, 0.0}},
+			{"magenta", RGB_t{1.0, 0.0, 1.0}},
+			{"cyan", RGB_t{0.0, 1.0, 1.0}},
+			{"white", RGB_t{1.0, 1.0, 1.0}},
+		};
 
-		} else if (!strcmp(color, "green")) {
-			RGB[0] = 0.0; RGB[1] = 1.0; RGB[2] = 0.0;
+		bool colorFound = false;
+		for (auto& curStrColor : strColors) {
+			if (!strcmp(color, curStrColor.first)) {
+				RGB = curStrColor.second;
+				colorFound = true;
+				break;
+			}
+		}
 
-		} else if (!strcmp(color, "blue")) {
-			RGB[0] = 0.0; RGB[1] = 0.0; RGB[2] = 1.0;
-
-		} else if (!strcmp(color, "black")) {
-			RGB[0] = 0.0; RGB[1] = 0.0; RGB[2] = 0.0;
-
-		} else if (!strcmp(color, "white")) {
-			RGB[0] = 1.0; RGB[1] = 1.0; RGB[2] = 1.0;
-
-		} else {
+		if (!colorFound) {
 			throw std::invalid_argument("Invalid value of color argument");
 		}
 	}
 
 
 	Color::Color(const Color& other) {
-		memcpy(RGB, other.RGB, sizeof(RGB));
+		RGB = other.RGB;
+	}
+
+
+	Color& Color::operator=(const Color& other) {
+		RGB = other.RGB;
+
+		return *this;
 	}
 
 
 	float Color::operator[](const char* color) const {
 		if (!strcmp(color, "red") || !strcmp(color, "R"))
-			return RGB[0];
+			return RGB.red;
 
 		else if (!strcmp(color, "green") || !strcmp(color, "G"))
-			return RGB[1];
+			return RGB.green;
 
 		else if (!strcmp(color, "blue") || !strcmp(color, "B"))
-			return RGB[2];
+			return RGB.blue;
 
 		else
 			throw std::invalid_argument("Invalid value of color argument");
 	}
 
 
-	float Color::operator[](const size_t index) const {
-		if (index >= sizeof(RGB) / sizeof(RGB[0]))
-			throw std::invalid_argument("Invalid index argument");
-
-		return RGB[index];
-	}
-
-
 	float Color::RedAmt() const {
-		return RGB[0];
+		return RGB.red;
 	}
 
 
 	float Color::GreenAmt() const {
-		return RGB[1];
+		return RGB.green;
 	}
 
 
 	float Color::BlueAmt() const {
-		return RGB[2];
+		return RGB.blue;
 	}
 
 
@@ -164,7 +174,7 @@ namespace GUI {
 
 
 	Window* Application::CreateWindow(const int width, const int height, const char* name,
-	                                  const Color& backgroundColor) {
+		const Color& backgroundColor) {
 		assert(width >= 0);
 		assert(height >= 0);
 		assert(name != nullptr);
@@ -188,7 +198,7 @@ namespace GUI {
 		std::set<Window*>::iterator windowIter = windows.find(window);
 		if (windows.end() == windowIter)
 			throw std::invalid_argument("Passed window not found.");
-		
+
 		delete* windowIter;
 		windows.erase(windowIter);
 	}
@@ -207,7 +217,7 @@ namespace GUI {
 	Application::~Application() {
 		std::set<Window*>::iterator windowsIter = windows.begin();
 		while (windowsIter != windows.end()) {
-			delete *windowsIter;
+			delete* windowsIter;
 			++windowsIter;
 		}
 
@@ -238,13 +248,6 @@ namespace GUI {
 
 		this->name = new char[strlen(name) + 1];
 		strcpy(this->name, name);
-
-		SetActive();
-
-		glClearColor(backgroundColor.RedAmt(), backgroundColor.GreenAmt(), backgroundColor.BlueAmt(), 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		glfwSwapBuffers(window);
 	}
 
 
@@ -259,7 +262,6 @@ namespace GUI {
 
 
 	Rectangle* Window::CreateRectangle(const Coordinates& pos, const Size& size, const Color& color) {
-		SetActive();
 
 		Rectangle* newRect = new Rectangle(*this, pos, size, color);
 		rectangles.push_back(newRect);
@@ -269,9 +271,7 @@ namespace GUI {
 
 
 	Line* Window::CreateLine(const Coordinates& begPos, const Coordinates& endPos,
-		const size_t width, const Color& color) {
-
-		SetActive();
+	                         const size_t width, const Color& color) {
 
 		Line* newLine = new Line(*this, begPos, endPos, width, color);
 		lines.push_back(newLine);
@@ -281,9 +281,7 @@ namespace GUI {
 
 
 	Polyline* Window::CreatePolyline(const std::vector<Coordinates>& verteces,
-		const size_t width, const Color& color) {
-
-		SetActive();
+	                                 const size_t width, const Color& color) {
 
 		Polyline* newPolyline = new Polyline(*this, verteces, width, color);
 		polylines.push_back(newPolyline);
@@ -293,7 +291,6 @@ namespace GUI {
 
 
 	Polyline* Window::CreatePolyline(const size_t width, const Color& color) {
-		SetActive();
 
 		Polyline* newPolyline = new Polyline(*this, width, color);
 		polylines.push_back(newPolyline);
@@ -303,7 +300,7 @@ namespace GUI {
 
 
 	Text* Window::CreateText(const char* content, const Coordinates& pos,
-		const size_t fontSize, const Color& color) {
+	                         const size_t fontSize, const Color& color) {
 
 		SetActive();
 
@@ -315,7 +312,6 @@ namespace GUI {
 
 
 	Button* Window::CreateButton(const Coordinates& pos, const Size& size, const Color& color) {
-		SetActive();
 
 		Button* newButton = new Button(*this, pos, size, color);
 		buttons.push_back(newButton);
@@ -327,8 +323,6 @@ namespace GUI {
 	Graph* Window::CreateGraph(const GraphProps& props, const Coordinates& pos,
 	                           const Size& size, const Color& bgColor) {
 
-		SetActive();
-
 		Graph* newGraph = new Graph(*this, props, pos, size, bgColor);
 		graphs.push_back(newGraph);
 
@@ -336,7 +330,25 @@ namespace GUI {
 	}
 
 
-	void Window::DrawChanges() {
+	void Window::Draw() {
+		SetActive();
+
+		glClearColor(backgroundColor.RedAmt(), backgroundColor.GreenAmt(), backgroundColor.BlueAmt(), 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		for (auto curObj : lines)
+			curObj->Draw();
+		for (auto curObj : polylines)
+			curObj->Draw();
+		for (auto curObj : rectangles)
+			curObj->Draw();
+		for (auto curObj : texts)
+			curObj->Draw();
+		for (auto curObj : buttons)
+			curObj->Draw();
+		for (auto curObj : graphs)
+			curObj->Draw();
+
 		glfwSwapBuffers(window);
 	}
 
@@ -374,8 +386,6 @@ namespace GUI {
 
 
 	Window::~Window() {
-		SetActive();
-
 		DeleteArrayElements(lines);
 		DeleteArrayElements(polylines);
 		DeleteArrayElements(rectangles);
@@ -392,12 +402,13 @@ namespace GUI {
 
 	Line::Line(Window& window, const Coordinates& begPos, const Coordinates& endPos,
 	           const size_t width, const Color& color)
-		: window(window), firstPoint(begPos), secondPoint(endPos), width(width), color(color) {
+		: window(window), firstPoint(begPos), secondPoint(endPos), width(width), color(color) {}
 
-		GlCoordinates begPosGl = WindowToGlCoords(window, begPos);
-		GlCoordinates endPosGl = WindowToGlCoords(window, endPos);
 
-		
+	void Line::Draw() {
+		GlCoordinates begPosGl = WindowToGlCoords(window, firstPoint);
+		GlCoordinates endPosGl = WindowToGlCoords(window, secondPoint);
+
 		window.SetActive();
 
 		glColor3f(color.RedAmt(), color.GreenAmt(), color.BlueAmt());
@@ -414,9 +425,15 @@ namespace GUI {
 	/* Polyline implementation */
 
 	Polyline::Polyline(Window& window, const std::vector<Coordinates>& verteces,
-	                   const size_t width, const Color& color) 
-		: window(window), verteces(verteces), width(width), color(color) {
+	                   const size_t width, const Color& color)
+		: window(window), verteces(verteces), width(width), color(color) {}
 
+
+	Polyline::Polyline(Window& window, const size_t width, const Color& color)
+		: window(window), verteces(), width(width), color(color) {}
+
+
+	void Polyline::Draw() {
 		if (verteces.size() >= 2) {
 			window.SetActive();
 
@@ -433,27 +450,7 @@ namespace GUI {
 	}
 
 
-	Polyline::Polyline(Window& window, const size_t width, const Color& color)
-		: window(window), verteces(), width(width), color(color) {}
-
-
 	void Polyline::AddVertex(const Coordinates& pos) {
-
-		if (verteces.size() >= 1) {
-			GlCoordinates lastPosGl = WindowToGlCoords(window, verteces[verteces.size() - 1]);
-			GlCoordinates posGl = WindowToGlCoords(window, pos);
-
-			window.SetActive();
-			
-			glColor3f(color.RedAmt(), color.GreenAmt(), color.BlueAmt());
-			glLineWidth(static_cast<GLfloat>(width));
-
-			glBegin(GL_LINES);
-			glVertex2f(lastPosGl.x, lastPosGl.y);
-			glVertex2f(posGl.x, posGl.y);
-			glEnd();
-		}
-
 		verteces.push_back(pos);
 	}
 
@@ -462,13 +459,15 @@ namespace GUI {
 	/* Rectangle implementation */
 
 	Rectangle::Rectangle(Window& window, const Coordinates& pos, const Size& size, const Color& color)
-		: window(window), pos(pos), size(size), color(color) {
+		: window(window), pos(pos), size(size), color(color) {}
 
+
+	void Rectangle::Draw() {
 		GlCoordinates begPosGl = WindowToGlCoords(window, pos);
 		GlCoordinates endPosGl = WindowToGlCoords(window, Coordinates(pos.x + size.width, pos.y + size.height));
 
 		window.SetActive();
-		
+
 		glColor3f(color.RedAmt(), color.GreenAmt(), color.BlueAmt());
 
 		glBegin(GL_QUADS);
@@ -489,9 +488,9 @@ namespace GUI {
 	size_t Text::charHeight = 0;
 
 	Text::Text(Window& window, const char* string,
-	           const Coordinates& pos, const size_t fontSize, const Color& color) 
+	           const Coordinates& pos, const size_t fontSize, const Color& color)
 		: window(window), pos(pos), fontSize(fontSize), color(color) {
-		
+
 		assert(string != nullptr);
 
 		if (0 == instanceCount) {
@@ -502,10 +501,9 @@ namespace GUI {
 			InitFont(bitmapFileName, charWidth, charHeight);
 		}
 
-		content = new char[strlen(string) + 1];
-		strcpy(content, string);
-
-		Draw();
+		contentLen = strlen(string);
+		content = new char[contentLen + 1];
+		strncpy(content, string, contentLen + 1);
 
 		++instanceCount;
 	}
@@ -514,7 +512,7 @@ namespace GUI {
 	void Text::DrawChar(const char ch, const Coordinates& pos) {
 		//GlCoordinates glPos = WindowToGlCoords(window, pos);
 		//glRasterPos2f(glPos.x, glPos.y);
-		
+
 		Coordinates bmpCharPos = BmpCharPos(ch);
 
 		const char* bmpCharPtr = bitmapImg->ImagePointer() + bmpCharPos.y * bitmapImg->Width() + bmpCharPos.x;
@@ -533,8 +531,8 @@ namespace GUI {
 		for (int curY = 0; curY < charHeight * scale; ++curY) {
 			for (int curX = 0; curX < fontSize; ++curX) {
 
-				int pxOffsetX = round(curX / scale);
-				int pxOffsetY = round(curY / scale);
+				int pxOffsetX = Round(curX / scale);
+				int pxOffsetY = Round(curY / scale);
 				if (pxOffsetX > charWidth - 1)
 					pxOffsetX = charWidth - 1;
 				if (pxOffsetY > charHeight - 1)
@@ -556,11 +554,10 @@ namespace GUI {
 
 
 	void Text::Draw() {
-
 		window.SetActive();
 
 		Coordinates curPos(pos.x, pos.y);
-		for (int i = 0; i < strlen(content); ++i) {
+		for (int i = 0; i < contentLen; ++i) {
 			char curChar = content[i];
 
 			DrawChar(curChar, curPos);
@@ -592,9 +589,8 @@ namespace GUI {
 
 		delete[] content;
 
-		if (instanceCount == 1) {
+		if (instanceCount == 1)
 			DestroyFont();
-		}
 
 		--instanceCount;
 	}
@@ -635,29 +631,41 @@ namespace GUI {
 	Button::Button(Window& window, const Coordinates& pos, const Size& size, const Color& color)
 		: window(window), pos(pos), size(size), color(color) {
 
-		window.SetActive();
-
 		window.AddLeftMouseUpListener(LeftMouseUpCallback, this);
-
-		Rectangle* newRect = new Rectangle(window, pos, size, color);
-		rectangle = newRect;
+		
+		rectangle = new Rectangle(window, pos, size, color);
 	}
 
 
 	Text* Button::AddLabel(const char* string, const Coordinates& labelPos,
-	                       const size_t fontSize, const Color& labelColor) {
+		const size_t fontSize, const Color& labelColor) {
 
 		assert(string != nullptr);
-		
+
 		Coordinates globalPos(labelPos.x + pos.x, labelPos.y + pos.y);
 		label = new Text(window, string, globalPos, fontSize, labelColor);
 
 		return label;
 	}
 
+
+	Color Button::GetColor() const {
+		return color;
+	}
+
+
 	void Button::AddLeftMouseUpListener(void(*Listener)(void*), void* addParam) {
 		leftMouseUpListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
 	}
+
+
+	void Button::Draw() {
+		window.SetActive();
+
+		rectangle->Draw();
+		label->Draw();
+	}
+
 
 	Button::~Button() {
 		delete rectangle;
@@ -673,22 +681,18 @@ namespace GUI {
 
 
 	Graph::Graph(Window& window, const GraphProps& props, const Coordinates& pos, const Size& size,
-	             const Color& bgColor )
+	             const Color& bgColor)
 		: window(window), props(props), pos(pos), size(size), bgColor(bgColor) {
 
 		const size_t axesWidth = 3;
 
 		background = new Rectangle(window, pos, size, bgColor);
-		axes = new Polyline(window, axesWidth, Color(0, 0, 0));
 
-		//innerPos = pos;
-		//innerSize = size;
-		DrawGraphParts();
+		InitGraphParts();
 	}
 
 
 	Graph::DiagramNode::DiagramNode(int column, int value) : column(column), value(value) {}
-
 
 	int Graph::AddDiagram(const size_t lineWidth, const Color& color) {
 		Polyline* polyline = new Polyline(window, lineWidth, color);
@@ -698,17 +702,17 @@ namespace GUI {
 
 		return diagrams.size() - 1;
 	}
-	
+
 
 	void Graph::AddData(const int diagramInd, int column, int value) {
 		if (diagramInd < 0 || diagramInd >= diagrams.size())
 			throw std::out_of_range("The diagramInd argument out of range.");
 
 		int curVertexX = innerPos.x +
-		                 (column - props.startX) / static_cast<float>(props.rangeX) * innerSize.width;
+			(column - props.startX) / static_cast<float>(props.rangeX) * innerSize.width;
 
 		int curVertexY = innerPos.y + innerSize.height -
-		                 (value - props.startY) / static_cast<float>(props.rangeY) * innerSize.height;
+			(value - props.startY) / static_cast<float>(props.rangeY) * innerSize.height;
 
 		diagrams[diagramInd].first.push_back(DiagramNode(column, value));
 		diagrams[diagramInd].second->AddVertex(Coordinates(curVertexX, curVertexY));
@@ -716,9 +720,8 @@ namespace GUI {
 
 
 	Graph::~Graph() {
-		for (int i = 0; i < diagrams.size(); ++i) {
+		for (int i = 0; i < diagrams.size(); ++i)
 			delete diagrams[i].second;
-		}
 
 		DeleteArrayElements(labels);
 		DeleteArrayElements(hatches);
@@ -728,7 +731,7 @@ namespace GUI {
 	}
 
 
-	void Graph::DrawGraphParts() {
+	void Graph::InitGraphParts() {
 		constexpr size_t maxIntStrLen = Log10Compile(INT_MAX) + 2;
 		char tempBuf1[maxIntStrLen + 1] = "";
 		char tempBuf2[maxIntStrLen + 1] = "";
@@ -741,24 +744,25 @@ namespace GUI {
 
 		const int rowLabelsOffset = props.fontSize + 20;
 		const int columnLabelsOffset = std::max(strlen(itoa(props.startX, tempBuf1, 10)),
-		                               strlen(itoa(props.startX + props.rangeX, tempBuf2, 10))) *
-		                               props.fontSize + props.fontSize * 2;
+			strlen(itoa(props.startX + props.rangeX, tempBuf2, 10))) *
+			props.fontSize + props.fontSize * 2;
 
 		innerPos.x = pos.x + std::max(strlen(itoa(props.startY, tempBuf1, 10)),
-		             strlen(itoa(props.startY + props.rangeY, tempBuf2, 10))) * props.fontSize +
-		             props.hatchSize;
+			strlen(itoa(props.startY + props.rangeY, tempBuf2, 10))) * props.fontSize +
+			props.hatchSize;
 
 		innerSize.width = size.width - (innerPos.x - pos.x) - innerPadding;
 		innerPos.y = pos.y + innerPadding;
 		innerSize.height = size.height - props.fontSize - props.hatchSize - innerPadding;
 
-		DrawArrows(arrowFrontOffset, arrowSideOffset);
+		InitArrows(arrowFrontOffset, arrowSideOffset);
 
-		DrawLabels(rowLabelsOffset, columnLabelsOffset);
+		InitLabels(rowLabelsOffset, columnLabelsOffset);
 	}
 
 
-	void Graph::DrawArrows(const int arrowFrontOffset, const int arrowSideOffset) {
+	void Graph::InitArrows(const int arrowFrontOffset, const int arrowSideOffset) {
+
 		Coordinates innerEndPos(innerPos.x + innerSize.width, innerPos.y + innerSize.height);
 
 		axes = new Polyline(window, props.axesWidth, props.axesColor);
@@ -777,7 +781,7 @@ namespace GUI {
 	}
 
 
-	void Graph::DrawLabels(const int rowLabelsOffset, const int columnLabelsOffset) {
+	void Graph::InitLabels(const int rowLabelsOffset, const int columnLabelsOffset) {
 		constexpr size_t maxIntStrLen = Log10Compile(INT_MAX) + 2;
 		char tempBuf[maxIntStrLen + 1] = "";
 
@@ -789,11 +793,11 @@ namespace GUI {
 			int curYWindow = innerPos.y + innerSize.height - curY;
 
 			Text* curLabel = new Text(window, itoa(curLabelVal, tempBuf, 10),
-			                          Coordinates(pos.x, curYWindow), props.fontSize, props.fontColor);
+				Coordinates(pos.x, curYWindow), props.fontSize, props.fontColor);
 
 			Line* curHatch = new Line(window, Coordinates(innerPos.x, curYWindow + props.fontSize / 2),
-			                          Coordinates(innerPos.x - props.hatchSize, curYWindow + props.fontSize / 2),
-			                          props.axesWidth, props.axesColor);
+				Coordinates(innerPos.x - props.hatchSize, curYWindow + props.fontSize / 2),
+				props.axesWidth, props.axesColor);
 
 			labels.push_back(curLabel);
 			hatches.push_back(curHatch);
@@ -809,16 +813,34 @@ namespace GUI {
 
 			int curXWindow = innerPos.x + curX;
 			Text* curLabel = new Text(window, itoa(curLabelVal, tempBuf, 10),
-			                          Coordinates(curXWindow, pos.y + size.height - props.fontSize),
-			                          props.fontSize, props.fontColor);
+				Coordinates(curXWindow, pos.y + size.height - props.fontSize),
+				props.fontSize, props.fontColor);
 
 			Line* curHatch = new Line(window, Coordinates(curXWindow, innerPos.y + innerSize.height),
-			                          Coordinates(curXWindow, innerPos.y + innerSize.height + props.hatchSize),
-			                          props.axesWidth, props.axesColor);
+				Coordinates(curXWindow, innerPos.y + innerSize.height + props.hatchSize),
+				props.axesWidth, props.axesColor);
 
 			labels.push_back(curLabel);
 			hatches.push_back(curHatch);
 			curX += columnLabelsOffset;
 		}
 	}
+
+
+	void Graph::Draw() {
+		window.SetActive();
+
+		background->Draw();
+		axes->Draw();
+
+		for (int i = 0; i < diagrams.size(); ++i)
+			diagrams[i].second->Draw();
+
+		for (int i = 0; i < labels.size(); ++i)
+			labels[i]->Draw();
+
+		for (int i = 0; i < hatches.size(); ++i)
+			hatches[i]->Draw();
+	}
+
 }

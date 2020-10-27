@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <map>
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 #include "BMP_Img/BMP_Img.h"
@@ -76,21 +77,12 @@ namespace GUI {
 
 		Color(const Color& other);
 
-		Color& operator=(const Color& other) {
-			memcpy(RGB, other.RGB, sizeof(RGB));
-
-			return *this;
-		}
+		Color& operator=(const Color& other);
 
 		/*
 		* Returns specified color amount. Posiigble argument values are "red", "R", "green", "G", "blue", "B".
 		*/
 		float operator[](const char* color) const;
-
-		/*
-		* Returns specified color amount. 0 index represents red amount, 1 - green, 2 - blue
-		*/
-		float operator[](const size_t color) const;
 
 
 		float RedAmt() const;
@@ -101,7 +93,11 @@ namespace GUI {
 
 	private:
 
-		float RGB[3] = { 0, 0, 0 };
+		struct RGB_t {
+			float red = 0.0, green = 0.0, blue = 0.0;
+		};
+
+		RGB_t RGB;
 	};
 
 
@@ -187,10 +183,10 @@ namespace GUI {
 		Graph* CreateGraph(const GraphProps& props = GraphProps(),
 		                   const Coordinates& pos = Coordinates(0, 0),
 		                   const Size& size = Size(100, 100),
-		                   const Color& bgColor = Color(0.8, 0.8, 0.8));
+		                   const Color& bgColor = Color(0.9, 0.9, 0.9));
 
 
-		void DrawChanges();
+		void Draw();
 
 		void SetActive() const;
 
@@ -269,6 +265,8 @@ namespace GUI {
 
 		Line(const Line& other) = delete;
 
+		void Draw();
+
 	private:
 
 		Window& window;
@@ -292,6 +290,8 @@ namespace GUI {
 
 		void AddVertex(const Coordinates& pos);
 
+		void Draw();
+
 
 	private:
 
@@ -311,6 +311,8 @@ namespace GUI {
 
 		Rectangle(const Rectangle& other) = delete;
 
+		void Draw();
+
 	private:
 
 		Window& window;
@@ -329,9 +331,10 @@ namespace GUI {
 		     const Color& color = Color(0, 0, 0));
 
 		Text(const Text& other) = delete;
+		
+		void Draw();
 
 		~Text();
-
 
 	private:
 
@@ -341,12 +344,11 @@ namespace GUI {
 
 		void DrawChar(const char ch, const Coordinates& pos);
 
-		void Draw();
-
 		Coordinates BmpCharPos(const unsigned char ch) const;
 
 
 		char* content = nullptr;
+		int contentLen = 0;
 
 		Window& window;
 
@@ -371,6 +373,10 @@ namespace GUI {
 
 		Text* AddLabel(const char* label, const Coordinates& labelPos = Coordinates(10, 10),
 		               const size_t fontSize = 16, const Color& labelColor = Color(0, 0, 0));
+
+		Color GetColor() const;
+
+		void Draw();
 
 
 		void AddLeftMouseUpListener(void (*Listener)(void*), void* addParam);
@@ -416,23 +422,26 @@ namespace GUI {
 
 		Graph(Window& window, const GraphProps& props = GraphProps(),
 		      const Coordinates& pos = Coordinates(0, 0), const Size& size = Size(100, 100),
-		      const Color& bgColor = Color(0.8, 0.8, 0.8));
+		      const Color& bgColor = Color(0.9, 0.9, 0.9));
 
 		Graph(const Graph& other) = delete;
+
 
 		int AddDiagram(const size_t lineWidth = 1, const Color& color = Color(0, 0, 0));
 
 		void AddData(const int diagramInd, int x, int y);
+		
+		void Draw();
 
 		~Graph();
 
 	private:
 
-		void DrawGraphParts();
+		void InitGraphParts();
 
-		void DrawArrows(const int arrowBackOffset, const int arrowSideOffset);
+		void InitArrows(const int arrowBackOffset, const int arrowSideOffset);
 
-		void DrawLabels(const int rowLabelsOffset, const int columnLabelsOffset);
+		void InitLabels(const int rowLabelsOffset, const int columnLabelsOffset);
 
 
 		Window& window;
