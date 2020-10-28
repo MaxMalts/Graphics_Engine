@@ -5,7 +5,7 @@
 
 
 void CloseWindow(void* voidWindow) {
-	GUI::Window* window = static_cast<GUI::Window*>(voidWindow);
+	GUI::OSWindow* window = static_cast<GUI::OSWindow*>(voidWindow);
 	window->GetApplication().CloseWindow(window);
 }
 
@@ -13,7 +13,7 @@ void CloseWindow(void* voidWindow) {
 int main() {
 
 	GUI::Application app;
-	GUI::Window* window = app.CreateWindow(1080, 720, "Hello", GUI::Color("green"));
+	GUI::OSWindow* window = app.CreateWindow(1080, 720, "Hello", GUI::Color("green"));
 
 	GUI::Line* line = window->CreateLine(GUI::Coordinates(10, 10), GUI::Coordinates(500, 500), 5, GUI::Color("red"));
 	line->Draw();
@@ -26,11 +26,11 @@ int main() {
 	GUI::GraphProps props(-100, 100, -50, 100);
 	props.axesWidth = 3;
 	GUI::Graph* graph = window->CreateGraph(props, GUI::Coordinates(10, 100), GUI::Size(500, 500));
-	int diag = graph->AddDiagram(3, GUI::Color("red"));
+	int diag = graph->CreateDiagram(3, GUI::Color("red"));
 	graph->AddData(diag, 18 - 100, 22 - 50);
 	graph->AddData(diag, 0 - 100, 0 - 50);
 
-	int diag1 = graph->AddDiagram(3, GUI::Color("green"));
+	int diag1 = graph->CreateDiagram(3, GUI::Color("green"));
 	graph->AddData(diag1, 40 - 100, 69 - 50);
 	graph->AddData(diag1, 1 - 100, 1 - 50);
 	graph->AddData(diag, 100 - 100, 100 - 50);
@@ -43,6 +43,9 @@ int main() {
 	while (app.WindowsOpened() > 0) {
 		app.ProcessEvents();
 	}
+
+	GUI::Graph::Diagram test;
+	test.AddVertex();
 
 	return 0;
 }

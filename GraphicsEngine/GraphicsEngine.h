@@ -102,6 +102,15 @@ namespace GUI {
 	};
 
 
+
+	class OSWindow;
+	class Line;
+	class Polyline;
+	class Rectangle;
+	class Text;
+	class Button;
+	class Graph;
+
 	struct GraphProps {
 
 		GraphProps() = default;
@@ -115,15 +124,6 @@ namespace GUI {
 
 
 
-	class Window;
-	class Line;
-	class Polyline;
-	class Rectangle;
-	class Text;
-	class Button;
-	class Graph;
-
-
 	class Application {
 	public:
 
@@ -131,12 +131,12 @@ namespace GUI {
 
 		Application(const Application& other) = delete;
 
-		Window* CreateWindow(const int width = 640, const int height = 420, const char* name = "Window",
-		                     const Color& backgroundColor = Color(0, 0, 0));
+		OSWindow* CreateWindow(const int width = 640, const int height = 420, const char* name = "Window",
+		                       const Color& backgroundColor = Color(0, 0, 0));
 
 		size_t WindowsOpened() const;
 
-		void CloseWindow(Window* window);
+		void CloseWindow(OSWindow* window);
 
 		void ProcessEventsWait() const;
 
@@ -146,17 +146,17 @@ namespace GUI {
 
 	private:
 
-		std::set<Window*> windows;
+		std::set<OSWindow*> osWindows;
 	};
 
 
-	class Window {
+	class OSWindow {
 	public:
 
-		Window(Application& application, const int width = 640, const int height = 420,
-		       const char* name = "Window", const Color& backgroundColor = Color(0, 0, 0));
+		OSWindow(Application& application, const int width = 640, const int height = 420,
+		         const char* name = "Window", const Color& backgroundColor = Color(0, 0, 0));
 
-		Window(const Window& other) = delete;
+		OSWindow(const OSWindow& other) = delete;
 
 		size_t Width() const;
 
@@ -164,22 +164,22 @@ namespace GUI {
 
 
 		Rectangle* CreateRectangle(const Coordinates& pos = Coordinates(0, 0),
-			const Size& size = Size(200, 100), const Color& color = Color(0, 0, 0));
+		                           const Size& size = Size(200, 100), const Color& color = Color(0, 0, 0));
 
 		Button* CreateButton(const Coordinates& pos = Coordinates(0, 0),
-			const Size& size = Size(100, 50), const Color& color = Color(0.7, 0.7, 0.7));
+		                     const Size& size = Size(100, 50), const Color& color = Color(0.7, 0.7, 0.7));
 
 		Line* CreateLine(const Coordinates& begPos = Coordinates(10, 10),
-			const Coordinates& endPos = Coordinates(100, 10),
-			const size_t width = 1, const Color& color = Color(0, 0, 0));
+		                 const Coordinates& endPos = Coordinates(100, 10),
+		                 const size_t width = 1, const Color& color = Color(0, 0, 0));
 
 		Polyline* CreatePolyline(const std::vector<Coordinates>& verteces, const size_t width = 1,
-			const Color& color = Color(0, 0, 0));
+		                         const Color& color = Color(0, 0, 0));
 
 		Polyline* CreatePolyline(const size_t width = 1, const Color& color = Color(0, 0, 0));
 
 		Text* CreateText(const char* content, const Coordinates& pos = Coordinates(0, 0),
-			const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
+		                 const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
 
 		Graph* CreateGraph(const GraphProps& props = GraphProps(),
 		                   const Coordinates& pos = Coordinates(0, 0),
@@ -202,7 +202,7 @@ namespace GUI {
 		Application& GetApplication() const;
 
 
-		~Window();
+		~OSWindow();
 
 
 	private:
@@ -211,7 +211,7 @@ namespace GUI {
 			assert(glfwWindow != nullptr);
 
 			if (GLFW_MOUSE_BUTTON_LEFT == button && GLFW_RELEASE == action) {
-				Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow));
+				OSWindow* window = static_cast<OSWindow*>(glfwGetWindowUserPointer(glfwWindow));
 				assert(window != nullptr);
 
 				for (int i = 0; i < window->leftMouseUpListeners.size(); ++i) {
@@ -225,7 +225,7 @@ namespace GUI {
 		static void WindowCloseCallback(GLFWwindow* glfwWindow) {
 			assert(glfwWindow != nullptr);
 
-			Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow));
+			OSWindow* window = static_cast<OSWindow*>(glfwGetWindowUserPointer(glfwWindow));
 			assert(window != nullptr);
 
 			for (int i = 0; i < window->leftMouseUpListeners.size(); ++i) {
@@ -260,7 +260,7 @@ namespace GUI {
 	class Line {
 	public:
 
-		Line(Window& window, const Coordinates& begPos = Coordinates(10, 10),
+		Line(OSWindow& window, const Coordinates& begPos = Coordinates(10, 10),
 		     const Coordinates& endPos = Coordinates(100, 10), const size_t width = 1,
 		     const Color& color = Color(0, 0, 0));
 
@@ -270,7 +270,7 @@ namespace GUI {
 
 	private:
 
-		Window& window;
+		OSWindow& window;
 
 		Coordinates firstPoint;
 		Coordinates secondPoint;
@@ -282,10 +282,10 @@ namespace GUI {
 	class Polyline {
 	public:
 
-		Polyline(Window& window, const std::vector<Coordinates>& verteces,
+		Polyline(OSWindow& window, const std::vector<Coordinates>& verteces,
 		         const size_t width = 1, const Color& color = Color(0, 0, 0));
 
-		Polyline(Window& window, const size_t width = 1, const Color& color = Color(0, 0, 0));
+		Polyline(OSWindow& window, const size_t width = 1, const Color& color = Color(0, 0, 0));
 
 		Polyline(const Polyline& other) = delete;
 
@@ -296,7 +296,7 @@ namespace GUI {
 
 	private:
 
-		Window& window;
+		OSWindow& window;
 
 		std::vector<Coordinates> verteces;
 		size_t width;
@@ -307,7 +307,7 @@ namespace GUI {
 	class Rectangle {
 	public:
 
-		Rectangle(Window& window, const Coordinates& pos = Coordinates(0, 0),
+		Rectangle(OSWindow& window, const Coordinates& pos = Coordinates(0, 0),
 		          const Size& size = Size(200, 100), const Color& color = Color(0, 0, 0));
 
 		Rectangle(const Rectangle& other) = delete;
@@ -316,7 +316,7 @@ namespace GUI {
 
 	private:
 
-		Window& window;
+		OSWindow& window;
 
 		Coordinates pos;
 		Size size;
@@ -327,7 +327,7 @@ namespace GUI {
 	class Text {
 	public:
 
-		Text(Window& window, const char* string,
+		Text(OSWindow& window, const char* string,
 		     const Coordinates& pos = Coordinates(0, 0), const size_t fontSize = 16,
 		     const Color& color = Color(0, 0, 0));
 
@@ -351,7 +351,7 @@ namespace GUI {
 		char* content = nullptr;
 		int contentLen = 0;
 
-		Window& window;
+		OSWindow& osWindow;
 
 		Coordinates pos;
 		size_t fontSize;    // width in window pixels
@@ -367,7 +367,7 @@ namespace GUI {
 	class Button {
 	public:
 
-		Button(Window& window, const Coordinates& pos = Coordinates(0, 0),
+		Button(OSWindow& window, const Coordinates& pos = Coordinates(0, 0),
 		       const Size& size = Size(100, 50), const Color& color = Color(0.7, 0.7, 0.7));
 
 		Button(const Button& other) = delete;
@@ -393,7 +393,7 @@ namespace GUI {
 
 			Button* button = static_cast<Button*>(buttonArg);
 
-			WindowCoordinates cursorPos = button->window.CursorPos();
+			WindowCoordinates cursorPos = button->osWindow.CursorPos();
 			if (cursorPos.x >= button->pos.x && cursorPos.x <= button->pos.x + button->size.width &&
 				cursorPos.y >= button->pos.y && cursorPos.y <= button->pos.y + button->size.height) {
 
@@ -405,7 +405,7 @@ namespace GUI {
 		}
 
 
-		Window& window;
+		OSWindow& osWindow;
 
 		std::vector<std::pair<void (*)(void*), void*>> leftMouseUpListeners;
 
@@ -421,16 +421,41 @@ namespace GUI {
 	class Graph {
 	public:
 
-		Graph(Window& window, const GraphProps& props = GraphProps(),
+		class Diagram {
+		public:
+
+			Diagram(Graph& graph, OSWindow& window, const size_t width = 1, const Color& color = Color(0, 0, 0));
+			
+			void AddData(int column, int value);
+
+			void Draw();
+
+		private:
+
+			Graph& graph;
+
+			struct DiagramData {
+				DiagramData() = default;
+
+				DiagramData(int column, int value);
+
+				int column = 0, value = 0;
+			};
+
+			std::vector<DiagramData> data;
+
+			Polyline polyline;
+		};
+
+
+		Graph(OSWindow& window, const GraphProps& props = GraphProps(),
 		      const Coordinates& pos = Coordinates(0, 0), const Size& size = Size(100, 100),
 		      const Color& bgColor = Color(0.9, 0.9, 0.9));
 
 		Graph(const Graph& other) = delete;
 
 
-		int AddDiagram(const size_t lineWidth = 1, const Color& color = Color(0, 0, 0));
-
-		void AddData(const int diagramInd, int x, int y);
+		Diagram* CreateDiagram(const size_t lineWidth = 1, const Color& color = Color(0, 0, 0));
 		
 		void Draw();
 
@@ -445,27 +470,16 @@ namespace GUI {
 		void InitLabels(const int rowLabelsOffset, const int columnLabelsOffset);
 
 
-		Window& window;
-
-
-		struct DiagramNode {
-			DiagramNode() = default;
-
-			DiagramNode(int column, int value);
-
-			int column = 0, value = 0;
-		};
-
-		// Diargrams data with corresponding polylines
-		std::vector<std::pair<std::vector<DiagramNode>, Polyline*>> diagrams;
-
-		std::vector<Text*> labels;
-		std::vector<Line*> hatches;
+		OSWindow& osWindow;
 
 		GraphProps props;
 
+		std::vector<Diagram*> diagrams;
+
 		Rectangle* background = nullptr;
 		Polyline* axes = nullptr;
+		std::vector<Text*> labels;
+		std::vector<Line*> hatches;
 
 		Coordinates pos;
 		Size size;

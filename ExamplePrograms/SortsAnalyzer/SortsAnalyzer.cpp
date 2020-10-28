@@ -89,13 +89,13 @@ struct Buttons {
 
 
 struct Interface {
-	GUI::Window* window = nullptr;
+	GUI::OSWindow* window = nullptr;
 	Graphs graphs = {};
 	Buttons buttons = {};
 };
 
 
-Interface DrawInterface(GUI::Window* window, const int maxArraySize) {
+Interface DrawInterface(GUI::OSWindow* window, const int maxArraySize) {
 	assert(window != nullptr);
 
 	const int windowW = window->Width();
@@ -121,7 +121,6 @@ Interface DrawInterface(GUI::Window* window, const int maxArraySize) {
 	Interface interface = {window};
 
 	GUI::GraphProps graphsProps(0, maxArraySize, 0, maxArraySize * maxArraySize / 2);
-	//graphsProps.fontSize = 12;
 	interface.graphs.left =
 		window->CreateGraph(graphsProps, GUI::Coordinates(graphsMarginLeft, graphsMarginTop), graphsSize);
 	interface.graphs.leftLabel =
@@ -167,8 +166,8 @@ void AnalyseSort(const Interface& interface, const int maxCount,
 
 	assert(maxCount > 0);
 
-	int comparesDiagram = interface.graphs.left->AddDiagram(3, diagramColor);
-	int swapsDiagram = interface.graphs.right->AddDiagram(3, diagramColor);
+	GUI::Graph::Diagram* comparesDiagram = interface.graphs.left->CreateDiagram(3, diagramColor);
+	GUI::Graph::Diagram* swapsDiagram = interface.graphs.right->CreateDiagram(3, diagramColor);
 
 	std::vector<long long> comparesByCount(maxCount, 0);
 	std::vector<long long> swapsByCount(maxCount, 0);
@@ -181,8 +180,8 @@ void AnalyseSort(const Interface& interface, const int maxCount,
 
 		//comparesByCount[curCount] = StatsFuncs::ComparatorCount();
 		//swapsByCount[curCount] = StatsFuncs::SwapCount();
-		interface.graphs.left->AddData(comparesDiagram, curCount, StatsFuncs::ComparatorCount());
-		interface.graphs.right->AddData(swapsDiagram, curCount, StatsFuncs::SwapCount());
+		comparesDiagram->AddData(curCount, StatsFuncs::ComparatorCount());
+		swapsDiagram->AddData(curCount, StatsFuncs::SwapCount());
 		interface.window->Draw();
 
 		StatsFuncs::ResetComparator();
@@ -241,19 +240,19 @@ void AddButtonsListeners(const Interface& interface, const int maxArraySize) {
 
 
 void CloseWindow(void* voidWindow) {
-	GUI::Window* window = static_cast<GUI::Window*>(voidWindow);
+	GUI::OSWindow* window = static_cast<GUI::OSWindow*>(voidWindow);
 	window->GetApplication().CloseWindow(window);
 }
 
 
 int main() {
-	const int maxArraySize = 500;
+	const int maxArraySize = 50;
 
 	const int windowW = 1280;
 	const int windowH = 720;
 
 	GUI::Application app;
-	GUI::Window* window = app.CreateWindow(1280, 720, "Sorts Analyzer", GUI::Color("white"));
+	GUI::OSWindow* window = app.CreateWindow(1280, 720, "Sorts Analyzer", GUI::Color("white"));
 
 	Interface interface = DrawInterface(window, maxArraySize);
 

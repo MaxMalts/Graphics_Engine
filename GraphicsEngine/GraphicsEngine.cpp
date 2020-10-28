@@ -49,7 +49,7 @@ namespace GUI {
 		GLfloat y = 0;
 	};
 
-	GlCoordinates WindowToGlCoords(const Window& window, const Coordinates& coords) {
+	GlCoordinates WindowToGlCoords(const OSWindow& window, const Coordinates& coords) {
 		float resX = static_cast<float>(coords.x) / window.Width() * 2 - 1;
 		float resY = -(static_cast<float>(coords.y) / window.Height() * 2 - 1);
 
@@ -172,34 +172,34 @@ namespace GUI {
 	}
 
 
-	Window* Application::CreateWindow(const int width, const int height, const char* name,
+	OSWindow* Application::CreateWindow(const int width, const int height, const char* name,
 		const Color& backgroundColor) {
 		assert(width >= 0);
 		assert(height >= 0);
 		assert(name != nullptr);
 
-		Window* newWindow = new Window(*this, width, height, name, backgroundColor);
-		windows.insert(newWindow);
+		OSWindow* newWindow = new OSWindow(*this, width, height, name, backgroundColor);
+		osWindows.insert(newWindow);
 
 		return newWindow;
 	}
 
 
 	size_t Application::WindowsOpened() const {
-		return windows.size();
+		return osWindows.size();
 	}
 
 
-	void Application::CloseWindow(Window* window) {
+	void Application::CloseWindow(OSWindow* window) {
 		if (window == nullptr)
 			return;
 
-		std::set<Window*>::iterator windowIter = windows.find(window);
-		if (windows.end() == windowIter)
+		std::set<OSWindow*>::iterator windowIter = osWindows.find(window);
+		if (osWindows.end() == windowIter)
 			throw std::invalid_argument("Passed window not found.");
 
 		delete* windowIter;
-		windows.erase(windowIter);
+		osWindows.erase(windowIter);
 	}
 
 
@@ -214,8 +214,8 @@ namespace GUI {
 
 
 	Application::~Application() {
-		std::set<Window*>::iterator windowsIter = windows.begin();
-		while (windowsIter != windows.end()) {
+		std::set<OSWindow*>::iterator windowsIter = osWindows.begin();
+		while (windowsIter != osWindows.end()) {
 			delete* windowsIter;
 			++windowsIter;
 		}
@@ -227,7 +227,7 @@ namespace GUI {
 
 	/* Window Implementation */
 
-	Window::Window(Application& application, const int width, const int height,
+	OSWindow::OSWindow(Application& application, const int width, const int height,
 	               const char* name, const Color& backgroundColor)
 		: application(application), width(width), height(height), backgroundColor(backgroundColor) {
 
@@ -250,17 +250,17 @@ namespace GUI {
 	}
 
 
-	size_t Window::Width() const {
+	size_t OSWindow::Width() const {
 		return width;
 	}
 
 
-	size_t Window::Height() const {
+	size_t OSWindow::Height() const {
 		return height;
 	}
 
 
-	Rectangle* Window::CreateRectangle(const Coordinates& pos, const Size& size, const Color& color) {
+	Rectangle* OSWindow::CreateRectangle(const Coordinates& pos, const Size& size, const Color& color) {
 
 		Rectangle* newRect = new Rectangle(*this, pos, size, color);
 		rectangles.push_back(newRect);
@@ -269,7 +269,7 @@ namespace GUI {
 	}
 
 
-	Line* Window::CreateLine(const Coordinates& begPos, const Coordinates& endPos,
+	Line* OSWindow::CreateLine(const Coordinates& begPos, const Coordinates& endPos,
 	                         const size_t width, const Color& color) {
 
 		Line* newLine = new Line(*this, begPos, endPos, width, color);
@@ -279,7 +279,7 @@ namespace GUI {
 	}
 
 
-	Polyline* Window::CreatePolyline(const std::vector<Coordinates>& verteces,
+	Polyline* OSWindow::CreatePolyline(const std::vector<Coordinates>& verteces,
 	                                 const size_t width, const Color& color) {
 
 		Polyline* newPolyline = new Polyline(*this, verteces, width, color);
@@ -289,7 +289,7 @@ namespace GUI {
 	}
 
 
-	Polyline* Window::CreatePolyline(const size_t width, const Color& color) {
+	Polyline* OSWindow::CreatePolyline(const size_t width, const Color& color) {
 
 		Polyline* newPolyline = new Polyline(*this, width, color);
 		polylines.push_back(newPolyline);
@@ -298,7 +298,7 @@ namespace GUI {
 	}
 
 
-	Text* Window::CreateText(const char* content, const Coordinates& pos,
+	Text* OSWindow::CreateText(const char* content, const Coordinates& pos,
 	                         const size_t fontSize, const Color& color) {
 
 		SetActive();
@@ -310,7 +310,7 @@ namespace GUI {
 	}
 
 
-	Button* Window::CreateButton(const Coordinates& pos, const Size& size, const Color& color) {
+	Button* OSWindow::CreateButton(const Coordinates& pos, const Size& size, const Color& color) {
 
 		Button* newButton = new Button(*this, pos, size, color);
 		buttons.push_back(newButton);
@@ -319,8 +319,8 @@ namespace GUI {
 	}
 
 
-	Graph* Window::CreateGraph(const GraphProps& props, const Coordinates& pos,
-	                           const Size& size, const Color& bgColor) {
+	Graph* OSWindow::CreateGraph(const GraphProps& props, const Coordinates& pos,
+	                             const Size& size, const Color& bgColor) {
 
 		Graph* newGraph = new Graph(*this, props, pos, size, bgColor);
 		graphs.push_back(newGraph);
@@ -329,7 +329,7 @@ namespace GUI {
 	}
 
 
-	void Window::Draw() {
+	void OSWindow::Draw() {
 		SetActive();
 
 		glClearColor(backgroundColor.RedAmt(), backgroundColor.GreenAmt(), backgroundColor.BlueAmt(), 1.0);
@@ -352,7 +352,7 @@ namespace GUI {
 	}
 
 
-	void Window::SetActive() const {
+	void OSWindow::SetActive() const {
 		assert(window != nullptr);
 
 		if (glfwGetCurrentContext() != window) {
@@ -361,17 +361,17 @@ namespace GUI {
 	}
 
 
-	void Window::AddLeftMouseUpListener(void (*Listener)(void*), void* addParam) {
+	void OSWindow::AddLeftMouseUpListener(void (*Listener)(void*), void* addParam) {
 		leftMouseUpListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
 	}
 
 
-	void Window::AddWindowCloseListener(void(*Listener)(void*), void* addParam) {
+	void OSWindow::AddWindowCloseListener(void(*Listener)(void*), void* addParam) {
 		windowCloseListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
 	}
 
 
-	WindowCoordinates Window::CursorPos() const {
+	WindowCoordinates OSWindow::CursorPos() const {
 		double posX = 0, posY = 0;
 		glfwGetCursorPos(window, &posX, &posY);
 
@@ -379,12 +379,12 @@ namespace GUI {
 	}
 
 
-	Application& Window::GetApplication() const {
+	Application& OSWindow::GetApplication() const {
 		return application;
 	}
 
 
-	Window::~Window() {
+	OSWindow::~OSWindow() {
 		DeleteArrayElements(lines);
 		DeleteArrayElements(polylines);
 		DeleteArrayElements(rectangles);
@@ -399,7 +399,7 @@ namespace GUI {
 
 	/* Line implementation */
 
-	Line::Line(Window& window, const Coordinates& begPos, const Coordinates& endPos,
+	Line::Line(OSWindow& window, const Coordinates& begPos, const Coordinates& endPos,
 	           const size_t width, const Color& color)
 		: window(window), firstPoint(begPos), secondPoint(endPos), width(width), color(color) {}
 
@@ -423,12 +423,12 @@ namespace GUI {
 
 	/* Polyline implementation */
 
-	Polyline::Polyline(Window& window, const std::vector<Coordinates>& verteces,
+	Polyline::Polyline(OSWindow& window, const std::vector<Coordinates>& verteces,
 	                   const size_t width, const Color& color)
 		: window(window), verteces(verteces), width(width), color(color) {}
 
 
-	Polyline::Polyline(Window& window, const size_t width, const Color& color)
+	Polyline::Polyline(OSWindow& window, const size_t width, const Color& color)
 		: window(window), verteces(), width(width), color(color) {}
 
 
@@ -457,7 +457,7 @@ namespace GUI {
 
 	/* Rectangle implementation */
 
-	Rectangle::Rectangle(Window& window, const Coordinates& pos, const Size& size, const Color& color)
+	Rectangle::Rectangle(OSWindow& window, const Coordinates& pos, const Size& size, const Color& color)
 		: window(window), pos(pos), size(size), color(color) {}
 
 
@@ -486,9 +486,9 @@ namespace GUI {
 	size_t Text::charWidth = 0;
 	size_t Text::charHeight = 0;
 
-	Text::Text(Window& window, const char* string,
+	Text::Text(OSWindow& window, const char* string,
 	           const Coordinates& pos, const size_t fontSize, const Color& color)
-		: window(window), pos(pos), fontSize(fontSize), color(color) {
+		: osWindow(window), pos(pos), fontSize(fontSize), color(color) {
 
 		assert(string != nullptr);
 
@@ -541,7 +541,7 @@ namespace GUI {
 
 				if (curPx != 0) {
 					GlCoordinates curPos =
-						WindowToGlCoords(window, Coordinates(pos.x + curX, pos.y + charHeight * scale - 1 - curY));
+						WindowToGlCoords(osWindow, Coordinates(pos.x + curX, pos.y + charHeight * scale - 1 - curY));
 
 					glVertex2f(curPos.x, curPos.y);
 				}
@@ -553,7 +553,7 @@ namespace GUI {
 
 
 	void Text::Draw() {
-		window.SetActive();
+		osWindow.SetActive();
 
 		Coordinates curPos(pos.x, pos.y);
 		for (int i = 0; i < contentLen; ++i) {
@@ -627,8 +627,8 @@ namespace GUI {
 
 	/* Button implementation */
 
-	Button::Button(Window& window, const Coordinates& pos, const Size& size, const Color& color)
-		: window(window), pos(pos), size(size), color(color) {
+	Button::Button(OSWindow& window, const Coordinates& pos, const Size& size, const Color& color)
+		: osWindow(window), pos(pos), size(size), color(color) {
 
 		window.AddLeftMouseUpListener(LeftMouseUpCallback, this);
 		
@@ -642,7 +642,7 @@ namespace GUI {
 		assert(string != nullptr);
 
 		Coordinates globalPos(labelPos.x + pos.x, labelPos.y + pos.y);
-		label = new Text(window, string, globalPos, fontSize, labelColor);
+		label = new Text(osWindow, string, globalPos, fontSize, labelColor);
 
 		return label;
 	}
@@ -659,7 +659,7 @@ namespace GUI {
 
 
 	void Button::Draw() {
-		window.SetActive();
+		osWindow.SetActive();
 
 		rectangle->Draw();
 		label->Draw();
@@ -679,9 +679,30 @@ namespace GUI {
 		: startX(startX), rangeX(rangeX), startY(startY), rangeY(rangeY) {}
 
 
-	Graph::Graph(Window& window, const GraphProps& props, const Coordinates& pos, const Size& size,
+	Graph::Diagram::Diagram(Graph& graph, OSWindow& window, const size_t width, const Color& color)
+		: graph(graph), polyline(window, width, color) {}
+
+
+	void Graph::Diagram::AddData(int column, int value) {
+		int curVertexX = graph.innerPos.x +
+			(column - graph.props.startX) / static_cast<float>(graph.props.rangeX) * graph.innerSize.width;
+
+		int curVertexY = graph.innerPos.y + graph.innerSize.height -
+			(value - graph.props.startY) / static_cast<float>(graph.props.rangeY) * graph.innerSize.height;
+
+		data.push_back(DiagramData(column, value));
+		polyline.AddVertex(Coordinates(curVertexX, curVertexY));
+	}
+
+
+	void Graph::Diagram::Draw() {
+		polyline.Draw();
+	}
+
+
+	Graph::Graph(OSWindow& window, const GraphProps& props, const Coordinates& pos, const Size& size,
 	             const Color& bgColor)
-		: window(window), props(props), pos(pos), size(size), bgColor(bgColor) {
+		: osWindow(window), props(props), pos(pos), size(size), bgColor(bgColor) {
 
 		const size_t axesWidth = 3;
 
@@ -691,42 +712,24 @@ namespace GUI {
 	}
 
 
-	Graph::DiagramNode::DiagramNode(int column, int value) : column(column), value(value) {}
+	Graph::Diagram::DiagramData::DiagramData(int column, int value) : column(column), value(value) {}
 
-	int Graph::AddDiagram(const size_t lineWidth, const Color& color) {
-		Polyline* polyline = new Polyline(window, lineWidth, color);
+	Graph::Diagram* Graph::CreateDiagram(const size_t lineWidth, const Color& color) {
+		Diagram* newDiag = new Diagram(*this, osWindow, lineWidth, color);
 
-		diagrams.push_back(std::pair<std::vector<DiagramNode>, Polyline*>
-		                   (std::vector<DiagramNode>(), polyline));
+		diagrams.push_back(newDiag);
 
-		return diagrams.size() - 1;
-	}
-
-
-	void Graph::AddData(const int diagramInd, int column, int value) {
-		if (diagramInd < 0 || diagramInd >= diagrams.size())
-			throw std::out_of_range("The diagramInd argument out of range.");
-
-		int curVertexX = innerPos.x +
-			(column - props.startX) / static_cast<float>(props.rangeX) * innerSize.width;
-
-		int curVertexY = innerPos.y + innerSize.height -
-			(value - props.startY) / static_cast<float>(props.rangeY) * innerSize.height;
-
-		diagrams[diagramInd].first.push_back(DiagramNode(column, value));
-		diagrams[diagramInd].second->AddVertex(Coordinates(curVertexX, curVertexY));
+		return newDiag;
 	}
 
 
 	Graph::~Graph() {
-		for (int i = 0; i < diagrams.size(); ++i)
-			delete diagrams[i].second;
-
+		delete axes;
+		delete background;
 		DeleteArrayElements(labels);
 		DeleteArrayElements(hatches);
 
-		delete axes;
-		delete background;
+		DeleteArrayElements(diagrams);
 	}
 
 
@@ -764,7 +767,7 @@ namespace GUI {
 
 		Coordinates innerEndPos(innerPos.x + innerSize.width, innerPos.y + innerSize.height);
 
-		axes = new Polyline(window, props.axesWidth, props.axesColor);
+		axes = new Polyline(osWindow, props.axesWidth, props.axesColor);
 		axes->AddVertex(Coordinates(innerPos.x, innerPos.y));
 		axes->AddVertex(Coordinates(innerPos.x - arrowSideOffset, innerPos.y));
 		axes->AddVertex(Coordinates(innerPos.x, innerPos.y - arrowFrontOffset));
@@ -791,10 +794,10 @@ namespace GUI {
 
 			int curYWindow = innerPos.y + innerSize.height - curY;
 
-			Text* curLabel = new Text(window, itoa(curLabelVal, tempBuf, 10),
+			Text* curLabel = new Text(osWindow, itoa(curLabelVal, tempBuf, 10),
 				Coordinates(pos.x, curYWindow), props.fontSize, props.fontColor);
 
-			Line* curHatch = new Line(window, Coordinates(innerPos.x, curYWindow + props.fontSize / 2),
+			Line* curHatch = new Line(osWindow, Coordinates(innerPos.x, curYWindow + props.fontSize / 2),
 				Coordinates(innerPos.x - props.hatchSize, curYWindow + props.fontSize / 2),
 				props.axesWidth, props.axesColor);
 
@@ -811,11 +814,11 @@ namespace GUI {
 				props.rangeX + props.startX;
 
 			int curXWindow = innerPos.x + curX;
-			Text* curLabel = new Text(window, itoa(curLabelVal, tempBuf, 10),
+			Text* curLabel = new Text(osWindow, itoa(curLabelVal, tempBuf, 10),
 				Coordinates(curXWindow, pos.y + size.height - props.fontSize),
 				props.fontSize, props.fontColor);
 
-			Line* curHatch = new Line(window, Coordinates(curXWindow, innerPos.y + innerSize.height),
+			Line* curHatch = new Line(osWindow, Coordinates(curXWindow, innerPos.y + innerSize.height),
 				Coordinates(curXWindow, innerPos.y + innerSize.height + props.hatchSize),
 				props.axesWidth, props.axesColor);
 
@@ -827,13 +830,13 @@ namespace GUI {
 
 
 	void Graph::Draw() {
-		window.SetActive();
+		osWindow.SetActive();
 
 		background->Draw();
 		axes->Draw();
 
 		for (int i = 0; i < diagrams.size(); ++i)
-			diagrams[i].second->Draw();
+			diagrams[i]->Draw();
 
 		for (int i = 0; i < labels.size(); ++i)
 			labels[i]->Draw();
