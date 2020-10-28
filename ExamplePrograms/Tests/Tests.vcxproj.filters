@@ -15,24 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sorts_analyzer.cpp">
+    <ClCompile Include="Tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsApi\BMP_Img\BMP_Img.cpp">
+    <ClCompile Include="..\..\GraphicsEngine\BMP_Img\BMP_Img.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsAPI\GraphicsAPI.cpp">
+    <ClCompile Include="..\..\GraphicsEngine\GraphicsEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sorts.h">
+    <ClInclude Include="..\..\GraphicsEngine\GraphicsEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsApi\BMP_Img\BMP_Img.h">
+    <ClInclude Include="..\..\GraphicsEngine\BMP_Img\BMP_Img.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsAPI\GraphicsAPI.h">
+    <ClInclude Include="..\SortsAnalyzer\Sorts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,8 +2,8 @@
 #include <fstream>
 #include <immintrin.h>
 #include <assert.h>
-#include "BMP_Img.h"
 #include <errno.h>
+#include "BMP_Img.h"
 
 
 std::streamsize GetFileSize(std::ifstream& file) {

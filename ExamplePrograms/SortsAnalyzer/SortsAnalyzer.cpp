@@ -1,71 +1,8 @@
 ﻿#include <iostream>
 #include <vector>
 #include "Sorts.h"
-#include <gl/glew.h>
-#include <GLFW/glfw3.h>
-#include "GraphicsAPI/GraphicsAPI.h"
+#include <GraphicsEngine.h>
 
-
-/*
-
-//The following flags are passed as parameters to the functions which counts their call times. 
-enum StatsFuncFlag {
-	StatsFuncFlag_initCounter,      // When this flag is passed you should pass the address of the counter too.
-	StatsFuncFlag_process,          // Default value. If the counter was initialized, it increases.
-	StatsFuncFlag_disableCounter    // When this flag is passed, function won't count its calls anymore.
-};
-
-
-bool Comparator(const int arg1, const int arg2, StatsFuncFlag flag = StatsFuncFlag_process,
-                long long* counterParam = nullptr) {
-
-	static long long* counter = nullptr;
-
-	if (flag == StatsFuncFlag_initCounter) {
-		assert(counter != nullptr);
-		*counter = 0;
-
-	} else if (flag == StatsFuncFlag_process) {
-		if (counter != nullptr) {
-			++(*counter);
-		}
-		return arg1 < arg2;
-
-	} else {
-		assert(flag == StatsFuncFlag_disableCounter);
-		counter = nullptr;
-	}
-
-	return true;
-}
-
-
-void Swap(int* arg1, int* arg2, StatsFuncFlag flag = StatsFuncFlag_process,
-          long long* counterParam = nullptr) {
-
-	static long long* counter = nullptr;
-
-	if (flag == StatsFuncFlag_initCounter) {
-		assert(counter != nullptr);
-		*counter = 1;
-
-	} else if (flag == StatsFuncFlag_process) {
-		assert(arg1 != nullptr);
-		assert(arg2 != nullptr);
-
-		if (counter != nullptr) {
-			++(*counter);
-		}
-
-		int temp = *arg1;
-		*arg1 = *arg2;
-		*arg2 = temp;
-
-	} else {
-		assert(flag == StatsFuncFlag_disableCounter);
-		counter = nullptr;
-	}
-}*/
 
 
 class StatsFuncs {
@@ -326,8 +263,8 @@ int main() {
 
 	double prevTime = glfwGetTime();
 	while (app.WindowsOpened() > 0) {
-		app.ProcessEvents();
 		window->Draw();
+		app.ProcessEvents();
 		double curTime = glfwGetTime();
 		std::cout << 1 / (curTime - prevTime) << '\n';
 		prevTime = curTime;

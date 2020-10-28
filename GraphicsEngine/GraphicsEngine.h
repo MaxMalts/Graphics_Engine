@@ -4,7 +4,8 @@
 #include <vector>
 #include <set>
 #include <map>
-#include <gl/glew.h>
+#include <assert.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "BMP_Img/BMP_Img.h"
 

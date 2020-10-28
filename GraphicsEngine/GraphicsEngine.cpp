@@ -4,16 +4,15 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
-#include <gl/glew.h> 
+#include <GL/glew.h> 
 #include <GLFW/glfw3.h>
-#include "GraphicsApi.h"
+#include "GraphicsEngine.h"
 
 
 template<typename Arr>
 void DeleteArrayElements(Arr arr) {
-	for (int i = 0; i < arr.size(); ++i) {
+	for (int i = 0; i < arr.size(); ++i)
 		delete arr[i];
-	}
 }
 
 
@@ -63,7 +62,7 @@ namespace GUI {
 	}
 
 	
-	int Round(float val) {
+	int Round(double val) {
 		int floor = static_cast<int>(val);
 		return (val - floor < 0.5) ? floor : floor + 1;
 	}
@@ -494,7 +493,7 @@ namespace GUI {
 		assert(string != nullptr);
 
 		if (0 == instanceCount) {
-			const char bitmapFileName[] = "Fonts/ASCII.bmp";
+			const char bitmapFileName[] = "../Fonts/ASCII.bmp";
 			const size_t charWidth = 16;
 			const size_t charHeight = 16;
 
