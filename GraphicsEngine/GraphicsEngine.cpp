@@ -49,7 +49,7 @@ namespace GUI {
 		GLfloat y = 0;
 	};
 
-	GlCoordinates WindowToGlCoords(const OSWindow& window, const Coordinates& coords) {
+	GlCoordinates OSWindowToGlCoords(const OSWindow& window, const Vector2& coords) {
 		float resX = static_cast<float>(coords.x) / window.Width() * 2 - 1;
 		float resY = -(static_cast<float>(coords.y) / window.Height() * 2 - 1);
 
@@ -61,7 +61,7 @@ namespace GUI {
 		return ((n < 10) ? 1 : 1 + Log10Compile(n / 10));
 	}
 
-	
+
 	int Round(double val) {
 		int floor = static_cast<int>(val);
 		return (val - floor < 0.5) ? floor : floor + 1;
@@ -70,11 +70,9 @@ namespace GUI {
 
 	/* Structures */
 
-	Coordinates::Coordinates(int x, int y) : x(x), y(y) {}
+	Vector2::Vector2(int x, int y) : x(x), y(y) {}
 
 	WindowCoordinates::WindowCoordinates(int x, int y) : x(x), y(y) {}
-
-	Size::Size(size_t width, size_t height) : width(width), height(height) {}
 
 
 
@@ -148,19 +146,39 @@ namespace GUI {
 	}
 
 
-	float Color::RedAmt() const {
+	float Color::Redness() const {
 		return RGB.red;
 	}
 
 
-	float Color::GreenAmt() const {
+	float Color::Greenness() const {
 		return RGB.green;
 	}
 
 
-	float Color::BlueAmt() const {
+	float Color::Blueness() const {
 		return RGB.blue;
 	}
+
+
+
+	/* Props implementation */
+
+	ButtonProps::ButtonProps(const Color& color) : color(color) {}
+
+
+	LineProps::LineProps(const Vector2& firstPoint, const Vector2& secondPoint, const size_t width, const Color& color)
+		: firstPoint(firstPoint), secondPoint(secondPoint), width(width), color(color) {}
+
+
+	PolylineProps::PolylineProps(const std::vector<Vector2>& verteces, const size_t width, const Color& color)
+		: verteces(verteces), width(width), color(color) {}
+
+	PolylineProps::PolylineProps(const size_t width, const Color& color) : width(width), color(color) {}
+
+
+	RectangleProps::RectangleProps(const Vector2& pos, const Vector2& size, const Color& color)
+		: pos(pos), size(size), color(color) {}
 
 
 
@@ -225,11 +243,11 @@ namespace GUI {
 
 
 
-	/* Window Implementation */
+	/* OSWindow Implementation */
 
 	OSWindow::OSWindow(Application& application, const int width, const int height,
-	               const char* name, const Color& backgroundColor)
-		: application(application), width(width), height(height), backgroundColor(backgroundColor) {
+	                   const char* name, const Color& desktopColor)
+		: application(application), width(width), height(height) {
 
 		assert(width >= 0);
 		assert(height >= 0);
@@ -247,6 +265,10 @@ namespace GUI {
 
 		this->name = new char[strlen(name) + 1];
 		strcpy(this->name, name);
+
+		desktop = new DesktopWindow(*this, Vector2(0, 0), Vector2(width, height), desktopColor);
+		desktop->Draw();
+		Update();
 	}
 
 
@@ -260,7 +282,7 @@ namespace GUI {
 	}
 
 
-	Rectangle* OSWindow::CreateRectangle(const Coordinates& pos, const Size& size, const Color& color) {
+	/*Rectangle* OSWindow::CreateRectangle(const Vector2& pos, const Vector2& size, const Color& color) {
 
 		Rectangle* newRect = new Rectangle(*this, pos, size, color);
 		rectangles.push_back(newRect);
@@ -269,7 +291,7 @@ namespace GUI {
 	}
 
 
-	Line* OSWindow::CreateLine(const Coordinates& begPos, const Coordinates& endPos,
+	Line* OSWindow::CreateLine(const Vector2& begPos, const Vector2& endPos,
 	                         const size_t width, const Color& color) {
 
 		Line* newLine = new Line(*this, begPos, endPos, width, color);
@@ -279,7 +301,7 @@ namespace GUI {
 	}
 
 
-	Polyline* OSWindow::CreatePolyline(const std::vector<Coordinates>& verteces,
+	Polyline* OSWindow::CreatePolyline(const std::vector<Vector2>& verteces,
 	                                 const size_t width, const Color& color) {
 
 		Polyline* newPolyline = new Polyline(*this, verteces, width, color);
@@ -298,7 +320,7 @@ namespace GUI {
 	}
 
 
-	Text* OSWindow::CreateText(const char* content, const Coordinates& pos,
+	Text* OSWindow::CreateText(const char* content, const Vector2& pos,
 	                         const size_t fontSize, const Color& color) {
 
 		SetActive();
@@ -310,7 +332,7 @@ namespace GUI {
 	}
 
 
-	Button* OSWindow::CreateButton(const Coordinates& pos, const Size& size, const Color& color) {
+	Button* OSWindow::CreateButton(const Vector2& pos, const Vector2& size, const Color& color) {
 
 		Button* newButton = new Button(*this, pos, size, color);
 		buttons.push_back(newButton);
@@ -319,20 +341,20 @@ namespace GUI {
 	}
 
 
-	Graph* OSWindow::CreateGraph(const GraphProps& props, const Coordinates& pos,
-	                             const Size& size, const Color& bgColor) {
+	Graph* OSWindow::CreateGraph(const GraphProps& props, const Vector2& pos,
+	                             const Vector2& size, const Color& bgColor) {
 
 		Graph* newGraph = new Graph(*this, props, pos, size, bgColor);
 		graphs.push_back(newGraph);
 
 		return newGraph;
-	}
+	}*/
 
 
-	void OSWindow::Draw() {
+	/*void OSWindow::Draw() {
 		SetActive();
 
-		glClearColor(backgroundColor.RedAmt(), backgroundColor.GreenAmt(), backgroundColor.BlueAmt(), 1.0);
+		glClearColor(desktopColor.RedAmt(), desktopColor.GreenAmt(), desktopColor.BlueAmt(), 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		for (auto curObj : lines)
@@ -348,6 +370,12 @@ namespace GUI {
 		for (auto curObj : graphs)
 			curObj->Draw();
 
+		glfwSwapBuffers(window);
+	}*/
+
+
+	void OSWindow::Update() {
+		SetActive();
 		glfwSwapBuffers(window);
 	}
 
@@ -384,6 +412,11 @@ namespace GUI {
 	}
 
 
+	DesktopWindow* OSWindow::GetDesktop() const {
+		return desktop;
+	}
+
+
 	OSWindow::~OSWindow() {
 		DeleteArrayElements(lines);
 		DeleteArrayElements(polylines);
@@ -397,21 +430,115 @@ namespace GUI {
 
 
 
+	/* Element inplementation */
+
+	Element::Element(OSWindow& osWindow) : osWindow(osWindow) {}
+
+
+
+	/* Window implementation */
+
+	Window::Window(OSWindow& osWindow, const Vector2& pos, const Vector2& size)
+		: Element(osWindow), pos(pos), size(size) {}
+
+
+	Window* Window::CreateWindow(const Type type, const WindowProps& props,
+	                             const Vector2& pos, const Vector2& size) {
+
+		Window* newWindow = nullptr;
+		switch (type) {
+		case button:
+			try {
+				newWindow = new Button(osWindow, dynamic_cast<const ButtonProps&>(props), pos, size);
+
+			} catch (std::bad_cast&) {
+				throw std::invalid_argument("Button is to create but props are not of ButtonProps type.");
+			}
+			break;
+
+		case graph:
+			try {
+				newWindow = new Graph(osWindow, dynamic_cast<const GraphProps&>(props), pos, size);
+
+			} catch (std::bad_cast&) {
+				throw std::invalid_argument("Button is to create but props are not of ButtonProps type.");
+			}
+			break;
+
+		default:
+			throw std::invalid_argument("Unknown window type passed.");
+		}
+
+		windows.insert(newWindow);
+		
+		return newWindow;
+	}
+
+
+	void Window::RemoveWindow(Window* window) {
+		delete window;
+		windows.erase(window);
+	}
+
+
+	Window::~Window() {
+		for (auto window : windows) {
+			delete window;
+		}
+		for (auto primitive : primitives) {
+			delete primitive;
+		}
+	}
+
+
+	void Window::DrawInsides() {
+		for (auto window : windows) {
+			window->Draw();
+		}
+		for (auto primitive : primitives) {
+			primitive->Draw();
+		}
+	}
+
+
+
+	/* DesktopWindow implementation */
+
+	DesktopWindow::DesktopWindow(OSWindow& osWindow, const Vector2 pos, const Vector2 size, const Color& color)
+		: Window(osWindow, pos, size), color(color) {}
+
+
+	void DesktopWindow::Draw() {
+		osWindow.SetActive();
+
+		glClearColor(color.Redness(), color.Greenness(), color.Blueness(), 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		osWindow.Update();
+	}
+
+
+
+	/* Object implementation */
+
+	Primitive::Primitive(OSWindow& osWindow) : Element(osWindow) {}
+
+
+
 	/* Line implementation */
 
-	Line::Line(OSWindow& window, const Coordinates& begPos, const Coordinates& endPos,
-	           const size_t width, const Color& color)
-		: window(window), firstPoint(begPos), secondPoint(endPos), width(width), color(color) {}
+	Line::Line(OSWindow& osWindow, const LineProps& props)
+		: Primitive(osWindow), props(props) {}
 
 
 	void Line::Draw() {
-		GlCoordinates begPosGl = WindowToGlCoords(window, firstPoint);
-		GlCoordinates endPosGl = WindowToGlCoords(window, secondPoint);
+		GlCoordinates begPosGl = OSWindowToGlCoords(osWindow, props.firstPoint);
+		GlCoordinates endPosGl = OSWindowToGlCoords(osWindow, props.secondPoint);
 
-		window.SetActive();
+		osWindow.SetActive();
 
-		glColor3f(color.RedAmt(), color.GreenAmt(), color.BlueAmt());
-		glLineWidth(static_cast<GLfloat>(width));
+		glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
+		glLineWidth(static_cast<GLfloat>(props.width));
 
 		glBegin(GL_LINES);
 		glVertex2f(begPosGl.x, begPosGl.y);
@@ -423,25 +550,20 @@ namespace GUI {
 
 	/* Polyline implementation */
 
-	Polyline::Polyline(OSWindow& window, const std::vector<Coordinates>& verteces,
-	                   const size_t width, const Color& color)
-		: window(window), verteces(verteces), width(width), color(color) {}
-
-
-	Polyline::Polyline(OSWindow& window, const size_t width, const Color& color)
-		: window(window), verteces(), width(width), color(color) {}
+	Polyline::Polyline(OSWindow& osWindow, const PolylineProps props)
+		: Primitive(osWindow), props(props) {}
 
 
 	void Polyline::Draw() {
-		if (verteces.size() >= 2) {
-			window.SetActive();
+		if (props.verteces.size() >= 2) {
+			osWindow.SetActive();
 
-			glColor3f(color.RedAmt(), color.GreenAmt(), color.BlueAmt());
-			glLineWidth(static_cast<GLfloat>(width));
+			glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
+			glLineWidth(static_cast<GLfloat>(props.width));
 
 			glBegin(GL_LINE_STRIP);
-			for (int i = 0; i < verteces.size(); ++i) {
-				GlCoordinates curGlCoords = WindowToGlCoords(window, verteces[i]);
+			for (int i = 0; i < props.verteces.size(); ++i) {
+				GlCoordinates curGlCoords = OSWindowToGlCoords(osWindow, props.verteces[i]);
 				glVertex2f(curGlCoords.x, curGlCoords.y);
 			}
 			glEnd();
@@ -449,25 +571,27 @@ namespace GUI {
 	}
 
 
-	void Polyline::AddVertex(const Coordinates& pos) {
-		verteces.push_back(pos);
+	void Polyline::AddVertex(const Vector2& pos) {
+		props.verteces.push_back(pos);
 	}
 
 
 
 	/* Rectangle implementation */
 
-	Rectangle::Rectangle(OSWindow& window, const Coordinates& pos, const Size& size, const Color& color)
-		: window(window), pos(pos), size(size), color(color) {}
+	Rectangle::Rectangle(OSWindow& osWindow, const RectangleProps& props)
+		: Primitive(osWindow), props(props) {}
 
 
 	void Rectangle::Draw() {
-		GlCoordinates begPosGl = WindowToGlCoords(window, pos);
-		GlCoordinates endPosGl = WindowToGlCoords(window, Coordinates(pos.x + size.width, pos.y + size.height));
+		GlCoordinates begPosGl =
+			OSWindowToGlCoords(osWindow, props.pos);
+		GlCoordinates endPosGl =
+			OSWindowToGlCoords(osWindow, Vector2(props.pos.x + props.size.x, props.pos.y + props.size.y));
 
-		window.SetActive();
+		osWindow.SetActive();
 
-		glColor3f(color.RedAmt(), color.GreenAmt(), color.BlueAmt());
+		glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
 
 		glBegin(GL_QUADS);
 		glVertex2f(begPosGl.x, begPosGl.y);
@@ -486,9 +610,9 @@ namespace GUI {
 	size_t Text::charWidth = 0;
 	size_t Text::charHeight = 0;
 
-	Text::Text(OSWindow& window, const char* string,
-	           const Coordinates& pos, const size_t fontSize, const Color& color)
-		: osWindow(window), pos(pos), fontSize(fontSize), color(color) {
+	Text::Text(OSWindow& osWindow, const char* string,
+	           const Vector2& pos, const size_t fontSize, const Color& color)
+		: Primitive(osWindow), pos(pos), fontSize(fontSize), color(color) {
 
 		assert(string != nullptr);
 
@@ -508,11 +632,11 @@ namespace GUI {
 	}
 
 
-	void Text::DrawChar(const char ch, const Coordinates& pos) {
+	void Text::DrawChar(const char ch, const Vector2& pos) {
 		//GlCoordinates glPos = WindowToGlCoords(window, pos);
 		//glRasterPos2f(glPos.x, glPos.y);
 
-		Coordinates bmpCharPos = BmpCharPos(ch);
+		Vector2 bmpCharPos = BmpCharPos(ch);
 
 		const char* bmpCharPtr = bitmapImg->ImagePointer() + bmpCharPos.y * bitmapImg->Width() + bmpCharPos.x;
 		/*glPixelStorei(GL_UNPACK_ROW_LENGTH, bitmapImg->Width());
@@ -524,7 +648,7 @@ namespace GUI {
 		float scale = static_cast<float>(fontSize) / charWidth;
 
 		glPointSize(1.0);
-		glColor3f(color.RedAmt(), color.GreenAmt(), color.BlueAmt());
+		glColor3f(color.Redness(), color.Greenness(), color.Blueness());
 
 		glBegin(GL_POINTS);
 		for (int curY = 0; curY < charHeight * scale; ++curY) {
@@ -541,7 +665,7 @@ namespace GUI {
 
 				if (curPx != 0) {
 					GlCoordinates curPos =
-						WindowToGlCoords(osWindow, Coordinates(pos.x + curX, pos.y + charHeight * scale - 1 - curY));
+						OSWindowToGlCoords(osWindow, Vector2(pos.x + curX, pos.y + charHeight * scale - 1 - curY));
 
 					glVertex2f(curPos.x, curPos.y);
 				}
@@ -555,7 +679,7 @@ namespace GUI {
 	void Text::Draw() {
 		osWindow.SetActive();
 
-		Coordinates curPos(pos.x, pos.y);
+		Vector2 curPos(pos.x, pos.y);
 		for (int i = 0; i < contentLen; ++i) {
 			char curChar = content[i];
 
@@ -565,7 +689,7 @@ namespace GUI {
 	}
 
 
-	Coordinates Text::BmpCharPos(const unsigned char ch) const {
+	Vector2 Text::BmpCharPos(const unsigned char ch) const {
 		size_t bmpWidth = bitmapImg->Width();
 		size_t bmpHeight = bitmapImg->Height();
 
@@ -575,7 +699,7 @@ namespace GUI {
 		size_t chColumn = ch % nColumns + 1;
 		size_t chRow = ch / nColumns + 1;
 
-		Coordinates res = { 0, 0 };
+		Vector2 res = { 0, 0 };
 		res.x = (chColumn - 1) * charWidth;
 		res.y = bmpHeight - chRow * charHeight;
 
@@ -627,21 +751,22 @@ namespace GUI {
 
 	/* Button implementation */
 
-	Button::Button(OSWindow& window, const Coordinates& pos, const Size& size, const Color& color)
-		: osWindow(window), pos(pos), size(size), color(color) {
+	Button::Button(OSWindow& osWindow, const ButtonProps& props,
+	               const Vector2& pos, const Vector2& size)
+		: Window(osWindow, pos, size), props(props) {
 
-		window.AddLeftMouseUpListener(LeftMouseUpCallback, this);
+		osWindow.AddLeftMouseUpListener(LeftMouseUpCallback, this);
 		
-		rectangle = new Rectangle(window, pos, size, color);
+		rectangle = new Rectangle(osWindow, pos, size, props.color);
 	}
 
 
-	Text* Button::AddLabel(const char* string, const Coordinates& labelPos,
+	Text* Button::AddLabel(const char* string, const Vector2& labelPos,
 		const size_t fontSize, const Color& labelColor) {
 
 		assert(string != nullptr);
 
-		Coordinates globalPos(labelPos.x + pos.x, labelPos.y + pos.y);
+		Vector2 globalPos(labelPos.x + pos.x, labelPos.y + pos.y);
 		label = new Text(osWindow, string, globalPos, fontSize, labelColor);
 
 		return label;
@@ -649,7 +774,7 @@ namespace GUI {
 
 
 	Color Button::GetColor() const {
-		return color;
+		return props.color;
 	}
 
 
@@ -685,13 +810,13 @@ namespace GUI {
 
 	void Graph::Diagram::AddData(int column, int value) {
 		int curVertexX = graph.innerPos.x +
-			(column - graph.props.startX) / static_cast<float>(graph.props.rangeX) * graph.innerSize.width;
+			(column - graph.props.startX) / static_cast<float>(graph.props.rangeX) * graph.innerSize.x;
 
-		int curVertexY = graph.innerPos.y + graph.innerSize.height -
-			(value - graph.props.startY) / static_cast<float>(graph.props.rangeY) * graph.innerSize.height;
+		int curVertexY = graph.innerPos.y + graph.innerSize.y -
+			(value - graph.props.startY) / static_cast<float>(graph.props.rangeY) * graph.innerSize.y;
 
 		data.push_back(DiagramData(column, value));
-		polyline.AddVertex(Coordinates(curVertexX, curVertexY));
+		polyline.AddVertex(Vector2(curVertexX, curVertexY));
 	}
 
 
@@ -700,13 +825,12 @@ namespace GUI {
 	}
 
 
-	Graph::Graph(OSWindow& window, const GraphProps& props, const Coordinates& pos, const Size& size,
-	             const Color& bgColor)
-		: osWindow(window), props(props), pos(pos), size(size), bgColor(bgColor) {
+	Graph::Graph(OSWindow& osWindow, const GraphProps& props, const Vector2& pos, const Vector2& size)
+		: Window(osWindow, pos, size), props(props) {
 
 		const size_t axesWidth = 3;
 
-		background = new Rectangle(window, pos, size, bgColor);
+		background = new Rectangle(osWindow, pos, size, props.bgColor);
 
 		InitGraphParts();
 	}
@@ -738,7 +862,7 @@ namespace GUI {
 		char tempBuf1[maxIntStrLen + 1] = "";
 		char tempBuf2[maxIntStrLen + 1] = "";
 
-		const int innerPadding = size.width / 15;
+		const int innerPadding = size.x / 15;
 		const int arrowFrontOffset = innerPadding / 1.3;
 		const int arrowSideOffset = arrowFrontOffset / 3;
 
@@ -753,9 +877,9 @@ namespace GUI {
 			strlen(itoa(props.startY + props.rangeY, tempBuf2, 10))) * props.fontSize +
 			props.hatchSize;
 
-		innerSize.width = size.width - (innerPos.x - pos.x) - innerPadding;
+		innerSize.x = size.x - (innerPos.x - pos.x) - innerPadding;
 		innerPos.y = pos.y + innerPadding;
-		innerSize.height = size.height - props.fontSize - props.hatchSize - innerPadding;
+		innerSize.y = size.y - props.fontSize - props.hatchSize - innerPadding;
 
 		InitArrows(arrowFrontOffset, arrowSideOffset);
 
@@ -765,21 +889,21 @@ namespace GUI {
 
 	void Graph::InitArrows(const int arrowFrontOffset, const int arrowSideOffset) {
 
-		Coordinates innerEndPos(innerPos.x + innerSize.width, innerPos.y + innerSize.height);
+		Vector2 innerEndPos(innerPos.x + innerSize.x, innerPos.y + innerSize.y);
 
 		axes = new Polyline(osWindow, props.axesWidth, props.axesColor);
-		axes->AddVertex(Coordinates(innerPos.x, innerPos.y));
-		axes->AddVertex(Coordinates(innerPos.x - arrowSideOffset, innerPos.y));
-		axes->AddVertex(Coordinates(innerPos.x, innerPos.y - arrowFrontOffset));
-		axes->AddVertex(Coordinates(innerPos.x + arrowSideOffset, innerPos.y));
-		axes->AddVertex(Coordinates(innerPos.x, innerPos.y));
-		axes->AddVertex(Coordinates(innerPos.x, innerEndPos.y));
+		axes->AddVertex(Vector2(innerPos.x, innerPos.y));
+		axes->AddVertex(Vector2(innerPos.x - arrowSideOffset, innerPos.y));
+		axes->AddVertex(Vector2(innerPos.x, innerPos.y - arrowFrontOffset));
+		axes->AddVertex(Vector2(innerPos.x + arrowSideOffset, innerPos.y));
+		axes->AddVertex(Vector2(innerPos.x, innerPos.y));
+		axes->AddVertex(Vector2(innerPos.x, innerEndPos.y));
 
-		axes->AddVertex(Coordinates(innerEndPos.x, innerEndPos.y));
-		axes->AddVertex(Coordinates(innerEndPos.x, innerEndPos.y - arrowSideOffset));
-		axes->AddVertex(Coordinates(innerEndPos.x + arrowFrontOffset, innerEndPos.y));
-		axes->AddVertex(Coordinates(innerEndPos.x, innerEndPos.y + arrowSideOffset));
-		axes->AddVertex(Coordinates(innerEndPos.x, innerEndPos.y));
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y));
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y - arrowSideOffset));
+		axes->AddVertex(Vector2(innerEndPos.x + arrowFrontOffset, innerEndPos.y));
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y + arrowSideOffset));
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y));
 	}
 
 
@@ -788,17 +912,17 @@ namespace GUI {
 		char tempBuf[maxIntStrLen + 1] = "";
 
 		int curY = props.fontSize / 2;
-		while (curY < innerSize.height) {
-			int curLabelVal = (curY - props.fontSize / 2) / static_cast<float>(innerSize.height) *
+		while (curY < innerSize.y) {
+			int curLabelVal = (curY - props.fontSize / 2) / static_cast<float>(innerSize.y) *
 				props.rangeY + props.startY;
 
-			int curYWindow = innerPos.y + innerSize.height - curY;
+			int curYWindow = innerPos.y + innerSize.y - curY;
 
 			Text* curLabel = new Text(osWindow, itoa(curLabelVal, tempBuf, 10),
-				Coordinates(pos.x, curYWindow), props.fontSize, props.fontColor);
+				Vector2(pos.x, curYWindow), props.fontSize, props.fontColor);
 
-			Line* curHatch = new Line(osWindow, Coordinates(innerPos.x, curYWindow + props.fontSize / 2),
-				Coordinates(innerPos.x - props.hatchSize, curYWindow + props.fontSize / 2),
+			Line* curHatch = new Line(osWindow, Vector2(innerPos.x, curYWindow + props.fontSize / 2),
+				Vector2(innerPos.x - props.hatchSize, curYWindow + props.fontSize / 2),
 				props.axesWidth, props.axesColor);
 
 			labels.push_back(curLabel);
@@ -809,17 +933,17 @@ namespace GUI {
 
 
 		int curX = 0;
-		while (curX < innerSize.width) {
-			int curLabelVal = curX / static_cast<float>(innerSize.width) *
+		while (curX < innerSize.x) {
+			int curLabelVal = curX / static_cast<float>(innerSize.x) *
 				props.rangeX + props.startX;
 
 			int curXWindow = innerPos.x + curX;
 			Text* curLabel = new Text(osWindow, itoa(curLabelVal, tempBuf, 10),
-				Coordinates(curXWindow, pos.y + size.height - props.fontSize),
+				Vector2(curXWindow, pos.y + size.y - props.fontSize),
 				props.fontSize, props.fontColor);
 
-			Line* curHatch = new Line(osWindow, Coordinates(curXWindow, innerPos.y + innerSize.height),
-				Coordinates(curXWindow, innerPos.y + innerSize.height + props.hatchSize),
+			Line* curHatch = new Line(osWindow, Vector2(curXWindow, innerPos.y + innerSize.y),
+				Vector2(curXWindow, innerPos.y + innerSize.y + props.hatchSize),
 				props.axesWidth, props.axesColor);
 
 			labels.push_back(curLabel);
@@ -844,5 +968,4 @@ namespace GUI {
 		for (int i = 0; i < hatches.size(); ++i)
 			hatches[i]->Draw();
 	}
-
 }

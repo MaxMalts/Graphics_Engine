@@ -103,58 +103,58 @@ Interface DrawInterface(GUI::OSWindow* window, const int maxArraySize) {
 
 	const int graphsMarginLeft = 0.05 * windowW;
 	const int graphsMarginTop = 0.1 * windowH;
-	const GUI::Size graphsSize((windowW - 3 * graphsMarginLeft) / 2, 0.6 * windowH);
-	const size_t graphLabelFontSize = 0.07 * graphsSize.width;
+	const GUI::Vector2 graphsSize((windowW - 3 * graphsMarginLeft) / 2, 0.6 * windowH);
+	const size_t graphLabelFontSize = 0.07 * graphsSize.x;
 
 	const int buttonsMarginLeft = 0.03 * windowW;
 	const int buttonsMarginTop = 0.1 * windowH;
-	const GUI::Size buttonsSize((windowW - 5 * buttonsMarginLeft) / 4, 0.15 * windowH);
+	const GUI::Vector2 buttonsSize((windowW - 5 * buttonsMarginLeft) / 4, 0.15 * windowH);
 
 	const GUI::Color bubbleColor("red");
 	const GUI::Color selectionColor("green");
 	const GUI::Color quickColor("blue");
 	const GUI::Color mergeColor("yellow");
 
-	const size_t buttonsFontSize = 0.1 * buttonsSize.width;
-	const GUI::Coordinates buttonsLabelPos(10, (buttonsSize.height - buttonsFontSize) / 2);
+	const size_t buttonsFontSize = 0.1 * buttonsSize.x;
+	const GUI::Vector2 buttonsLabelPos(10, (buttonsSize.y - buttonsFontSize) / 2);
 
 	Interface interface = {window};
 
 	GUI::GraphProps graphsProps(0, maxArraySize, 0, maxArraySize * maxArraySize / 2);
 	interface.graphs.left =
-		window->CreateGraph(graphsProps, GUI::Coordinates(graphsMarginLeft, graphsMarginTop), graphsSize);
+		window->CreateGraph(graphsProps, GUI::Vector2(graphsMarginLeft, graphsMarginTop), graphsSize);
 	interface.graphs.leftLabel =
-		window->CreateText("Comparisons:", GUI::Coordinates(graphsMarginLeft,
+		window->CreateText("Comparisons:", GUI::Vector2(graphsMarginLeft,
 	                       graphsMarginTop - graphLabelFontSize), graphLabelFontSize);
 	interface.graphs.right =
-		window->CreateGraph(graphsProps, GUI::Coordinates(2 * graphsMarginLeft + graphsSize.width,
+		window->CreateGraph(graphsProps, GUI::Vector2(2 * graphsMarginLeft + graphsSize.x,
 		                    graphsMarginTop), graphsSize);
 	interface.graphs.rightLabel =
-		window->CreateText("Swaps:", GUI::Coordinates(2 * graphsMarginLeft + graphsSize.width,
+		window->CreateText("Swaps:", GUI::Vector2(2 * graphsMarginLeft + graphsSize.x,
 			graphsMarginTop - graphLabelFontSize), graphLabelFontSize);
 
 
 	interface.buttons.bubble =
-		window->CreateButton(GUI::Coordinates(buttonsMarginLeft,
-		                     graphsMarginTop + graphsSize.height + buttonsMarginTop), buttonsSize, bubbleColor);
+		window->CreateButton(GUI::Vector2(buttonsMarginLeft,
+		                     graphsMarginTop + graphsSize.y + buttonsMarginTop), buttonsSize, bubbleColor);
 	interface.buttons.bubble->AddLabel("bubble", buttonsLabelPos, buttonsFontSize);
 
 	interface.buttons.selection =
-		window->CreateButton(GUI::Coordinates(2 * buttonsMarginLeft + buttonsSize.width,
-		                     graphsMarginTop + graphsSize.height + buttonsMarginTop), buttonsSize, selectionColor);
+		window->CreateButton(GUI::Vector2(2 * buttonsMarginLeft + buttonsSize.x,
+		                     graphsMarginTop + graphsSize.y + buttonsMarginTop), buttonsSize, selectionColor);
 	interface.buttons.selection->AddLabel("selection", buttonsLabelPos, buttonsFontSize);
 
 	interface.buttons.quick =
-		window->CreateButton(GUI::Coordinates(3 * buttonsMarginLeft + 2 * buttonsSize.width,
-		                     graphsMarginTop + graphsSize.height + buttonsMarginTop), buttonsSize, quickColor);
+		window->CreateButton(GUI::Vector2(3 * buttonsMarginLeft + 2 * buttonsSize.x,
+		                     graphsMarginTop + graphsSize.y + buttonsMarginTop), buttonsSize, quickColor);
 	interface.buttons.quick->AddLabel("quick", buttonsLabelPos, buttonsFontSize);
 
 	interface.buttons.merge =
-		window->CreateButton(GUI::Coordinates(4 * buttonsMarginLeft + 3 * buttonsSize.width,
-		                     graphsMarginTop + graphsSize.height + buttonsMarginTop), buttonsSize, mergeColor);
+		window->CreateButton(GUI::Vector2(4 * buttonsMarginLeft + 3 * buttonsSize.x,
+		                     graphsMarginTop + graphsSize.y + buttonsMarginTop), buttonsSize, mergeColor);
 	interface.buttons.merge->AddLabel("merge", buttonsLabelPos, buttonsFontSize);
 
-	window->Draw();
+	window->Update();
 
 	return interface;
 }
@@ -182,7 +182,7 @@ void AnalyseSort(const Interface& interface, const int maxCount,
 		//swapsByCount[curCount] = StatsFuncs::SwapCount();
 		comparesDiagram->AddData(curCount, StatsFuncs::ComparatorCount());
 		swapsDiagram->AddData(curCount, StatsFuncs::SwapCount());
-		interface.window->Draw();
+		interface.window->Update();
 
 		StatsFuncs::ResetComparator();
 		StatsFuncs::ResetSwap();
@@ -262,7 +262,7 @@ int main() {
 
 	double prevTime = glfwGetTime();
 	while (app.WindowsOpened() > 0) {
-		window->Draw();
+		window->Update();
 		app.ProcessEvents();
 		double curTime = glfwGetTime();
 		std::cout << 1 / (curTime - prevTime) << '\n';

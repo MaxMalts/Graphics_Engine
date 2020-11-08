@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <unordered_set>
 #include <map>
 #include <assert.h>
 #include <GL/glew.h>
@@ -30,10 +31,10 @@ namespace GUI {
 
 
 
-	struct Coordinates {
-		Coordinates() = default;
+	struct Vector2 {
+		Vector2() = default;
 
-		Coordinates(int x, int y);
+		Vector2(int x, int y);
 
 		int x = 0;
 		int y = 0;
@@ -47,17 +48,6 @@ namespace GUI {
 
 		int x = 0;
 		int y = 0;
-	};
-
-
-	struct Size {
-
-		Size() = default;
-
-		Size(size_t width, size_t height);
-
-		size_t width = 0;
-		size_t height = 0;
 	};
 
 
@@ -86,11 +76,11 @@ namespace GUI {
 		float operator[](const char* color) const;
 
 
-		float RedAmt() const;
+		float Redness() const;
 
-		float GreenAmt() const;
+		float Greenness() const;
 
-		float BlueAmt() const;
+		float Blueness() const;
 
 	private:
 
@@ -111,15 +101,81 @@ namespace GUI {
 	class Button;
 	class Graph;
 
-	struct GraphProps {
+
+	struct WindowProps {
+	public:
+
+		virtual ~WindowProps() = default;
+	};
+
+
+	struct ButtonProps : public WindowProps {
+	public:
+
+		ButtonProps(const Color& color = Color(0.7, 0.7, 0.7));
+
+		Color color;
+	};
+
+
+	struct GraphProps : public WindowProps {
+	public:
 
 		GraphProps() = default;
 
 		GraphProps(const int startX, const int rangeX, const int startY, const int rangeY);
 
 		int startX = 0, rangeX = 100, startY = 0, rangeY = 100;
+		Color bgColor = Color(0.9, 0.9, 0.9);
 		size_t fontSize = 16, axesWidth = 3, hatchSize = 10;
 		Color axesColor = Color(0, 0, 0), fontColor = Color(0, 0, 0);
+	};
+
+
+
+	struct PrimitiveProps {
+	public:
+
+		~PrimitiveProps() = default;
+	};
+
+
+	struct LineProps : public PrimitiveProps {
+	public:
+
+		LineProps(const Vector2& firstPoint = Vector2(10, 10), const Vector2& secondPoint = Vector2(100, 10),
+		          const size_t width = 1, const Color& color = Color(0, 0, 0));
+
+		Vector2 firstPoint;
+		Vector2 secondPoint;
+		size_t width;
+		Color color;
+	};
+
+
+	struct PolylineProps : public PrimitiveProps {
+	public:
+
+		PolylineProps(const std::vector<Vector2>& verteces,
+		              const size_t width = 1, const Color& color = Color(0, 0, 0));
+
+		PolylineProps(const size_t width = 1, const Color& color = Color(0, 0, 0));
+
+		std::vector<Vector2> verteces;
+		size_t width;
+		Color color;
+	};
+
+
+	struct RectangleProps : public PrimitiveProps {
+	public:
+
+		RectangleProps(const Vector2& pos = Vector2(0, 0), const Vector2& size = Vector2(200, 100),
+		               const Color& color = Color(0, 0, 0));
+
+		Vector2 pos;
+		Vector2 size;
+		Color color;
 	};
 
 
@@ -154,7 +210,7 @@ namespace GUI {
 	public:
 
 		OSWindow(Application& application, const int width = 640, const int height = 420,
-		         const char* name = "Window", const Color& backgroundColor = Color(0, 0, 0));
+		         const char* name = "Window", const Color& desktopColor = Color(0, 0, 0));
 
 		OSWindow(const OSWindow& other) = delete;
 
@@ -163,31 +219,31 @@ namespace GUI {
 		size_t Height() const;
 
 
-		Rectangle* CreateRectangle(const Coordinates& pos = Coordinates(0, 0),
-		                           const Size& size = Size(200, 100), const Color& color = Color(0, 0, 0));
+		/*Rectangle* CreateRectangle(const Vector2& pos = Vector2(0, 0),
+		                           const Vector2& size = Vector2(200, 100), const Color& color = Color(0, 0, 0));
 
-		Button* CreateButton(const Coordinates& pos = Coordinates(0, 0),
-		                     const Size& size = Size(100, 50), const Color& color = Color(0.7, 0.7, 0.7));
+		Button* CreateButton(const Vector2& pos = Vector2(0, 0),
+		                     const Vector2& size = Vector2(100, 50), const Color& color = Color(0.7, 0.7, 0.7));
 
-		Line* CreateLine(const Coordinates& begPos = Coordinates(10, 10),
-		                 const Coordinates& endPos = Coordinates(100, 10),
+		Line* CreateLine(const Vector2& begPos = Vector2(10, 10),
+		                 const Vector2& endPos = Vector2(100, 10),
 		                 const size_t width = 1, const Color& color = Color(0, 0, 0));
 
-		Polyline* CreatePolyline(const std::vector<Coordinates>& verteces, const size_t width = 1,
+		Polyline* CreatePolyline(const std::vector<Vector2>& verteces, const size_t width = 1,
 		                         const Color& color = Color(0, 0, 0));
 
 		Polyline* CreatePolyline(const size_t width = 1, const Color& color = Color(0, 0, 0));
 
-		Text* CreateText(const char* content, const Coordinates& pos = Coordinates(0, 0),
+		Text* CreateText(const char* content, const Vector2& pos = Vector2(0, 0),
 		                 const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
 
 		Graph* CreateGraph(const GraphProps& props = GraphProps(),
-		                   const Coordinates& pos = Coordinates(0, 0),
-		                   const Size& size = Size(100, 100),
-		                   const Color& bgColor = Color(0.9, 0.9, 0.9));
+		                   const Vector2& pos = Vector2(0, 0),
+		                   const Vector2& size = Vector2(100, 100),
+		                   const Color& bgColor = Color(0.9, 0.9, 0.9));*/
 
 
-		void Draw();
+		void Update();
 
 		void SetActive() const;
 
@@ -199,7 +255,10 @@ namespace GUI {
 
 		WindowCoordinates CursorPos() const;
 
+
 		Application& GetApplication() const;
+
+		DesktopWindow* GetDesktop() const;
 
 
 		~OSWindow();
@@ -239,6 +298,8 @@ namespace GUI {
 
 		GLFWwindow* window = nullptr;
 
+		DesktopWindow* desktop = nullptr;
+
 		std::vector<Line*> lines;
 		std::vector<Polyline*> polylines;
 		std::vector<Rectangle*> rectangles;
@@ -253,87 +314,136 @@ namespace GUI {
 		size_t width = 0;
 		size_t height = 0;
 		char* name = nullptr;
-		Color backgroundColor;
 	};
 
 
-	class Line {
+	class Element {
 	public:
 
-		Line(OSWindow& window, const Coordinates& begPos = Coordinates(10, 10),
-		     const Coordinates& endPos = Coordinates(100, 10), const size_t width = 1,
-		     const Color& color = Color(0, 0, 0));
+		Element(OSWindow& osWindow);
+
+	protected:
+
+		OSWindow& osWindow;
+	};
+
+
+	class Window : public Element {
+	public:
+
+		enum Type {
+			button,
+			graph
+		};
+
+		Window(OSWindow& osWindow, const Vector2& pos, const Vector2& size);
+
+		Window* CreateWindow(const Type type, const WindowProps& props, const Vector2& pos = Vector2(10, 10),
+		                     const Vector2& size = Vector2(100, 50));
+
+		Primitive* CreatePrimitive(const Primitive::Type type, const PrimitiveProps& props);
+
+		void RemoveWindow(Window* window);
+
+		virtual void Draw() = 0;
+
+		~Window();
+
+	protected:
+
+		void DrawInsides();
+
+		Vector2 pos;
+		Vector2 size;
+
+		std::unordered_set<Window*> windows;
+		std::unordered_set<Primitive*> primitives;
+	};
+
+
+	class DesktopWindow : public Window {
+	public:
+
+		DesktopWindow(OSWindow& osWindow, const Vector2 pos, const Vector2 size,
+		              const Color& color = Color(1, 1, 1));
+
+		DesktopWindow(const DesktopWindow& other) = delete;
+
+		virtual void Draw();
+
+	private:
+
+		Color color;
+	};
+
+
+	class Primitive : public Element {
+	public:
+
+		Primitive(OSWindow& osWindow);
+
+		virtual void Draw() = 0;
+	};
+
+
+	class Line : public Primitive {
+	public:
+
+		Line(OSWindow& window, const LineProps& props = LineProps());
 
 		Line(const Line& other) = delete;
 
-		void Draw();
+		virtual void Draw();
 
 	private:
 
-		OSWindow& window;
-
-		Coordinates firstPoint;
-		Coordinates secondPoint;
-		size_t width;
-		Color color;
+		LineProps props;
 	};
 
 
-	class Polyline {
+	class Polyline : public Primitive {
 	public:
 
-		Polyline(OSWindow& window, const std::vector<Coordinates>& verteces,
-		         const size_t width = 1, const Color& color = Color(0, 0, 0));
-
-		Polyline(OSWindow& window, const size_t width = 1, const Color& color = Color(0, 0, 0));
+		Polyline(OSWindow& window, const PolylineProps props = PolylineProps());
 
 		Polyline(const Polyline& other) = delete;
 
-		void AddVertex(const Coordinates& pos);
+		void AddVertex(const Vector2& pos);
 
-		void Draw();
+		virtual void Draw();
 
 
 	private:
 
-		OSWindow& window;
-
-		std::vector<Coordinates> verteces;
-		size_t width;
-		Color color;
+		PolylineProps props;
 	};
 
 
-	class Rectangle {
+	class Rectangle : public Primitive {
 	public:
 
-		Rectangle(OSWindow& window, const Coordinates& pos = Coordinates(0, 0),
-		          const Size& size = Size(200, 100), const Color& color = Color(0, 0, 0));
+		Rectangle(OSWindow& window, const RectangleProps& props = RectangleProps());
 
 		Rectangle(const Rectangle& other) = delete;
 
-		void Draw();
+		virtual void Draw();
 
 	private:
 
-		OSWindow& window;
-
-		Coordinates pos;
-		Size size;
-		Color color;
+		RectangleProps props;
 	};
 
 
-	class Text {
+	class Text : public Primitive {
 	public:
 
 		Text(OSWindow& window, const char* string,
-		     const Coordinates& pos = Coordinates(0, 0), const size_t fontSize = 16,
+		     const Vector2& pos = Vector2(0, 0), const size_t fontSize = 16,
 		     const Color& color = Color(0, 0, 0));
 
 		Text(const Text& other) = delete;
 		
-		void Draw();
+		virtual void Draw();
 
 		~Text();
 
@@ -343,17 +453,15 @@ namespace GUI {
 
 		void DestroyFont();
 
-		void DrawChar(const char ch, const Coordinates& pos);
+		void DrawChar(const char ch, const Vector2& pos);
 
-		Coordinates BmpCharPos(const unsigned char ch) const;
+		Vector2 BmpCharPos(const unsigned char ch) const;
 
 
 		char* content = nullptr;
 		int contentLen = 0;
 
-		OSWindow& osWindow;
-
-		Coordinates pos;
+		Vector2 pos;
 		size_t fontSize;    // width in window pixels
 		Color color;
 
@@ -364,20 +472,20 @@ namespace GUI {
 	};
 
 
-	class Button {
+	class Button : public Window {
 	public:
 
-		Button(OSWindow& window, const Coordinates& pos = Coordinates(0, 0),
-		       const Size& size = Size(100, 50), const Color& color = Color(0.7, 0.7, 0.7));
+		Button(OSWindow& window, const ButtonProps& buttonProps,
+		       const Vector2& pos, const Vector2& size);
 
 		Button(const Button& other) = delete;
 
-		Text* AddLabel(const char* label, const Coordinates& labelPos = Coordinates(10, 10),
+		Text* AddLabel(const char* label, const Vector2& labelPos = Vector2(10, 10),
 		               const size_t fontSize = 16, const Color& labelColor = Color(0, 0, 0));
 
 		Color GetColor() const;
 
-		void Draw();
+		virtual void Draw();
 
 
 		void AddLeftMouseUpListener(void (*Listener)(void*), void* addParam);
@@ -394,8 +502,8 @@ namespace GUI {
 			Button* button = static_cast<Button*>(buttonArg);
 
 			WindowCoordinates cursorPos = button->osWindow.CursorPos();
-			if (cursorPos.x >= button->pos.x && cursorPos.x <= button->pos.x + button->size.width &&
-				cursorPos.y >= button->pos.y && cursorPos.y <= button->pos.y + button->size.height) {
+			if (cursorPos.x >= button->pos.x && cursorPos.x <= button->pos.x + button->size.x &&
+				cursorPos.y >= button->pos.y && cursorPos.y <= button->pos.y + button->size.y) {
 
 				for (int i = 0; i < button->leftMouseUpListeners.size(); ++i) {
 					std::pair<void (*)(void*), void*>& curListener = button->leftMouseUpListeners[i];
@@ -404,21 +512,16 @@ namespace GUI {
 			}
 		}
 
-
-		OSWindow& osWindow;
-
 		std::vector<std::pair<void (*)(void*), void*>> leftMouseUpListeners;
 
-		Coordinates pos;
-		Size size;
-		Color color;
+		ButtonProps props;
 
 		Rectangle* rectangle = nullptr;
 		Text* label = nullptr;
 	};
 
 
-	class Graph {
+	class Graph : public Window {
 	public:
 
 		class Diagram {
@@ -428,7 +531,7 @@ namespace GUI {
 			
 			void AddData(int column, int value);
 
-			void Draw();
+			virtual void Draw();
 
 		private:
 
@@ -448,9 +551,8 @@ namespace GUI {
 		};
 
 
-		Graph(OSWindow& window, const GraphProps& props = GraphProps(),
-		      const Coordinates& pos = Coordinates(0, 0), const Size& size = Size(100, 100),
-		      const Color& bgColor = Color(0.9, 0.9, 0.9));
+		Graph(OSWindow& window, const GraphProps& props,
+		      const Vector2& pos, const Vector2& size);
 
 		Graph(const Graph& other) = delete;
 
@@ -470,8 +572,6 @@ namespace GUI {
 		void InitLabels(const int rowLabelsOffset, const int columnLabelsOffset);
 
 
-		OSWindow& osWindow;
-
 		GraphProps props;
 
 		std::vector<Diagram*> diagrams;
@@ -481,11 +581,7 @@ namespace GUI {
 		std::vector<Text*> labels;
 		std::vector<Line*> hatches;
 
-		Coordinates pos;
-		Size size;
-		Color bgColor;
-
-		Coordinates innerPos;    // Position without axes and labels
-		Size innerSize;    // Size of graph without axes and labels
+		Vector2 innerPos;    // Position without axes and labels
+		Vector2 innerSize;    // Size of graph without axes and labels
 	};
 }
