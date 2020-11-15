@@ -72,8 +72,6 @@ namespace GUI {
 
 	Vector2::Vector2(int x, int y) : x(x), y(y) {}
 
-	WindowCoordinates::WindowCoordinates(int x, int y) : x(x), y(y) {}
-
 
 
 	/* Color implementation */
@@ -162,9 +160,49 @@ namespace GUI {
 
 
 
+	/* Event implementation */
+
+	Event::Event(Type type) : type(type) {
+		assert(window_close == type);
+	}
+
+
+	Event::Event(Type type, MouseProps& mouseProps) : type(type), mouseProps(mouseProps) {
+		assert(mouse_up == type || mouse_down == type);
+	}
+
+
+	Event::Event(Type type, KeyProps& keyProps) : type(type), keyProps(keyProps) {
+		assert(key_up == type || key_down == type);
+	}
+
+
+	Event::Event(Type type, ScrollProps& scrollProps) : type(type), scrollProps(scrollProps) {
+		assert(scroll == type);
+	}
+
+
+	void Event::Stop() {
+		stopped = true;
+	}
+
+
+	bool Event::Stopped() const {
+		return stopped;
+	}
+
+
+	Event::Type Event::GetType() const {
+		return type;
+	}
+
+
 	/* Props implementation */
 
 	ButtonProps::ButtonProps(const Color& color) : color(color) {}
+
+	GraphProps::GraphProps(const int startX, const int rangeX, const int startY, const int rangeY)
+		: startX(startX), rangeX(rangeX), startY(startY), rangeY(rangeY) {}
 
 
 	LineProps::LineProps(const Vector2& firstPoint, const Vector2& secondPoint, const size_t width, const Color& color)
@@ -179,6 +217,10 @@ namespace GUI {
 
 	RectangleProps::RectangleProps(const Vector2& pos, const Vector2& size, const Color& color)
 		: pos(pos), size(size), color(color) {}
+
+
+	TextProps::TextProps(const std::string& content, const Vector2& pos, const size_t fontSize, const Color& color)
+		: content(content), pos(pos), fontSize(fontSize), color(color) {}
 
 
 
@@ -212,11 +254,11 @@ namespace GUI {
 		if (window == nullptr)
 			return;
 
-		std::set<OSWindow*>::iterator windowIter = osWindows.find(window);
+		std::unordered_set<OSWindow*>::iterator windowIter = osWindows.find(window);
 		if (osWindows.end() == windowIter)
 			throw std::invalid_argument("Passed window not found.");
 
-		delete* windowIter;
+		delete *windowIter;
 		osWindows.erase(windowIter);
 	}
 
@@ -232,7 +274,7 @@ namespace GUI {
 
 
 	Application::~Application() {
-		std::set<OSWindow*>::iterator windowsIter = osWindows.begin();
+		std::unordered_set<OSWindow*>::iterator windowsIter = osWindows.begin();
 		while (windowsIter != osWindows.end()) {
 			delete* windowsIter;
 			++windowsIter;
@@ -254,14 +296,14 @@ namespace GUI {
 		assert(name != nullptr);
 
 		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
-		window = glfwCreateWindow(width, height, name, NULL, NULL);
-		if (!window) {
+		glfwWindow = glfwCreateWindow(width, height, name, NULL, NULL);
+		if (!glfwWindow) {
 			glfwTerminate();
 			throw bad_init("Error occurred while creating the window");
 		}
-		glfwSetWindowUserPointer(window, this);
-		glfwSetMouseButtonCallback(window, LeftMouseUpCallback);
-		glfwSetWindowCloseCallback(window, WindowCloseCallback);
+		glfwSetWindowUserPointer(glfwWindow, this);
+
+		InitCallbacks();
 
 		this->name = new char[strlen(name) + 1];
 		strcpy(this->name, name);
@@ -376,34 +418,24 @@ namespace GUI {
 
 	void OSWindow::Update() {
 		SetActive();
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(glfwWindow);
 	}
 
 
 	void OSWindow::SetActive() const {
-		assert(window != nullptr);
+		assert(glfwWindow != nullptr);
 
-		if (glfwGetCurrentContext() != window) {
-			glfwMakeContextCurrent(window);
+		if (glfwGetCurrentContext() != glfwWindow) {
+			glfwMakeContextCurrent(glfwWindow);
 		}
 	}
 
 
-	void OSWindow::AddLeftMouseUpListener(void (*Listener)(void*), void* addParam) {
-		leftMouseUpListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
-	}
-
-
-	void OSWindow::AddWindowCloseListener(void(*Listener)(void*), void* addParam) {
-		windowCloseListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
-	}
-
-
-	WindowCoordinates OSWindow::CursorPos() const {
+	Vector2 OSWindow::CursorPos() const {
 		double posX = 0, posY = 0;
-		glfwGetCursorPos(window, &posX, &posY);
+		glfwGetCursorPos(glfwWindow, &posX, &posY);
 
-		return WindowCoordinates(static_cast<int>(posX), static_cast<int>(posY));
+		return Vector2(static_cast<int>(posX), static_cast<int>(posY));
 	}
 
 
@@ -417,15 +449,24 @@ namespace GUI {
 	}
 
 
-	OSWindow::~OSWindow() {
-		DeleteArrayElements(lines);
-		DeleteArrayElements(polylines);
-		DeleteArrayElements(rectangles);
-		DeleteArrayElements(texts);
-		DeleteArrayElements(buttons);
-		DeleteArrayElements(graphs);
+	void OSWindow::InitCallbacks() {
+		glfwSetWindowCloseCallback(glfwWindow, WindowCloseCallback);
+		glfwSetMouseButtonCallback(glfwWindow, MouseButtonCallback);
+		glfwSetKeyCallback(glfwWindow, KeyCallback);
+		glfwSetScrollCallback(glfwWindow, ScrollCallback);
+	}
 
-		glfwDestroyWindow(window);
+
+	OSWindow::~OSWindow() {
+		//DeleteArrayElements(lines);
+		//DeleteArrayElements(polylines);
+		//DeleteArrayElements(rectangles);
+		//DeleteArrayElements(texts);
+		//DeleteArrayElements(buttons);
+		//DeleteArrayElements(graphs);
+
+		delete desktop;
+		glfwDestroyWindow(glfwWindow);
 	}
 
 
@@ -446,32 +487,74 @@ namespace GUI {
 	                             const Vector2& pos, const Vector2& size) {
 
 		Window* newWindow = nullptr;
-		switch (type) {
-		case button:
-			try {
-				newWindow = new Button(osWindow, dynamic_cast<const ButtonProps&>(props), pos, size);
 
-			} catch (std::bad_cast&) {
-				throw std::invalid_argument("Button is to create but props are not of ButtonProps type.");
+		try {
+			switch (type) {
+			case button:
+				try {
+					newWindow = new Button(osWindow, dynamic_cast<const ButtonProps&>(props), pos, size);
+
+				} catch (std::bad_cast&) {
+					throw std::invalid_argument("Button is to create but props are not of ButtonProps type.");
+				}
+				break;
+
+			case graph:
+				try {
+					newWindow = new Graph(osWindow, dynamic_cast<const GraphProps&>(props), pos, size);
+
+				} catch (std::bad_cast&) {
+					throw std::invalid_argument("Button is to create but props are not of ButtonProps type.");
+				}
+				break;
+
+			default:
+				throw std::invalid_argument("Unknown window type passed.");
 			}
-			break;
 
-		case graph:
-			try {
-				newWindow = new Graph(osWindow, dynamic_cast<const GraphProps&>(props), pos, size);
-
-			} catch (std::bad_cast&) {
-				throw std::invalid_argument("Button is to create but props are not of ButtonProps type.");
-			}
-			break;
-
-		default:
-			throw std::invalid_argument("Unknown window type passed.");
+		} catch (std::bad_cast&) {
+			throw std::invalid_argument("Props type doesn't match to window type.");
 		}
 
 		windows.insert(newWindow);
 		
 		return newWindow;
+	}
+
+
+	Primitive* Window::CreatePrimitive(const Primitive::Type type, const PrimitiveProps& props) {
+
+		Primitive* newPrimitive = nullptr;
+
+		try {
+			switch (type) {
+			case Primitive::Type::line:
+				newPrimitive = new Line(osWindow, dynamic_cast<const LineProps&>(props));
+				break;
+
+			case Primitive::Type::polyline:
+				newPrimitive = new Polyline(osWindow, dynamic_cast<const PolylineProps&>(props));
+				break;
+
+			case Primitive::Type::rectangle:
+				newPrimitive = new Rectangle(osWindow, dynamic_cast<const RectangleProps&>(props));
+				break;
+
+			case Primitive::Type::text:
+				newPrimitive = new Text(osWindow, dynamic_cast<const TextProps&>(props));
+				break;
+
+			default:
+				throw std::invalid_argument("Unknown window type passed.");
+			}
+
+		} catch (std::bad_cast&) {
+			throw std::invalid_argument("Props type doesn't match to primitive type.");
+		}
+
+		primitives.insert(newPrimitive);
+
+		return newPrimitive;
 	}
 
 
@@ -481,21 +564,80 @@ namespace GUI {
 	}
 
 
+	void Window::AddEventListener(Event::Type type, void(*listener)(Event&, void*), void* additParam) {
+		assert(type != Event::Type::unknown);
+
+		eventsListeners[type].emplace(listener, additParam);
+	}
+
+
+	void Window::RemoveEventListener(Event::Type type, void (*listener)(Event&, void*)) {
+		assert(type != Event::Type::unknown);
+
+		for (auto& curListener : eventsListeners[type]) {
+			if (curListener.first == listener) {
+				eventsListeners[type].erase(curListener);
+			}
+		}
+	}
+
+
+	void Window::HandleEvent(Event& event) {
+		Event::Type type = event.GetType();
+		if (Event::mouse_down == type || Event::mouse_up == type || Event::scroll == type) {
+			Vector2 mousePos;
+			if (Event::scroll == type) {
+				mousePos = event.scrollProps.pos;
+			} else {
+				 mousePos = event.mouseProps.pos;
+			}
+
+			if (mousePos.x >= pos.x && mousePos.x <= pos.x + size.x &&
+				mousePos.y >= pos.y && mousePos.y <= pos.y + size.y) {
+				for (auto& curListener : eventsListeners[type]) {
+					curListener.first(event, curListener.second);
+
+					if (event.Stopped()) {
+						return;
+					}
+				}
+			}
+
+		} else {
+			for (auto& curListener : eventsListeners[type]) {
+				curListener.first(event, curListener.second);
+
+				if (event.Stopped()) {
+					return;
+				}
+			}
+		}
+
+		for (Window* curWindow : windows) {
+			curWindow->HandleEvent(event);
+
+			if (event.Stopped()) {
+				return;
+			}
+		}
+	}
+
+
 	Window::~Window() {
-		for (auto window : windows) {
+		for (Window* window : windows) {
 			delete window;
 		}
-		for (auto primitive : primitives) {
+		for (Primitive* primitive : primitives) {
 			delete primitive;
 		}
 	}
 
 
 	void Window::DrawInsides() {
-		for (auto window : windows) {
+		for (Window* window : windows) {
 			window->Draw();
 		}
-		for (auto primitive : primitives) {
+		for (Primitive* primitive : primitives) {
 			primitive->Draw();
 		}
 	}
@@ -513,6 +655,8 @@ namespace GUI {
 
 		glClearColor(color.Redness(), color.Greenness(), color.Blueness(), 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		DrawInsides();
 
 		osWindow.Update();
 	}
@@ -610,11 +754,7 @@ namespace GUI {
 	size_t Text::charWidth = 0;
 	size_t Text::charHeight = 0;
 
-	Text::Text(OSWindow& osWindow, const char* string,
-	           const Vector2& pos, const size_t fontSize, const Color& color)
-		: Primitive(osWindow), pos(pos), fontSize(fontSize), color(color) {
-
-		assert(string != nullptr);
+	Text::Text(OSWindow& osWindow, const TextProps& props) : Primitive(osWindow), props(props) {
 
 		if (0 == instanceCount) {
 			const char bitmapFileName[] = "../Fonts/ASCII.bmp";
@@ -623,10 +763,6 @@ namespace GUI {
 
 			InitFont(bitmapFileName, charWidth, charHeight);
 		}
-
-		contentLen = strlen(string);
-		content = new char[contentLen + 1];
-		strncpy(content, string, contentLen + 1);
 
 		++instanceCount;
 	}
@@ -645,14 +781,14 @@ namespace GUI {
 
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);*/
 
-		float scale = static_cast<float>(fontSize) / charWidth;
+		float scale = static_cast<float>(props.fontSize) / charWidth;
 
 		glPointSize(1.0);
-		glColor3f(color.Redness(), color.Greenness(), color.Blueness());
+		glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
 
 		glBegin(GL_POINTS);
 		for (int curY = 0; curY < charHeight * scale; ++curY) {
-			for (int curX = 0; curX < fontSize; ++curX) {
+			for (int curX = 0; curX < props.fontSize; ++curX) {
 
 				int pxOffsetX = Round(curX / scale);
 				int pxOffsetY = Round(curY / scale);
@@ -665,7 +801,8 @@ namespace GUI {
 
 				if (curPx != 0) {
 					GlCoordinates curPos =
-						OSWindowToGlCoords(osWindow, Vector2(pos.x + curX, pos.y + charHeight * scale - 1 - curY));
+						OSWindowToGlCoords(osWindow, Vector2(pos.x + curX,
+						                                     pos.y + charHeight * scale - 1 - curY));
 
 					glVertex2f(curPos.x, curPos.y);
 				}
@@ -679,12 +816,12 @@ namespace GUI {
 	void Text::Draw() {
 		osWindow.SetActive();
 
-		Vector2 curPos(pos.x, pos.y);
-		for (int i = 0; i < contentLen; ++i) {
-			char curChar = content[i];
+		Vector2 curPos(props.pos.x, props.pos.y);
+		for (int i = 0; i < props.content.size(); ++i) {
+			char curChar = props.content[i];
 
 			DrawChar(curChar, curPos);
-			curPos.x += fontSize;
+			curPos.x += props.fontSize;
 		}
 	}
 
@@ -709,8 +846,6 @@ namespace GUI {
 
 	Text::~Text() {
 		assert(instanceCount >= 1);
-
-		delete[] content;
 
 		if (instanceCount == 1)
 			DestroyFont();
@@ -754,22 +889,18 @@ namespace GUI {
 	Button::Button(OSWindow& osWindow, const ButtonProps& props,
 	               const Vector2& pos, const Vector2& size)
 		: Window(osWindow, pos, size), props(props) {
-
-		osWindow.AddLeftMouseUpListener(LeftMouseUpCallback, this);
 		
-		rectangle = new Rectangle(osWindow, pos, size, props.color);
+		rectangle = new Rectangle(osWindow, RectangleProps(pos, size, props.color));
 	}
 
 
-	Text* Button::AddLabel(const char* string, const Vector2& labelPos,
-		const size_t fontSize, const Color& labelColor) {
-
-		assert(string != nullptr);
+	Text* Button::AddLabel(const std::string label, const Vector2& labelPos,
+	                       const size_t fontSize, const Color& labelColor) {
 
 		Vector2 globalPos(labelPos.x + pos.x, labelPos.y + pos.y);
-		label = new Text(osWindow, string, globalPos, fontSize, labelColor);
+		this->label = new Text(osWindow, TextProps(label, globalPos, fontSize, labelColor));
 
-		return label;
+		return this->label;
 	}
 
 
@@ -778,9 +909,9 @@ namespace GUI {
 	}
 
 
-	void Button::AddLeftMouseUpListener(void(*Listener)(void*), void* addParam) {
-		leftMouseUpListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
-	}
+	//void Button::AddLeftMouseUpListener(void(*Listener)(void*), void* addParam) {
+	//	leftMouseUpListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
+	//}
 
 
 	void Button::Draw() {
@@ -800,12 +931,8 @@ namespace GUI {
 
 	/* Graph implementation */
 
-	GraphProps::GraphProps(const int startX, const int rangeX, const int startY, const int rangeY)
-		: startX(startX), rangeX(rangeX), startY(startY), rangeY(rangeY) {}
-
-
 	Graph::Diagram::Diagram(Graph& graph, OSWindow& window, const size_t width, const Color& color)
-		: graph(graph), polyline(window, width, color) {}
+		: graph(graph), polyline(window, PolylineProps(width, color)) {}
 
 
 	void Graph::Diagram::AddData(int column, int value) {
@@ -830,7 +957,7 @@ namespace GUI {
 
 		const size_t axesWidth = 3;
 
-		background = new Rectangle(osWindow, pos, size, props.bgColor);
+		background = new Rectangle(osWindow, RectangleProps(pos, size, props.bgColor));
 
 		InitGraphParts();
 	}
@@ -891,7 +1018,7 @@ namespace GUI {
 
 		Vector2 innerEndPos(innerPos.x + innerSize.x, innerPos.y + innerSize.y);
 
-		axes = new Polyline(osWindow, props.axesWidth, props.axesColor);
+		axes = new Polyline(osWindow, PolylineProps(props.axesWidth, props.axesColor));
 		axes->AddVertex(Vector2(innerPos.x, innerPos.y));
 		axes->AddVertex(Vector2(innerPos.x - arrowSideOffset, innerPos.y));
 		axes->AddVertex(Vector2(innerPos.x, innerPos.y - arrowFrontOffset));
@@ -918,12 +1045,12 @@ namespace GUI {
 
 			int curYWindow = innerPos.y + innerSize.y - curY;
 
-			Text* curLabel = new Text(osWindow, itoa(curLabelVal, tempBuf, 10),
-				Vector2(pos.x, curYWindow), props.fontSize, props.fontColor);
+			Text* curLabel = new Text(osWindow, TextProps(itoa(curLabelVal, tempBuf, 10),
+				Vector2(pos.x, curYWindow), props.fontSize, props.fontColor));
 
-			Line* curHatch = new Line(osWindow, Vector2(innerPos.x, curYWindow + props.fontSize / 2),
+			Line* curHatch = new Line(osWindow, LineProps(Vector2(innerPos.x, curYWindow + props.fontSize / 2),
 				Vector2(innerPos.x - props.hatchSize, curYWindow + props.fontSize / 2),
-				props.axesWidth, props.axesColor);
+				props.axesWidth, props.axesColor));
 
 			labels.push_back(curLabel);
 			hatches.push_back(curHatch);
@@ -938,13 +1065,13 @@ namespace GUI {
 				props.rangeX + props.startX;
 
 			int curXWindow = innerPos.x + curX;
-			Text* curLabel = new Text(osWindow, itoa(curLabelVal, tempBuf, 10),
+			Text* curLabel = new Text(osWindow, TextProps(itoa(curLabelVal, tempBuf, 10),
 				Vector2(curXWindow, pos.y + size.y - props.fontSize),
-				props.fontSize, props.fontColor);
+				props.fontSize, props.fontColor));
 
-			Line* curHatch = new Line(osWindow, Vector2(curXWindow, innerPos.y + innerSize.y),
+			Line* curHatch = new Line(osWindow, LineProps(Vector2(curXWindow, innerPos.y + innerSize.y),
 				Vector2(curXWindow, innerPos.y + innerSize.y + props.hatchSize),
-				props.axesWidth, props.axesColor);
+				props.axesWidth, props.axesColor));
 
 			labels.push_back(curLabel);
 			hatches.push_back(curHatch);

@@ -5,6 +5,7 @@
 #include <set>
 #include <unordered_set>
 #include <map>
+#include <unordered_map>
 #include <assert.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -35,16 +36,6 @@ namespace GUI {
 		Vector2() = default;
 
 		Vector2(int x, int y);
-
-		int x = 0;
-		int y = 0;
-	};
-
-
-	struct WindowCoordinates {
-		WindowCoordinates() = default;
-
-		WindowCoordinates(int x, int y);
 
 		int x = 0;
 		int y = 0;
@@ -92,14 +83,93 @@ namespace GUI {
 	};
 
 
-
 	class OSWindow;
+	class Primitive;
 	class Line;
 	class Polyline;
 	class Rectangle;
 	class Text;
+	class Window;
+	class DesktopWindow;
 	class Button;
 	class Graph;
+
+
+	struct MouseProps {
+		enum Buttons {
+			unknown, left, right, middle
+		};
+
+		Vector2 pos;
+		Buttons button;
+	};
+
+
+	struct KeyProps {
+		enum Keys {
+			unknown,
+			q, w, e, r, t, y, u, i, o, p, a, s, d, f, g, h, j, k, l, z, x, c, v, b, n, m,
+			n0, n1, n2, n3, n4, n5, n6, n7, n8, n9,
+			ctr, alt, shift, space, tab, enter, backspace, caps,
+			num_lock, num0, num1, num2, num3, num4, num5, num6, num7, num8, num9, num_div,
+			num_mul, num_minus, num_plus, num_enter, num_comma,
+			escape, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12,
+			semicolon, quote, comma, period, slash, backslash, square_bracket_open, quare_bracket_close,
+			acute, hyphen, equal,
+			print_screen, scroll_lock, insert, del, home, end, page_up, page_down,
+			arrow_up, arrow_down, arros_left, arrow_right,
+		};
+
+		Keys key;
+	};
+
+
+	struct ScrollProps {
+		Vector2 offset;
+		Vector2 pos;
+	};
+
+
+	class Event {
+	public:
+
+		enum Type {
+			unknown,
+			mouse_down,
+			mouse_up,
+			key_down,
+			key_up,
+			key_repeat,
+			scroll,
+			window_close
+		};
+
+		Event(Type type);
+
+		Event(Type type, MouseProps& mouseProps);
+
+		Event(Type type, KeyProps& keyProps);
+
+		Event(Type type, ScrollProps& scrollProps);
+
+
+		union {
+			MouseProps mouseProps;
+			KeyProps keyProps;
+			ScrollProps scrollProps;
+		};
+
+		void Stop();
+
+		bool Stopped() const;
+
+		Type GetType() const;
+
+	private:
+
+		Type type;
+		bool stopped = false;
+	};
 
 
 	struct WindowProps {
@@ -136,7 +206,7 @@ namespace GUI {
 	struct PrimitiveProps {
 	public:
 
-		~PrimitiveProps() = default;
+		virtual ~PrimitiveProps() = default;
 	};
 
 
@@ -144,7 +214,7 @@ namespace GUI {
 	public:
 
 		LineProps(const Vector2& firstPoint = Vector2(10, 10), const Vector2& secondPoint = Vector2(100, 10),
-		          const size_t width = 1, const Color& color = Color(0, 0, 0));
+			const size_t width = 1, const Color& color = Color(0, 0, 0));
 
 		Vector2 firstPoint;
 		Vector2 secondPoint;
@@ -157,7 +227,7 @@ namespace GUI {
 	public:
 
 		PolylineProps(const std::vector<Vector2>& verteces,
-		              const size_t width = 1, const Color& color = Color(0, 0, 0));
+			const size_t width = 1, const Color& color = Color(0, 0, 0));
 
 		PolylineProps(const size_t width = 1, const Color& color = Color(0, 0, 0));
 
@@ -171,7 +241,7 @@ namespace GUI {
 	public:
 
 		RectangleProps(const Vector2& pos = Vector2(0, 0), const Vector2& size = Vector2(200, 100),
-		               const Color& color = Color(0, 0, 0));
+			const Color& color = Color(0, 0, 0));
 
 		Vector2 pos;
 		Vector2 size;
@@ -179,141 +249,21 @@ namespace GUI {
 	};
 
 
-
-	class Application {
+	struct TextProps : public PrimitiveProps {
 	public:
 
-		Application();
+		TextProps(const std::string& content = "text", const Vector2& pos = Vector2(0, 0),
+			const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
 
-		Application(const Application& other) = delete;
 
-		OSWindow* CreateWindow(const int width = 640, const int height = 420, const char* name = "Window",
-		                       const Color& backgroundColor = Color(0, 0, 0));
-
-		size_t WindowsOpened() const;
-
-		void CloseWindow(OSWindow* window);
-
-		void ProcessEventsWait() const;
-
-		void ProcessEvents() const;
-
-		~Application();
+		std::string content = nullptr;
+		Vector2 pos;
+		size_t fontSize;
+		Color color;
 
 	private:
 
-		std::set<OSWindow*> osWindows;
-	};
-
-
-	class OSWindow {
-	public:
-
-		OSWindow(Application& application, const int width = 640, const int height = 420,
-		         const char* name = "Window", const Color& desktopColor = Color(0, 0, 0));
-
-		OSWindow(const OSWindow& other) = delete;
-
-		size_t Width() const;
-
-		size_t Height() const;
-
-
-		/*Rectangle* CreateRectangle(const Vector2& pos = Vector2(0, 0),
-		                           const Vector2& size = Vector2(200, 100), const Color& color = Color(0, 0, 0));
-
-		Button* CreateButton(const Vector2& pos = Vector2(0, 0),
-		                     const Vector2& size = Vector2(100, 50), const Color& color = Color(0.7, 0.7, 0.7));
-
-		Line* CreateLine(const Vector2& begPos = Vector2(10, 10),
-		                 const Vector2& endPos = Vector2(100, 10),
-		                 const size_t width = 1, const Color& color = Color(0, 0, 0));
-
-		Polyline* CreatePolyline(const std::vector<Vector2>& verteces, const size_t width = 1,
-		                         const Color& color = Color(0, 0, 0));
-
-		Polyline* CreatePolyline(const size_t width = 1, const Color& color = Color(0, 0, 0));
-
-		Text* CreateText(const char* content, const Vector2& pos = Vector2(0, 0),
-		                 const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
-
-		Graph* CreateGraph(const GraphProps& props = GraphProps(),
-		                   const Vector2& pos = Vector2(0, 0),
-		                   const Vector2& size = Vector2(100, 100),
-		                   const Color& bgColor = Color(0.9, 0.9, 0.9));*/
-
-
-		void Update();
-
-		void SetActive() const;
-
-
-		void AddLeftMouseUpListener(void (*Listener)(void*), void* addParam);
-
-		void AddWindowCloseListener(void (*Listener)(void*), void* addParam);
-
-
-		WindowCoordinates CursorPos() const;
-
-
-		Application& GetApplication() const;
-
-		DesktopWindow* GetDesktop() const;
-
-
-		~OSWindow();
-
-
-	private:
-
-		static void LeftMouseUpCallback(GLFWwindow* glfwWindow, int button, int action, int mods) {
-			assert(glfwWindow != nullptr);
-
-			if (GLFW_MOUSE_BUTTON_LEFT == button && GLFW_RELEASE == action) {
-				OSWindow* window = static_cast<OSWindow*>(glfwGetWindowUserPointer(glfwWindow));
-				assert(window != nullptr);
-
-				for (int i = 0; i < window->leftMouseUpListeners.size(); ++i) {
-					std::pair<void (*)(void*), void*>& curListener = window->leftMouseUpListeners[i];
-					curListener.first(curListener.second);
-				}
-			}
-		}
-
-
-		static void WindowCloseCallback(GLFWwindow* glfwWindow) {
-			assert(glfwWindow != nullptr);
-
-			OSWindow* window = static_cast<OSWindow*>(glfwGetWindowUserPointer(glfwWindow));
-			assert(window != nullptr);
-
-			for (int i = 0; i < window->leftMouseUpListeners.size(); ++i) {
-				std::pair<void (*)(void*), void*>& curListener = window->windowCloseListeners[i];
-				curListener.first(curListener.second);
-			}
-		}
-
-
-		Application& application;
-
-		GLFWwindow* window = nullptr;
-
-		DesktopWindow* desktop = nullptr;
-
-		std::vector<Line*> lines;
-		std::vector<Polyline*> polylines;
-		std::vector<Rectangle*> rectangles;
-		std::vector<Text*> texts;
-		std::vector<Button*> buttons;
-		std::vector<Graph*> graphs;
-
-		// Second element will be tranfered to listener
-		std::vector<std::pair<void (*)(void*), void*>> leftMouseUpListeners;
-		std::vector<std::pair<void (*)(void*), void*>> windowCloseListeners;
-
-		size_t width = 0;
-		size_t height = 0;
-		char* name = nullptr;
+		int contentLen = 0;
 	};
 
 
@@ -328,57 +278,15 @@ namespace GUI {
 	};
 
 
-	class Window : public Element {
+	class Primitive : public Element {
 	public:
 
 		enum Type {
-			button,
-			graph
+			line,
+			polyline,
+			rectangle,
+			text
 		};
-
-		Window(OSWindow& osWindow, const Vector2& pos, const Vector2& size);
-
-		Window* CreateWindow(const Type type, const WindowProps& props, const Vector2& pos = Vector2(10, 10),
-		                     const Vector2& size = Vector2(100, 50));
-
-		Primitive* CreatePrimitive(const Primitive::Type type, const PrimitiveProps& props);
-
-		void RemoveWindow(Window* window);
-
-		virtual void Draw() = 0;
-
-		~Window();
-
-	protected:
-
-		void DrawInsides();
-
-		Vector2 pos;
-		Vector2 size;
-
-		std::unordered_set<Window*> windows;
-		std::unordered_set<Primitive*> primitives;
-	};
-
-
-	class DesktopWindow : public Window {
-	public:
-
-		DesktopWindow(OSWindow& osWindow, const Vector2 pos, const Vector2 size,
-		              const Color& color = Color(1, 1, 1));
-
-		DesktopWindow(const DesktopWindow& other) = delete;
-
-		virtual void Draw();
-
-	private:
-
-		Color color;
-	};
-
-
-	class Primitive : public Element {
-	public:
 
 		Primitive(OSWindow& osWindow);
 
@@ -437,12 +345,10 @@ namespace GUI {
 	class Text : public Primitive {
 	public:
 
-		Text(OSWindow& window, const char* string,
-		     const Vector2& pos = Vector2(0, 0), const size_t fontSize = 16,
-		     const Color& color = Color(0, 0, 0));
+		Text(OSWindow& window, const TextProps& props = TextProps());
 
 		Text(const Text& other) = delete;
-		
+
 		virtual void Draw();
 
 		~Text();
@@ -458,12 +364,7 @@ namespace GUI {
 		Vector2 BmpCharPos(const unsigned char ch) const;
 
 
-		char* content = nullptr;
-		int contentLen = 0;
-
-		Vector2 pos;
-		size_t fontSize;    // width in window pixels
-		Color color;
+		TextProps props;
 
 		static size_t instanceCount;
 		static BMP_Img* bitmapImg;
@@ -472,23 +373,86 @@ namespace GUI {
 	};
 
 
+	class Window : public Element {
+	public:
+
+		enum Type {
+			button,
+			graph
+		};
+
+		Window(OSWindow& osWindow, const Vector2& pos, const Vector2& size);
+
+		Window* CreateWindow(const Type type, const WindowProps& props, const Vector2& pos = Vector2(10, 10),
+			const Vector2& size = Vector2(100, 50));
+
+		Primitive* CreatePrimitive(const Primitive::Type type, const PrimitiveProps& props);
+
+		void RemoveWindow(Window* window);
+
+		virtual void Draw() = 0;
+
+
+		void AddEventListener(Event::Type type, void (*listener)(Event&, void*), void* additParam = nullptr);
+
+		void RemoveEventListener(Event::Type type, void(*listener)(Event&, void*));
+
+		void HandleEvent(Event& event);
+
+
+		~Window();
+
+	protected:
+
+		void DrawInsides();
+
+		Vector2 pos;
+		Vector2 size;
+
+		std::unordered_set<Window*> windows;
+		std::unordered_set<Primitive*> primitives;
+
+	private:
+
+		// Second element will be tranfered to listener
+		std::unordered_map<Event::Type,
+			std::set<std::pair<void (*)(Event&, void*), void*>>> eventsListeners;
+	};
+
+
+	class DesktopWindow : public Window {
+	public:
+
+		DesktopWindow(OSWindow& osWindow, const Vector2 pos, const Vector2 size,
+			const Color& color = Color(1, 1, 1));
+
+		DesktopWindow(const DesktopWindow& other) = delete;
+
+		virtual void Draw();
+
+	private:
+
+		Color color;
+	};
+
+
 	class Button : public Window {
 	public:
 
 		Button(OSWindow& window, const ButtonProps& buttonProps,
-		       const Vector2& pos, const Vector2& size);
+			const Vector2& pos, const Vector2& size);
 
 		Button(const Button& other) = delete;
 
-		Text* AddLabel(const char* label, const Vector2& labelPos = Vector2(10, 10),
-		               const size_t fontSize = 16, const Color& labelColor = Color(0, 0, 0));
+		Text* AddLabel(const std::string label, const Vector2& labelPos = Vector2(10, 10),
+			const size_t fontSize = 16, const Color& labelColor = Color(0, 0, 0));
 
 		Color GetColor() const;
 
 		virtual void Draw();
 
 
-		void AddLeftMouseUpListener(void (*Listener)(void*), void* addParam);
+		//void AddLeftMouseUpListener(void (*Listener)(void*), void* addParam);
 
 
 		~Button();
@@ -496,23 +460,23 @@ namespace GUI {
 
 	private:
 
-		static void LeftMouseUpCallback(void* buttonArg) {
-			assert(buttonArg != nullptr);
+		//static void LeftMouseUpCallback(void* buttonArg) {
+		//	assert(buttonArg != nullptr);
 
-			Button* button = static_cast<Button*>(buttonArg);
+		//	Button* button = static_cast<Button*>(buttonArg);
 
-			WindowCoordinates cursorPos = button->osWindow.CursorPos();
-			if (cursorPos.x >= button->pos.x && cursorPos.x <= button->pos.x + button->size.x &&
-				cursorPos.y >= button->pos.y && cursorPos.y <= button->pos.y + button->size.y) {
+		//	WindowCoordinates cursorPos = button->osWindow.CursorPos();
+		//	if (cursorPos.x >= button->pos.x && cursorPos.x <= button->pos.x + button->size.x &&
+		//		cursorPos.y >= button->pos.y && cursorPos.y <= button->pos.y + button->size.y) {
 
-				for (int i = 0; i < button->leftMouseUpListeners.size(); ++i) {
-					std::pair<void (*)(void*), void*>& curListener = button->leftMouseUpListeners[i];
-					curListener.first(curListener.second);
-				}
-			}
-		}
+		//		for (int i = 0; i < button->leftMouseUpListeners.size(); ++i) {
+		//			std::pair<void (*)(void*), void*>& curListener = button->leftMouseUpListeners[i];
+		//			curListener.first(curListener.second);
+		//		}
+		//	}
+		//}
 
-		std::vector<std::pair<void (*)(void*), void*>> leftMouseUpListeners;
+		//std::vector<std::pair<void (*)(void*), void*>> leftMouseUpListeners;
 
 		ButtonProps props;
 
@@ -528,7 +492,7 @@ namespace GUI {
 		public:
 
 			Diagram(Graph& graph, OSWindow& window, const size_t width = 1, const Color& color = Color(0, 0, 0));
-			
+
 			void AddData(int column, int value);
 
 			virtual void Draw();
@@ -552,13 +516,13 @@ namespace GUI {
 
 
 		Graph(OSWindow& window, const GraphProps& props,
-		      const Vector2& pos, const Vector2& size);
+			const Vector2& pos, const Vector2& size);
 
 		Graph(const Graph& other) = delete;
 
 
 		Diagram* CreateDiagram(const size_t lineWidth = 1, const Color& color = Color(0, 0, 0));
-		
+
 		void Draw();
 
 		~Graph();
@@ -583,5 +547,188 @@ namespace GUI {
 
 		Vector2 innerPos;    // Position without axes and labels
 		Vector2 innerSize;    // Size of graph without axes and labels
+	};
+
+
+	class Application {
+	public:
+
+		Application();
+
+		Application(const Application& other) = delete;
+
+		OSWindow* CreateWindow(const int width = 640, const int height = 420, const char* name = "Window",
+			const Color& backgroundColor = Color(0, 0, 0));
+
+		size_t WindowsOpened() const;
+
+		void CloseWindow(OSWindow* window);
+
+		void ProcessEventsWait() const;
+
+		void ProcessEvents() const;
+
+		~Application();
+
+	private:
+
+		std::unordered_set<OSWindow*> osWindows;
+	};
+
+
+	class OSWindow {
+	public:
+
+		OSWindow(Application& application, const int width = 640, const int height = 420,
+			const char* name = "Window", const Color& desktopColor = Color(0, 0, 0));
+
+		OSWindow(const OSWindow& other) = delete;
+
+		size_t Width() const;
+
+		size_t Height() const;
+
+
+		/*Rectangle* CreateRectangle(const Vector2& pos = Vector2(0, 0),
+								   const Vector2& size = Vector2(200, 100), const Color& color = Color(0, 0, 0));
+
+		Button* CreateButton(const Vector2& pos = Vector2(0, 0),
+							 const Vector2& size = Vector2(100, 50), const Color& color = Color(0.7, 0.7, 0.7));
+
+		Line* CreateLine(const Vector2& begPos = Vector2(10, 10),
+						 const Vector2& endPos = Vector2(100, 10),
+						 const size_t width = 1, const Color& color = Color(0, 0, 0));
+
+		Polyline* CreatePolyline(const std::vector<Vector2>& verteces, const size_t width = 1,
+								 const Color& color = Color(0, 0, 0));
+
+		Polyline* CreatePolyline(const size_t width = 1, const Color& color = Color(0, 0, 0));
+
+		Text* CreateText(const char* content, const Vector2& pos = Vector2(0, 0),
+						 const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
+
+		Graph* CreateGraph(const GraphProps& props = GraphProps(),
+						   const Vector2& pos = Vector2(0, 0),
+						   const Vector2& size = Vector2(100, 100),
+						   const Color& bgColor = Color(0.9, 0.9, 0.9));*/
+
+
+		void Update();
+
+		void SetActive() const;
+
+
+		Vector2 CursorPos() const;
+
+
+		Application& GetApplication() const;
+
+		DesktopWindow* GetDesktop() const;
+
+
+		~OSWindow();
+
+
+	private:
+
+		void InitCallbacks();
+
+		static void WindowCloseCallback(GLFWwindow* glfwWindow) {
+			assert(glfwWindow != nullptr);
+
+			OSWindow* window = static_cast<OSWindow*>(glfwGetWindowUserPointer(glfwWindow));
+			assert(window != nullptr);
+
+			Event closeEvent(Event::window_close);
+
+			if (!closeEvent.Stopped()) {
+				window->desktop->HandleEvent(closeEvent);
+			}
+		}
+
+
+		static void MouseButtonCallback(GLFWwindow* glfwWindow, int button, int action, int mods) {
+			assert(glfwWindow != nullptr);
+
+			OSWindow* window = static_cast<OSWindow*>(glfwGetWindowUserPointer(glfwWindow));
+			assert(window != nullptr);
+
+			MouseProps mouseProps{ window->CursorPos() };
+			switch (button) {
+			case GLFW_MOUSE_BUTTON_LEFT:
+				mouseProps.button = MouseProps::left;
+				break;
+
+			case GLFW_MOUSE_BUTTON_RIGHT:
+				mouseProps.button = MouseProps::right;
+				break;
+
+			case GLFW_MOUSE_BUTTON_MIDDLE:
+				mouseProps.button = MouseProps::middle;
+				break;
+
+			default:
+				mouseProps.button = MouseProps::unknown;
+			}
+
+			Event mouseEvent((GLFW_RELEASE == action ? Event::mouse_up : Event::mouse_down), mouseProps);
+
+			if (!mouseEvent.Stopped()) {
+				window->desktop->HandleEvent(mouseEvent);
+			}
+		}
+
+
+		static void KeyCallback(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods) {
+			assert(glfwWindow != nullptr);
+
+			OSWindow* window = static_cast<OSWindow*>(glfwGetWindowUserPointer(glfwWindow));
+			assert(window != nullptr);
+
+			KeyProps keyProps{ static_cast<KeyProps::Keys>(key) };
+
+			Event keyEvent((GLFW_RELEASE == action ? Event::key_up :
+			               (GLFW_PRESS == action ? Event::key_down : Event::key_repeat)),
+			               keyProps);
+
+			if (!keyEvent.Stopped()) {
+				window->desktop->HandleEvent(keyEvent);
+			}
+		}
+
+
+		static void ScrollCallback(GLFWwindow* glfwWindow, double xoffset, double yoffset) {
+			assert(glfwWindow != nullptr);
+
+			OSWindow* window = static_cast<OSWindow*>(glfwGetWindowUserPointer(glfwWindow));
+			assert(window != nullptr);
+
+			ScrollProps scrollProps{ Vector2(static_cast<int>(xoffset), static_cast<int>(yoffset)),
+									 window->CursorPos() };
+
+			Event scrollEvent(Event::scroll, scrollProps);
+
+			if (!scrollEvent.Stopped()) {
+				window->desktop->HandleEvent(scrollEvent);
+			}
+		}
+
+
+		Application& application;
+
+		GLFWwindow* glfwWindow = nullptr;
+
+		DesktopWindow* desktop = nullptr;
+
+		//std::vector<Line*> lines;
+		//std::vector<Polyline*> polylines;
+		//std::vector<Rectangle*> rectangles;
+		//std::vector<Text*> texts;
+		//std::vector<Button*> buttons;
+		//std::vector<Graph*> graphs;
+
+		size_t width = 0;
+		size_t height = 0;
+		char* name = nullptr;
 	};
 }
