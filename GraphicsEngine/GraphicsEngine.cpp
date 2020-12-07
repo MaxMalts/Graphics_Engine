@@ -167,17 +167,27 @@ namespace GUI {
 	}
 
 
-	Event::Event(Type type, MouseProps& mouseProps) : type(type), mouseProps(mouseProps) {
+	Event::Event(Type type, const MouseButtonProps& mouseButtonProps) : type(type), mouseButtonProps(mouseButtonProps) {
 		assert(mouse_up == type || mouse_down == type);
 	}
 
 
-	Event::Event(Type type, KeyProps& keyProps) : type(type), keyProps(keyProps) {
+	Event::Event(Type type, const MouseMoveProps& mouseMoveProps) : type(type), mouseMoveProps(mouseMoveProps) {
+		assert(mouse_move == type);
+	}
+
+
+	Event::Event(Type type, const MouseHoverProps& mouseHoverProps) : type(type), mouseHoverProps(mouseHoverProps) {
+		assert(mouse_hover == type);
+	}
+
+
+	Event::Event(Type type, const KeyProps& keyProps) : type(type), keyProps(keyProps) {
 		assert(key_up == type || key_down == type);
 	}
 
 
-	Event::Event(Type type, ScrollProps& scrollProps) : type(type), scrollProps(scrollProps) {
+	Event::Event(Type type, const ScrollProps& scrollProps) : type(type), scrollProps(scrollProps) {
 		assert(scroll == type);
 	}
 
@@ -452,6 +462,7 @@ namespace GUI {
 	void OSWindow::InitCallbacks() {
 		glfwSetWindowCloseCallback(glfwWindow, WindowCloseCallback);
 		glfwSetMouseButtonCallback(glfwWindow, MouseButtonCallback);
+		glfwSetCursorPosCallback(glfwWindow, MouseMoveCallback);
 		glfwSetKeyCallback(glfwWindow, KeyCallback);
 		glfwSetScrollCallback(glfwWindow, ScrollCallback);
 	}
@@ -584,12 +595,18 @@ namespace GUI {
 
 	void Window::HandleEvent(Event& event) {
 		Event::Type type = event.GetType();
-		if (Event::mouse_down == type || Event::mouse_up == type || Event::scroll == type) {
+		if (Event::mouse_down == type || Event::mouse_up == type ||
+		    Event::mouse_move == type || Event::scroll == type) {
+
 			Vector2 mousePos;
 			if (Event::scroll == type) {
 				mousePos = event.scrollProps.pos;
+			} else if (Event::mouse_move == type) {
+				mousePos = event.mouseMoveProps.pos;
+
+				HandleHoverEvent(event.mouseMoveProps);
 			} else {
-				 mousePos = event.mouseProps.pos;
+				mousePos = event.mouseButtonProps.pos;
 			}
 
 			if (mousePos.x >= pos.x && mousePos.x <= pos.x + size.x &&
@@ -639,6 +656,40 @@ namespace GUI {
 		}
 		for (Primitive* primitive : primitives) {
 			primitive->Draw();
+		}
+	}
+
+
+	void Window::HandleHoverEvent(const MouseMoveProps& mouseMoveProps) {
+		Vector2 mousePos = mouseMoveProps.pos;
+
+		bool hoverChanged = false;
+		MouseHoverProps hoverProps;
+		if (mousePos.x >= pos.x && mousePos.x <= pos.x + size.x &&
+			mousePos.y >= pos.y && mousePos.y <= pos.y + size.y) {
+			if (!hovered) {
+				hoverProps.hoverType = MouseHoverProps::HoverType::hovered;
+				hoverChanged = true;
+			}
+		} else {
+			if (hovered) {
+				hoverProps.hoverType = MouseHoverProps::HoverType::unhovered;
+				hoverChanged = true;
+			}
+		}
+
+		if (hoverChanged) {
+			hovered = !hovered;
+
+			Event hoverEvent(Event::Type::mouse_hover, hoverProps);
+
+			for (auto& curListener : eventsListeners[Event::Type::mouse_hover]) {
+				curListener.first(hoverEvent, curListener.second);
+
+				if (hoverEvent.Stopped()) {
+					return;
+				}
+			}
 		}
 	}
 

@@ -95,13 +95,28 @@ namespace GUI {
 	class Graph;
 
 
-	struct MouseProps {
+	struct MouseButtonProps {
 		enum Buttons {
 			unknown, left, right, middle
 		};
 
 		Vector2 pos;
 		Buttons button;
+	};
+
+
+	struct MouseMoveProps {
+		Vector2 pos;
+	};
+
+
+	struct MouseHoverProps {
+		enum HoverType {
+			unknown, hovered, unhovered
+		};
+
+		Vector2 pos;
+		HoverType hoverType;
 	};
 
 
@@ -137,6 +152,8 @@ namespace GUI {
 			unknown,
 			mouse_down,
 			mouse_up,
+			mouse_move,
+			mouse_hover,
 			key_down,
 			key_up,
 			key_repeat,
@@ -146,15 +163,21 @@ namespace GUI {
 
 		Event(Type type);
 
-		Event(Type type, MouseProps& mouseProps);
+		Event(Type type, const MouseButtonProps& mouseButtonProps);
 
-		Event(Type type, KeyProps& keyProps);
+		Event(Type type, const MouseMoveProps& mouseMoveProps);
 
-		Event(Type type, ScrollProps& scrollProps);
+		Event(Type type, const MouseHoverProps& mouseHoverProps);
+
+		Event(Type type, const KeyProps& keyProps);
+
+		Event(Type type, const ScrollProps& scrollProps);
 
 
 		union {
-			MouseProps mouseProps;
+			MouseButtonProps mouseButtonProps;
+			MouseMoveProps mouseMoveProps;
+			MouseHoverProps mouseHoverProps;
 			KeyProps keyProps;
 			ScrollProps scrollProps;
 		};
@@ -406,6 +429,10 @@ namespace GUI {
 
 		void DrawInsides();
 
+		void HandleHoverEvent(const MouseMoveProps& mouseMoveProps);
+
+		bool hovered = false;
+
 		Vector2 pos;
 		Vector2 size;
 
@@ -653,25 +680,41 @@ namespace GUI {
 			OSWindow* window = static_cast<OSWindow*>(glfwGetWindowUserPointer(glfwWindow));
 			assert(window != nullptr);
 
-			MouseProps mouseProps{ window->CursorPos() };
+			MouseButtonProps mouseProps{ window->CursorPos() };
 			switch (button) {
 			case GLFW_MOUSE_BUTTON_LEFT:
-				mouseProps.button = MouseProps::left;
+				mouseProps.button = MouseButtonProps::left;
 				break;
 
 			case GLFW_MOUSE_BUTTON_RIGHT:
-				mouseProps.button = MouseProps::right;
+				mouseProps.button = MouseButtonProps::right;
 				break;
 
 			case GLFW_MOUSE_BUTTON_MIDDLE:
-				mouseProps.button = MouseProps::middle;
+				mouseProps.button = MouseButtonProps::middle;
 				break;
 
 			default:
-				mouseProps.button = MouseProps::unknown;
+				mouseProps.button = MouseButtonProps::unknown;
 			}
 
 			Event mouseEvent((GLFW_RELEASE == action ? Event::mouse_up : Event::mouse_down), mouseProps);
+
+			if (!mouseEvent.Stopped()) {
+				window->desktop->HandleEvent(mouseEvent);
+			}
+		}
+
+
+		static void MouseMoveCallback(GLFWwindow* glfwWindow, double xpos, double ypos) {
+			assert(glfwWindow != nullptr);
+
+			OSWindow* window = static_cast<OSWindow*>(glfwGetWindowUserPointer(glfwWindow));
+			assert(window != nullptr);
+
+			MouseMoveProps mousePosProps{ window->CursorPos() };
+
+			Event mouseEvent(Event::mouse_move, mousePosProps);
 
 			if (!mouseEvent.Stopped()) {
 				window->desktop->HandleEvent(mouseEvent);
