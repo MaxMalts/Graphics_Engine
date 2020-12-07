@@ -13,27 +13,117 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\GraphicsEngine">
+      <UniqueIdentifier>{3a14d203-6204-4670-a0c2-617fb95b07b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphicsEngine\Primitives">
+      <UniqueIdentifier>{6d4104d5-3d74-4a91-87e1-74ff45157a74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphicsEngine\Windows">
+      <UniqueIdentifier>{99c91be2-0a6c-496e-b394-97ac10b97721}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsEngine">
+      <UniqueIdentifier>{d5da5107-9e43-4a4b-8bdc-227faaa12cf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsEngine\Windows">
+      <UniqueIdentifier>{f3398a54-d696-4d71-b1ec-00caf3154713}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsEngine\Primitives">
+      <UniqueIdentifier>{7ca228c8-7f70-4ada-aaf0-8adb442f27b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\GraphicsEngine\BMP_Img\BMP_Img.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Application.cpp">
+      <Filter>Source Files\GraphicsEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\GraphicsEngine\GraphicsEngine.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\GraphicsEngine\BMP_Img\BMP_Img.cpp">
+      <Filter>Source Files\GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Common.cpp">
+      <Filter>Source Files\GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Event.cpp">
+      <Filter>Source Files\GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Button.cpp">
+      <Filter>Source Files\GraphicsEngine\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Graph.cpp">
+      <Filter>Source Files\GraphicsEngine\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Window.cpp">
+      <Filter>Source Files\GraphicsEngine\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Line.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Polyline.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Rectangle.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Text.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Desktop.cpp">
+      <Filter>Source Files\GraphicsEngine\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Primitive.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Extra.cpp">
+      <Filter>Source Files\GraphicsEngine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\GraphicsEngine\GraphicsEngine.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Line.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Polyline.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Rectangle.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Text.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Application.h">
+      <Filter>Header Files\GraphicsEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\GraphicsEngine\BMP_Img\BMP_Img.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GraphicsEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\SortsAnalyzer\Sorts.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Common.h">
+      <Filter>Header Files\GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Event.h">
+      <Filter>Header Files\GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\GraphicsEngine.h">
+      <Filter>Header Files\GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Primitive.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Button.h">
+      <Filter>Header Files\GraphicsEngine\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Desktop.h">
+      <Filter>Header Files\GraphicsEngine\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Graph.h">
+      <Filter>Header Files\GraphicsEngine\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Window.h">
+      <Filter>Header Files\GraphicsEngine\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Extra.h">
+      <Filter>Header Files\GraphicsEngine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -32,6 +32,7 @@ void MoveListener(GUI::Event& event, void*) {
 
 
 int main() {
+	GUI::Text::SetFontFile("../Fonts/Ascii.bmp");
 
 	GUI::Application app;
 	GUI::OSWindow* window = app.CreateWindow(1080, 720, "Hello", GUI::Color("green"));
@@ -65,7 +66,6 @@ int main() {
 	diag->AddData(100 - 100, 100 - 50);
 
 	desktop->AddEventListener(GUI::Event::window_close, CloseWindow, window);
-	//button->AddLeftMouseUpListener(TestFunc, window);
 
 	double prevTime = glfwGetTime();
 	while (app.WindowsOpened() > 0) {
