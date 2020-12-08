@@ -48,4 +48,16 @@ namespace GUI {
 	Event::Type Event::GetType() const {
 		return type;
 	}
+
+
+	Window* Event::GetTarget() const {
+		return target;
+	}
+
+
+	void Event::SetTarget(Window* newTarget) {
+		assert(newTarget != nullptr);
+
+		target = newTarget;
+	}
 }

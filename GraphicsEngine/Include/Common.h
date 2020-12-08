@@ -78,6 +78,8 @@ namespace GUI {
 
 		Element(OSWindow& osWindow);
 
+		OSWindow& GetOSWindow() const;
+
 	protected:
 
 		OSWindow& osWindow;

@@ -4,13 +4,6 @@
 
 
 
-void CloseWindow(GUI::Event& closeEvent, void* voidWindow) {
-	GUI::OSWindow* window = static_cast<GUI::OSWindow*>(voidWindow);
-	window->GetApplication().CloseWindow(window);
-	closeEvent.Stop();
-}
-
-
 void MousedownListener(GUI::Event& event, void*) {
 	std::cout << "clicked\n";
 }
@@ -65,7 +58,7 @@ int main() {
 	diag1->AddData(1 - 100, 1 - 50);
 	diag->AddData(100 - 100, 100 - 50);
 
-	desktop->AddEventListener(GUI::Event::window_close, CloseWindow, window);
+	desktop->AddEventListener(GUI::Event::window_close, GUI::CloseWindow);
 
 	double prevTime = glfwGetTime();
 	while (app.WindowsOpened() > 0) {

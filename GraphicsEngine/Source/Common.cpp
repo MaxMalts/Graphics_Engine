@@ -126,4 +126,10 @@ namespace GUI {
 	/* Element */
 
 	Element::Element(OSWindow& osWindow) : osWindow(osWindow) {}
+
+
+	OSWindow& Element::GetOSWindow() const {
+		return osWindow;
+	}
+
 }

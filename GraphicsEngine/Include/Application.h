@@ -22,11 +22,13 @@ namespace GUI {
 		Application(const Application& other) = delete;
 
 		OSWindow* CreateWindow(const int width = 640, const int height = 420, const char* name = "Window",
-			const Color& backgroundColor = Color(0, 0, 0));
+		                       const Color& backgroundColor = Color(0, 0, 0));
 
 		size_t WindowsOpened() const;
 
 		void CloseWindow(OSWindow* window);
+
+		void CloseWindow(OSWindow& window);
 
 		void ProcessEventsWait() const;
 
@@ -44,7 +46,7 @@ namespace GUI {
 	public:
 
 		OSWindow(Application& application, const int width = 640, const int height = 420,
-			const char* name = "Window", const Color& desktopColor = Color(0, 0, 0));
+		         const char* name = "Window", const Color& desktopColor = Color(0, 0, 0));
 
 		OSWindow(const OSWindow& other) = delete;
 

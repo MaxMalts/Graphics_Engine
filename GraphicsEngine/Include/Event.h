@@ -5,6 +5,7 @@
 
 
 namespace GUI {
+
 	struct MouseButtonProps {
 		enum Buttons {
 			unknown, left, right, middle
@@ -55,6 +56,8 @@ namespace GUI {
 	};
 
 
+	class Window;
+
 	class Event {
 	public:
 
@@ -98,9 +101,18 @@ namespace GUI {
 
 		Type GetType() const;
 
+		Window* GetTarget() const;
+
 	private:
 
-		Type type;
+		void SetTarget(Window* newTarget);
+
+
+		Type type = unknown;
+		Window* target = nullptr;
 		bool stopped = false;
+
+
+		friend class Window;
 	};
 }

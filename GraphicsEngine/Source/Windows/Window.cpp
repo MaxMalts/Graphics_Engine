@@ -123,7 +123,9 @@ namespace GUI {
 	}
 
 
-	void Window::HandleEvent(Event& event) {
+	void Window::HandleEvent(Event event) {
+		event.SetTarget(this);
+
 		Event::Type type = event.GetType();
 		if (Event::mouse_down == type || Event::mouse_up == type ||
 		    Event::mouse_move == type || Event::scroll == type) {
@@ -170,16 +172,6 @@ namespace GUI {
 	}
 
 
-	Window::~Window() {
-		for (Window* window : windows) {
-			delete window;
-		}
-		for (Primitive* primitive : primitives) {
-			delete primitive;
-		}
-	}
-
-
 	void Window::DrawInsides() {
 		for (Window* window : windows) {
 			window->Draw();
@@ -220,6 +212,16 @@ namespace GUI {
 					return;
 				}
 			}
+		}
+	}
+
+
+	Window::~Window() {
+		for (Window* window : windows) {
+			delete window;
+		}
+		for (Primitive* primitive : primitives) {
+			delete primitive;
 		}
 	}
 }

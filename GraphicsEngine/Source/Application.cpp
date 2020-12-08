@@ -38,15 +38,21 @@ namespace GUI {
 
 
 	void Application::CloseWindow(OSWindow* window) {
-		if (window == nullptr)
+		if (window == nullptr) {
 			return;
+		}
 
 		std::unordered_set<OSWindow*>::iterator windowIter = osWindows.find(window);
-		if (osWindows.end() == windowIter)
+		if (osWindows.end() == windowIter) {
 			throw std::invalid_argument("Passed window not found.");
+		}
 
 		delete *windowIter;
 		osWindows.erase(windowIter);
+	}
+
+	void Application::CloseWindow(OSWindow& window) {
+		CloseWindow(&window);
 	}
 
 

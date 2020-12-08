@@ -8,7 +8,14 @@
 
 namespace GUI {
 
-	DesktopWindow::DesktopWindow(OSWindow& osWindow, const Vector2 pos, const Vector2 size, const Color& color)
+	void CloseWindow(GUI::Event& closeEvent, void*) {
+		GUI::OSWindow& window = closeEvent.GetTarget()->GetOSWindow();
+		window.GetApplication().CloseWindow(window);
+		closeEvent.Stop();
+	}
+
+
+	DesktopWindow::DesktopWindow(OSWindow& osWindow, const Vector2& pos, const Vector2& size, const Color& color)
 		: Window(osWindow, pos, size), color(color) {}
 
 
