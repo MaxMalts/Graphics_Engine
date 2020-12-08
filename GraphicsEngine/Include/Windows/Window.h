@@ -47,6 +47,11 @@ namespace GUI {
 		void HandleEvent(Event event);
 
 
+		size_t Width() const;
+
+		size_t Height() const;
+
+
 		~Window();
 
 	protected:

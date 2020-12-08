@@ -172,6 +172,16 @@ namespace GUI {
 	}
 
 
+	size_t Window::Width() const {
+		return size.x;
+	}
+
+
+	size_t Window::Height() const {
+		return size.y;
+	}
+
+
 	void Window::DrawInsides() {
 		for (Window* window : windows) {
 			window->Draw();

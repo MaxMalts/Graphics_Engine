@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <unordered_set>
 #include <algorithm>
 
 #include "Include\Extra.h"
@@ -56,11 +57,24 @@ namespace GUI {
 	Graph::Diagram::DiagramData::DiagramData(int column, int value) : column(column), value(value) {}
 
 	Graph::Diagram* Graph::CreateDiagram(const size_t lineWidth, const Color& color) {
+
 		Diagram* newDiag = new Diagram(*this, osWindow, lineWidth, color);
 
 		diagrams.push_back(newDiag);
 
 		return newDiag;
+	}
+
+	void Graph::RemoveDiargam(Diagram* diagram) {
+		if (diagram == nullptr) {
+			return;
+		}
+
+		std::list<Diagram*>::iterator diagIter = std::find(diagrams.begin(), diagrams.end(), diagram);
+		if (diagIter != diagrams.end()) {
+			delete diagram;
+			diagrams.erase(diagIter);
+		}
 	}
 
 
@@ -166,23 +180,26 @@ namespace GUI {
 		background->Draw();
 		axes->Draw();
 
-		for (int i = 0; i < diagrams.size(); ++i)
-			diagrams[i]->Draw();
+		for (auto curDiagram : diagrams) {
+			curDiagram->Draw();
+		}
 
-		for (int i = 0; i < labels.size(); ++i)
+		for (int i = 0; i < labels.size(); ++i) {
 			labels[i]->Draw();
+		}
 
-		for (int i = 0; i < hatches.size(); ++i)
+		for (int i = 0; i < hatches.size(); ++i) {
 			hatches[i]->Draw();
+		}
 	}
 
 
 	Graph::~Graph() {
 		delete axes;
 		delete background;
-		DeleteArrayElements(labels);
-		DeleteArrayElements(hatches);
+		DeleteConatinerElements(labels);
+		DeleteConatinerElements(hatches);
 
-		DeleteArrayElements(diagrams);
+		DeleteConatinerElements(diagrams);
 	}
 }

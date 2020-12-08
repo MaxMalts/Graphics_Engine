@@ -146,12 +146,37 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\GraphicsEngine\BMP_Img\BMP_Img.cpp" />
-    <ClCompile Include="..\..\GraphicsEngine\GraphicsEngine.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Application.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Common.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Event.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Extra.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Line.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Polyline.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Primitive.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Rectangle.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Text.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Button.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Desktop.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Graph.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Window.cpp" />
     <ClCompile Include="SortsAnalyzer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\GraphicsEngine\BMP_Img\BMP_Img.h" />
     <ClInclude Include="..\..\GraphicsEngine\GraphicsEngine.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Application.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Common.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Event.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Extra.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Line.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Polyline.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Primitive.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Rectangle.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Text.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Button.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Desktop.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Graph.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Window.h" />
     <ClInclude Include="Sorts.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

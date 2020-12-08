@@ -8,10 +8,10 @@
 
 namespace GUI {
 
-	template<typename Arr>
-	void DeleteArrayElements(Arr arr) {
-		for (int i = 0; i < arr.size(); ++i) {
-			delete arr[i];
+	template<typename Container>
+	void DeleteConatinerElements(Container container) {
+		for (auto curElem : container) {
+			delete curElem;
 		}
 	}
 

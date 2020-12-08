@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include "Include\Common.h"
 #include "Include\Application.h"
 #include "Window.h"
@@ -37,6 +38,8 @@ namespace GUI {
 
 			virtual void Draw();
 
+			~Diagram() = default;
+
 		private:
 
 			Graph& graph;
@@ -63,6 +66,8 @@ namespace GUI {
 
 		Diagram* CreateDiagram(const size_t lineWidth = 1, const Color& color = Color(0, 0, 0));
 
+		void RemoveDiargam(Diagram* diagram);
+
 		void Draw();
 
 		~Graph();
@@ -78,7 +83,7 @@ namespace GUI {
 
 		GraphProps props;
 
-		std::vector<Diagram*> diagrams;
+		std::list<Diagram*> diagrams;
 
 		Rectangle* background = nullptr;
 		Polyline* axes = nullptr;
