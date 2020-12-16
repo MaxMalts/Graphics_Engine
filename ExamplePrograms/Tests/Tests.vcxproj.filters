@@ -78,6 +78,12 @@
     <ClCompile Include="..\..\GraphicsEngine\Source\Extra.cpp">
       <Filter>Source Files\GraphicsEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Container.cpp">
+      <Filter>Source Files\GraphicsEngine\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Image.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Line.h">
@@ -124,6 +130,12 @@
     </ClInclude>
     <ClInclude Include="..\..\GraphicsEngine\Include\Extra.h">
       <Filter>Header Files\GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Container.h">
+      <Filter>Header Files\GraphicsEngine\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Image.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

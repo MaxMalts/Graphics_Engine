@@ -13,13 +13,12 @@ namespace GUI {
 		: firstPoint(firstPoint), secondPoint(secondPoint), width(width), color(color) {}
 
 	
-	Line::Line(OSWindow& osWindow, const LineProps& props)
-		: Primitive(osWindow), props(props) {}
+	Line::Line(Window& window, const LineProps& props) : Primitive(window), props(props) {}
 
 
 	void Line::Draw() {
-		GlCoordinates begPosGl = OSWindowToGlCoords(osWindow, props.firstPoint);
-		GlCoordinates endPosGl = OSWindowToGlCoords(osWindow, props.secondPoint);
+		GlCoordinates begPosGl = OSWindowToGlCoords(osWindow, RelToAbsCoords(props.firstPoint));
+		GlCoordinates endPosGl = OSWindowToGlCoords(osWindow, RelToAbsCoords(props.secondPoint));
 
 		osWindow.SetActive();
 

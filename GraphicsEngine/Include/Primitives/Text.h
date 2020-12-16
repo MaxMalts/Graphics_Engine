@@ -3,17 +3,17 @@
 #include <string>
 #include "BMP_Img\BMP_Img.h"
 #include "Include\Common.h"
-#include "Include\Application.h"
 #include "Primitive.h"
 
 
 
 namespace GUI {
+
 	struct TextProps : public PrimitiveProps {
 	public:
 
 		TextProps(const std::string& content = "text", const Vector2& pos = Vector2(0, 0),
-			const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
+		          const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
 
 
 		std::string content = nullptr;
@@ -30,7 +30,7 @@ namespace GUI {
 	class Text : public Primitive {
 	public:
 
-		Text(OSWindow& window, const TextProps& props = TextProps());
+		Text(Window& window, const TextProps& props = TextProps());
 
 		Text(const Text& other) = delete;
 

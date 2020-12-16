@@ -22,7 +22,7 @@ namespace GUI {
 	size_t Text::charWidth = 0;
 	size_t Text::charHeight = 0;
 
-	Text::Text(OSWindow& osWindow, const TextProps& props) : Primitive(osWindow), props(props) {
+	Text::Text(Window& window, const TextProps& props) : Primitive(window), props(props) {
 
 		if (0 == instanceCount) {
 			const size_t charWidth = 16;
@@ -35,8 +35,8 @@ namespace GUI {
 	}
 
 
-	void Text::DrawChar(const char ch, const Vector2& pos) {
-		//GlCoordinates glPos = WindowToGlCoords(window, pos);
+	void Text::DrawChar(const char ch, const Vector2& absPos) {
+		//GlCoordinates glPos = WindowToGlCoords(window, absPos);
 		//glRasterPos2f(glPos.x, glPos.y);
 
 		Vector2 bmpCharPos = BmpCharPos(ch);
@@ -68,8 +68,8 @@ namespace GUI {
 
 				if (curPx != 0) {
 					GlCoordinates curPos =
-						OSWindowToGlCoords(osWindow, Vector2(pos.x + curX,
-						                                     pos.y + charHeight * scale - 1 - curY));
+						OSWindowToGlCoords(osWindow, Vector2(absPos.x + curX,
+						                                     absPos.y + charHeight * scale - 1 - curY));
 
 					glVertex2f(curPos.x, curPos.y);
 				}
@@ -83,7 +83,7 @@ namespace GUI {
 	void Text::Draw() {
 		osWindow.SetActive();
 
-		Vector2 curPos(props.pos.x, props.pos.y);
+		Vector2 curPos(RelToAbsCoords(props.pos));
 		for (int i = 0; i < props.content.size(); ++i) {
 			char curChar = props.content[i];
 

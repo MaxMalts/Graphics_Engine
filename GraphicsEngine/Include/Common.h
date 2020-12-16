@@ -25,6 +25,10 @@ namespace GUI {
 
 		Vector2(int x, int y);
 
+		Vector2 operator+(const Vector2& right) const;
+
+		Vector2 operator-(const Vector2& right) const;
+
 		int x = 0;
 		int y = 0;
 	};

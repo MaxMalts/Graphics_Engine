@@ -23,7 +23,7 @@ namespace GUI {
 
 
 	Graph::Diagram::Diagram(Graph& graph, OSWindow& window, const size_t width, const Color& color)
-		: graph(graph), polyline(window, PolylineProps(width, color)) {}
+		: graph(graph), polyline(graph, PolylineProps(width, color)) {}
 
 
 	void Graph::Diagram::AddData(int column, int value) {
@@ -34,7 +34,7 @@ namespace GUI {
 			(value - graph.props.startY) / static_cast<float>(graph.props.rangeY) * graph.innerSize.y;
 
 		data.push_back(DiagramData(column, value));
-		polyline.AddVertex(Vector2(curVertexX, curVertexY));
+		polyline.AddVertex(Vector2(curVertexX, curVertexY) - graph.pos);
 	}
 
 
@@ -48,7 +48,7 @@ namespace GUI {
 
 		const size_t axesWidth = 3;
 
-		background = new Rectangle(osWindow, RectangleProps(pos, size, props.bgColor));
+		background = new Rectangle(*this, RectangleProps(Vector2(0, 0), size, props.bgColor));
 
 		InitGraphParts();
 	}
@@ -112,19 +112,19 @@ namespace GUI {
 
 		Vector2 innerEndPos(innerPos.x + innerSize.x, innerPos.y + innerSize.y);
 
-		axes = new Polyline(osWindow, PolylineProps(props.axesWidth, props.axesColor));
-		axes->AddVertex(Vector2(innerPos.x, innerPos.y));
-		axes->AddVertex(Vector2(innerPos.x - arrowSideOffset, innerPos.y));
-		axes->AddVertex(Vector2(innerPos.x, innerPos.y - arrowFrontOffset));
-		axes->AddVertex(Vector2(innerPos.x + arrowSideOffset, innerPos.y));
-		axes->AddVertex(Vector2(innerPos.x, innerPos.y));
-		axes->AddVertex(Vector2(innerPos.x, innerEndPos.y));
+		axes = new Polyline(*this, PolylineProps(props.axesWidth, props.axesColor));
+		axes->AddVertex(Vector2(innerPos.x, innerPos.y) - pos);
+		axes->AddVertex(Vector2(innerPos.x - arrowSideOffset, innerPos.y) - pos);
+		axes->AddVertex(Vector2(innerPos.x, innerPos.y - arrowFrontOffset) - pos);
+		axes->AddVertex(Vector2(innerPos.x + arrowSideOffset, innerPos.y) - pos);
+		axes->AddVertex(Vector2(innerPos.x, innerPos.y) - pos);
+		axes->AddVertex(Vector2(innerPos.x, innerEndPos.y) - pos);
 
-		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y));
-		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y - arrowSideOffset));
-		axes->AddVertex(Vector2(innerEndPos.x + arrowFrontOffset, innerEndPos.y));
-		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y + arrowSideOffset));
-		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y));
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y) - pos);
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y - arrowSideOffset) - pos);
+		axes->AddVertex(Vector2(innerEndPos.x + arrowFrontOffset, innerEndPos.y) - pos);
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y + arrowSideOffset) - pos);
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y) - pos);
 	}
 
 
@@ -139,11 +139,11 @@ namespace GUI {
 
 			int curYWindow = innerPos.y + innerSize.y - curY;
 
-			Text* curLabel = new Text(osWindow, TextProps(itoa(curLabelVal, tempBuf, 10),
-				Vector2(pos.x, curYWindow), props.fontSize, props.fontColor));
+			Text* curLabel = new Text(*this, TextProps(itoa(curLabelVal, tempBuf, 10),
+				Vector2(pos.x, curYWindow) - pos, props.fontSize, props.fontColor));
 
-			Line* curHatch = new Line(osWindow, LineProps(Vector2(innerPos.x, curYWindow + props.fontSize / 2),
-				Vector2(innerPos.x - props.hatchSize, curYWindow + props.fontSize / 2),
+			Line* curHatch = new Line(*this, LineProps(Vector2(innerPos.x, curYWindow + props.fontSize / 2) - pos,
+				Vector2(innerPos.x - props.hatchSize, curYWindow + props.fontSize / 2) - pos,
 				props.axesWidth, props.axesColor));
 
 			labels.push_back(curLabel);
@@ -159,12 +159,12 @@ namespace GUI {
 				props.rangeX + props.startX;
 
 			int curXWindow = innerPos.x + curX;
-			Text* curLabel = new Text(osWindow, TextProps(itoa(curLabelVal, tempBuf, 10),
-				Vector2(curXWindow, pos.y + size.y - props.fontSize),
+			Text* curLabel = new Text(*this, TextProps(itoa(curLabelVal, tempBuf, 10),
+				Vector2(curXWindow, pos.y + size.y - props.fontSize) - pos,
 				props.fontSize, props.fontColor));
 
-			Line* curHatch = new Line(osWindow, LineProps(Vector2(curXWindow, innerPos.y + innerSize.y),
-				Vector2(curXWindow, innerPos.y + innerSize.y + props.hatchSize),
+			Line* curHatch = new Line(*this, LineProps(Vector2(curXWindow, innerPos.y + innerSize.y) - pos,
+				Vector2(curXWindow, innerPos.y + innerSize.y + props.hatchSize) - pos,
 				props.axesWidth, props.axesColor));
 
 			labels.push_back(curLabel);
@@ -191,6 +191,8 @@ namespace GUI {
 		for (int i = 0; i < hatches.size(); ++i) {
 			hatches[i]->Draw();
 		}
+
+		DrawInsides();
 	}
 
 

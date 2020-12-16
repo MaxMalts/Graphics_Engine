@@ -16,15 +16,14 @@ namespace GUI {
 	               const Vector2& pos, const Vector2& size)
 		: Window(osWindow, pos, size), props(props) {
 		
-		rectangle = new Rectangle(osWindow, RectangleProps(pos, size, props.color));
+		rectangle = new Rectangle(*this, RectangleProps(Vector2(0, 0), size, props.color));
 	}
 
 
 	Text* Button::AddLabel(const std::string label, const Vector2& labelPos,
 	                       const size_t fontSize, const Color& labelColor) {
 
-		Vector2 globalPos(labelPos.x + pos.x, labelPos.y + pos.y);
-		this->label = new Text(osWindow, TextProps(label, globalPos, fontSize, labelColor));
+		this->label = new Text(*this, TextProps(label, labelPos, fontSize, labelColor));
 
 		return this->label;
 	}
@@ -45,6 +44,8 @@ namespace GUI {
 
 		rectangle->Draw();
 		label->Draw();
+
+		DrawInsides();
 	}
 
 

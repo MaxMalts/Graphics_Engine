@@ -24,6 +24,7 @@ namespace GUI {
 	public:
 
 		enum Type {
+			container,
 			button,
 			graph
 		};
@@ -50,6 +51,8 @@ namespace GUI {
 		size_t Width() const;
 
 		size_t Height() const;
+
+		Vector2 Pos() const;
 
 
 		~Window();

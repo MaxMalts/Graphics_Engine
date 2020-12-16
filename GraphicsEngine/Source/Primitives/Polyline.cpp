@@ -17,8 +17,8 @@ namespace GUI {
 	PolylineProps::PolylineProps(const size_t width, const Color& color) : width(width), color(color) {}
 
 
-	Polyline::Polyline(OSWindow& osWindow, const PolylineProps props)
-		: Primitive(osWindow), props(props) {}
+	Polyline::Polyline(Window& window, const PolylineProps props)
+		: Primitive(window), props(props) {}
 
 
 	void Polyline::Draw() {
@@ -30,7 +30,7 @@ namespace GUI {
 
 			glBegin(GL_LINE_STRIP);
 			for (int i = 0; i < props.verteces.size(); ++i) {
-				GlCoordinates curGlCoords = OSWindowToGlCoords(osWindow, props.verteces[i]);
+				GlCoordinates curGlCoords = OSWindowToGlCoords(osWindow, RelToAbsCoords(props.verteces[i]));
 				glVertex2f(curGlCoords.x, curGlCoords.y);
 			}
 			glEnd();

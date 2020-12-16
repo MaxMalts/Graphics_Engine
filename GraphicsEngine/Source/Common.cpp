@@ -37,6 +37,15 @@ namespace GUI {
 	Vector2::Vector2(int x, int y) : x(x), y(y) {}
 
 
+	Vector2 Vector2::operator+(const Vector2& right) const {
+		return Vector2(x + right.x, y + right.y);
+	}
+
+	Vector2 Vector2::operator-(const Vector2& right) const {
+		return Vector2(x - right.x, y - right.y);
+	}
+
+
 
 	/* Color */
 

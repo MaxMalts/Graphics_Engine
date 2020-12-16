@@ -31,17 +31,21 @@ int main() {
 	GUI::OSWindow* window = app.CreateWindow(1080, 720, "Hello", GUI::Color("green"));
 	GUI::DesktopWindow* desktop = window->GetDesktop();
 
+
 	GUI::Line* line = dynamic_cast<GUI::Line*>(desktop->CreatePrimitive(GUI::Primitive::Type::line,
 		GUI::LineProps(GUI::Vector2(500, 500), GUI::Vector2(1000, 100), 5, GUI::Color("black"))));
 
+
 	GUI::Text* text = dynamic_cast<GUI::Text*>(desktop->CreatePrimitive(GUI::Primitive::Type::text,
 		GUI::TextProps("Test text", GUI::Vector2(50, 100), 32, GUI::Color("green"))));
+
 
 	GUI::Button* button = dynamic_cast<GUI::Button*>(desktop->CreateWindow(GUI::Window::Type::button,
 		GUI::ButtonProps(), GUI::Vector2(50, 50)));
 	button->AddLabel("test", GUI::Vector2(10, 10), 30, GUI::Color("red"));
 	button->AddEventListener(GUI::Event::mouse_down, MousedownListener);
 	button->AddEventListener(GUI::Event::mouse_hover, HoverListener);
+
 
 	GUI::GraphProps props(-100, 100, -50, 100);
 	props.axesWidth = 3;
@@ -58,6 +62,15 @@ int main() {
 	diag1->AddData(1 - 100, 1 - 50);
 	diag->AddData(100 - 100, 100 - 50);
 
+
+	GUI::Container* container = dynamic_cast<GUI::Container*>(graph->CreateWindow(GUI::Window::container,
+		GUI::ContainerProps()));
+	container->CreatePrimitive(GUI::Primitive::rectangle, GUI::RectangleProps());
+
+
+	desktop->CreatePrimitive(GUI::Primitive::image, GUI::ImageProps("Cat.bmp", GUI::Vector2(750, 720 - 94)));
+
+
 	desktop->AddEventListener(GUI::Event::window_close, GUI::CloseWindow);
 
 	double prevTime = glfwGetTime();
@@ -65,7 +78,7 @@ int main() {
 		desktop->Draw();
 		app.ProcessEvents();
 		double curTime = glfwGetTime();
-		//std::cout << 1 / (curTime - prevTime) << '\n';
+		std::cout << 1 / (curTime - prevTime) << '\n';
 		prevTime = curTime;
 	}
 

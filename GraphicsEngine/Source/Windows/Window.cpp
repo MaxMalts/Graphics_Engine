@@ -11,8 +11,10 @@
 #include "Include\Primitives\Polyline.h"
 #include "Include\Primitives\Rectangle.h"
 #include "Include\Primitives\Text.h"
+#include "Include\Primitives\Image.h"
 
 #include "Include\Windows\Window.h"
+#include "Include\Windows\Container.h"
 #include "Include\Windows\Button.h"
 #include "Include\Windows\Graph.h"
 
@@ -27,13 +29,23 @@ namespace GUI {
 	Window* Window::CreateWindow(const Type type, const WindowProps& props,
 	                             const Vector2& pos, const Vector2& size) {
 
+		Vector2 absPos = pos + this->pos;
 		Window* newWindow = nullptr;
 
 		try {
 			switch (type) {
+			case container:
+				try {
+					newWindow = new Container(osWindow, dynamic_cast<const ContainerProps&>(props), absPos, size);
+
+				} catch (std::bad_cast&) {
+					throw std::invalid_argument("Container is to create but props are not of ContainerProps type.");
+				}
+				break;
+
 			case button:
 				try {
-					newWindow = new Button(osWindow, dynamic_cast<const ButtonProps&>(props), pos, size);
+					newWindow = new Button(osWindow, dynamic_cast<const ButtonProps&>(props), absPos, size);
 
 				} catch (std::bad_cast&) {
 					throw std::invalid_argument("Button is to create but props are not of ButtonProps type.");
@@ -42,7 +54,7 @@ namespace GUI {
 
 			case graph:
 				try {
-					newWindow = new Graph(osWindow, dynamic_cast<const GraphProps&>(props), pos, size);
+					newWindow = new Graph(osWindow, dynamic_cast<const GraphProps&>(props), absPos, size);
 
 				} catch (std::bad_cast&) {
 					throw std::invalid_argument("Button is to create but props are not of ButtonProps type.");
@@ -70,19 +82,23 @@ namespace GUI {
 		try {
 			switch (type) {
 			case Primitive::Type::line:
-				newPrimitive = new Line(osWindow, dynamic_cast<const LineProps&>(props));
+				newPrimitive = new Line(*this, dynamic_cast<const LineProps&>(props));
 				break;
 
 			case Primitive::Type::polyline:
-				newPrimitive = new Polyline(osWindow, dynamic_cast<const PolylineProps&>(props));
+				newPrimitive = new Polyline(*this, dynamic_cast<const PolylineProps&>(props));
 				break;
 
 			case Primitive::Type::rectangle:
-				newPrimitive = new Rectangle(osWindow, dynamic_cast<const RectangleProps&>(props));
+				newPrimitive = new Rectangle(*this, dynamic_cast<const RectangleProps&>(props));
 				break;
 
 			case Primitive::Type::text:
-				newPrimitive = new Text(osWindow, dynamic_cast<const TextProps&>(props));
+				newPrimitive = new Text(*this, dynamic_cast<const TextProps&>(props));
+				break;
+
+			case Primitive::Type::image:
+				newPrimitive = new Image(*this, dynamic_cast<const ImageProps&>(props));
 				break;
 
 			default:
@@ -179,6 +195,11 @@ namespace GUI {
 
 	size_t Window::Height() const {
 		return size.y;
+	}
+
+
+	Vector2 Window::Pos() const {
+		return pos;
 	}
 
 

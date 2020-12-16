@@ -13,15 +13,15 @@ namespace GUI {
 		: pos(pos), size(size), color(color) {}
 
 
-	Rectangle::Rectangle(OSWindow& osWindow, const RectangleProps& props)
-		: Primitive(osWindow), props(props) {}
+	Rectangle::Rectangle(Window& window, const RectangleProps& props)
+		: Primitive(window), props(props) {}
 
 
 	void Rectangle::Draw() {
 		GlCoordinates begPosGl =
-			OSWindowToGlCoords(osWindow, props.pos);
+			OSWindowToGlCoords(osWindow, RelToAbsCoords(props.pos));
 		GlCoordinates endPosGl =
-			OSWindowToGlCoords(osWindow, Vector2(props.pos.x + props.size.x, props.pos.y + props.size.y));
+			OSWindowToGlCoords(osWindow, RelToAbsCoords(Vector2(props.pos.x + props.size.x, props.pos.y + props.size.y)));
 
 		osWindow.SetActive();
 
