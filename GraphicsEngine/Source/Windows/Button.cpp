@@ -43,7 +43,9 @@ namespace GUI {
 		osWindow.SetActive();
 
 		rectangle->Draw();
-		label->Draw();
+		if (label != nullptr) {
+			label->Draw();
+		}
 
 		DrawInsides();
 	}

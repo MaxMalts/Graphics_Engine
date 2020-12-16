@@ -9,6 +9,7 @@
 
 
 namespace GUI {
+
 	struct ButtonProps : public WindowProps {
 	public:
 
@@ -22,7 +23,7 @@ namespace GUI {
 	public:
 
 		Button(OSWindow& window, const ButtonProps& buttonProps,
-			const Vector2& pos, const Vector2& size);
+		       const Vector2& pos, const Vector2& size);
 
 		Button(const Button& other) = delete;
 
@@ -45,14 +46,14 @@ namespace GUI {
 		//static void LeftMouseUpCallback(void* buttonArg) {
 		//	assert(buttonArg != nullptr);
 
-		//	Button* button = static_cast<Button*>(buttonArg);
+		//	Button* toolBtn = static_cast<Button*>(buttonArg);
 
-		//	WindowCoordinates cursorPos = button->osWindow.CursorPos();
-		//	if (cursorPos.x >= button->pos.x && cursorPos.x <= button->pos.x + button->size.x &&
-		//		cursorPos.y >= button->pos.y && cursorPos.y <= button->pos.y + button->size.y) {
+		//	WindowCoordinates cursorPos = toolBtn->osWindow.CursorPos();
+		//	if (cursorPos.x >= toolBtn->pos.x && cursorPos.x <= toolBtn->pos.x + toolBtn->size.x &&
+		//		cursorPos.y >= toolBtn->pos.y && cursorPos.y <= toolBtn->pos.y + toolBtn->size.y) {
 
-		//		for (int i = 0; i < button->leftMouseUpListeners.size(); ++i) {
-		//			std::pair<void (*)(void*), void*>& curListener = button->leftMouseUpListeners[i];
+		//		for (int i = 0; i < toolBtn->leftMouseUpListeners.size(); ++i) {
+		//			std::pair<void (*)(void*), void*>& curListener = toolBtn->leftMouseUpListeners[i];
 		//			curListener.first(curListener.second);
 		//		}
 		//	}

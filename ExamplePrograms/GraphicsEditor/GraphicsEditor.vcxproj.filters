@@ -31,6 +31,9 @@
     <Filter Include="Source Files\GraphicsEngine\Primitives">
       <UniqueIdentifier>{73e0816e-7253-4553-9bad-01a7eca53b6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Tools">
+      <UniqueIdentifier>{c0512a9e-43e9-4031-acdc-6464e3b05fa0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEditor.cpp">
@@ -136,6 +139,12 @@
     </ClInclude>
     <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Image.h">
       <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\Tool.h">
+      <Filter>Header Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\Pencil.h">
+      <Filter>Header Files\Tools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

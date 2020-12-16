@@ -181,6 +181,8 @@
     <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Desktop.h" />
     <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Graph.h" />
     <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Window.h" />
+    <ClInclude Include="Tools\Pencil.h" />
+    <ClInclude Include="Tools\Tool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

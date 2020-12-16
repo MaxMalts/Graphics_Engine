@@ -147,22 +147,28 @@ namespace GUI {
 		    Event::mouse_move == type || Event::scroll == type) {
 
 			Vector2 mousePos;
+			Event relEvent(event);
 			if (Event::scroll == type) {
 				mousePos = event.scrollProps.pos;
+				relEvent.scrollProps.pos = mousePos - pos;
+
 			} else if (Event::mouse_move == type) {
 				mousePos = event.mouseMoveProps.pos;
+				relEvent.mouseMoveProps.pos = mousePos - pos;
 
-				HandleHoverEvent(event.mouseMoveProps);
+				HandleHoverEvent(relEvent.mouseMoveProps);
+
 			} else {
 				mousePos = event.mouseButtonProps.pos;
+				relEvent.mouseButtonProps.pos = mousePos - pos;
 			}
 
 			if (mousePos.x >= pos.x && mousePos.x <= pos.x + size.x &&
 				mousePos.y >= pos.y && mousePos.y <= pos.y + size.y) {
 				for (auto& curListener : eventsListeners[type]) {
-					curListener.first(event, curListener.second);
+					curListener.first(relEvent, curListener.second);
 
-					if (event.Stopped()) {
+					if (relEvent.Stopped()) {
 						return;
 					}
 				}
@@ -204,11 +210,11 @@ namespace GUI {
 
 
 	void Window::DrawInsides() {
-		for (Window* window : windows) {
-			window->Draw();
-		}
 		for (Primitive* primitive : primitives) {
 			primitive->Draw();
+		}
+		for (Window* window : windows) {
+			window->Draw();
 		}
 	}
 

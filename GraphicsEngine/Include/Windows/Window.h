@@ -55,7 +55,7 @@ namespace GUI {
 		Vector2 Pos() const;
 
 
-		~Window();
+		virtual ~Window();
 
 	protected:
 
