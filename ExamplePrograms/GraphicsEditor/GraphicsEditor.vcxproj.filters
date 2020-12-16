@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\GraphicsEngine">
+      <UniqueIdentifier>{f9de25d8-2500-467f-9806-442480098249}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphicsEngine\Primitives">
+      <UniqueIdentifier>{0097c746-88f6-47f1-a61a-153cd0012822}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphicsEngine\Windows">
+      <UniqueIdentifier>{b2ab96c6-4fff-46ca-9f16-d3fbe1fceac2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsEngine">
+      <UniqueIdentifier>{5cf9e362-95dd-40a5-b4f6-60061975a8ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsEngine\Windows">
+      <UniqueIdentifier>{b2e34442-c6be-4d70-acf8-13e48b3dc270}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsEngine\Primitives">
+      <UniqueIdentifier>{73e0816e-7253-4553-9bad-01a7eca53b6d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GraphicsEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\BMP_Img\BMP_Img.cpp">
+      <Filter>Source Files\GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Application.cpp">
+      <Filter>Source Files\GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Common.cpp">
+      <Filter>Source Files\GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Event.cpp">
+      <Filter>Source Files\GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Extra.cpp">
+      <Filter>Source Files\GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Button.cpp">
+      <Filter>Source Files\GraphicsEngine\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Desktop.cpp">
+      <Filter>Source Files\GraphicsEngine\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Graph.cpp">
+      <Filter>Source Files\GraphicsEngine\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Window.cpp">
+      <Filter>Source Files\GraphicsEngine\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Line.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Polyline.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Primitive.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Rectangle.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Text.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Windows\Container.cpp">
+      <Filter>Source Files\GraphicsEngine\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Image.cpp">
+      <Filter>Source Files\GraphicsEngine\Primitives</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\GraphicsEngine\BMP_Img\BMP_Img.h">
+      <Filter>Header Files\GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\GraphicsEngine.h">
+      <Filter>Header Files\GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Application.h">
+      <Filter>Header Files\GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Common.h">
+      <Filter>Header Files\GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Event.h">
+      <Filter>Header Files\GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Extra.h">
+      <Filter>Header Files\GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Line.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Polyline.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Primitive.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Rectangle.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Text.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Button.h">
+      <Filter>Header Files\GraphicsEngine\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Desktop.h">
+      <Filter>Header Files\GraphicsEngine\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Graph.h">
+      <Filter>Header Files\GraphicsEngine\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Window.h">
+      <Filter>Header Files\GraphicsEngine\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Container.h">
+      <Filter>Header Files\GraphicsEngine\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Image.h">
+      <Filter>Header Files\GraphicsEngine\Primitives</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
