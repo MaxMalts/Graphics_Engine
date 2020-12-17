@@ -90,11 +90,15 @@ namespace GUI {
 
 		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 		glfwWindow = glfwCreateWindow(width, height, name, NULL, NULL);
-		if (!glfwWindow) {
+		if (glfwWindow == nullptr) {
 			glfwTerminate();
 			throw bad_init("Error occurred while creating the window");
 		}
 		glfwSetWindowUserPointer(glfwWindow, this);
+
+		SetActive();
+		glEnable(GL_LINE_SMOOTH);
+		glEnable(GL_POINT_SMOOTH);
 
 		InitCallbacks();
 

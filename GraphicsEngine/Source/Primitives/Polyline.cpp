@@ -1,4 +1,5 @@
 #include <vector>
+#include <algorithm>
 #include <GL/glew.h> 
 #include <GLFW/glfw3.h>
 #include "Include\Extra.h"
@@ -25,15 +26,37 @@ namespace GUI {
 		if (props.verteces.size() >= 2) {
 			osWindow.SetActive();
 
+			//GLfloat lineRange[2] = { 0, 0 };
+			//glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, lineRange);
+			//GLfloat pointRange[2] = { 0, 0 };
+			//glGetFloatv(GL_POINT_SIZE_RANGE, pointRange);
+
+			//int actWidth = std::min({ props.width, static_cast<size_t>(lineRange[1]),
+			//						static_cast<size_t>(pointRange[1]) });
+			//printf("%f %f %d\n", lineRange[0], lineRange[1], props.width);
+
 			glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
 			glLineWidth(static_cast<GLfloat>(props.width));
+			glPointSize(static_cast<GLfloat>(props.width));
 
-			glBegin(GL_LINE_STRIP);
-			for (int i = 0; i < props.verteces.size(); ++i) {
-				GlCoordinates curGlCoords = OSWindowToGlCoords(osWindow, RelToAbsCoords(props.verteces[i]));
-				glVertex2f(curGlCoords.x, curGlCoords.y);
-			}
+			GlCoordinates prevGlCoords = OSWindowToGlCoords(osWindow, RelToAbsCoords(props.verteces[0]));
+			glBegin(GL_POINTS);
+			glVertex2f(prevGlCoords.x, prevGlCoords.y);
 			glEnd();
+			for (int i = 1; i < props.verteces.size(); ++i) {
+				GlCoordinates curGlCoords = OSWindowToGlCoords(osWindow, RelToAbsCoords(props.verteces[i]));
+
+				glBegin(GL_LINES);
+				glVertex2f(prevGlCoords.x, prevGlCoords.y);
+				glVertex2f(curGlCoords.x, curGlCoords.y);
+				glEnd();
+
+				glBegin(GL_POINTS);
+				glVertex2f(curGlCoords.x, curGlCoords.y);
+				glEnd();
+
+				prevGlCoords = curGlCoords;
+			}
 		}
 	}
 

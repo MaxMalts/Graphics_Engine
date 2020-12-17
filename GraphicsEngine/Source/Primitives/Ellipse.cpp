@@ -55,6 +55,7 @@ namespace GUI {
 			GlCoordinates centerGl =
 				OSWindowToGlCoords(osWindow, RelToAbsCoords(center));
 
+			glPointSize(1.0);
 			glBegin(GL_POINTS);
 			glVertex2f(centerGl.x, centerGl.y);  // To draw at least one point if size != 0
 			glEnd();

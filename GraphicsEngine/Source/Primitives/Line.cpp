@@ -31,7 +31,7 @@ namespace GUI {
 		GlCoordinates endPosGl = OSWindowToGlCoords(osWindow, RelToAbsCoords(props.secondPoint));
 
 		osWindow.SetActive();
-
+		
 		glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
 		glLineWidth(static_cast<GLfloat>(props.width));
 
