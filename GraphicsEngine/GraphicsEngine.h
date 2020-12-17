@@ -8,6 +8,7 @@
 #include "Include\Primitives\Line.h"
 #include "Include\Primitives\Polyline.h"
 #include "Include\Primitives\Rectangle.h"
+#include "Include\Primitives\Circle.h"
 #include "Include\Primitives\Text.h"
 #include "Include\Primitives\Image.h"
 

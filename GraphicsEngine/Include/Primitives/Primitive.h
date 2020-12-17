@@ -25,6 +25,7 @@ namespace GUI {
 			line,
 			polyline,
 			rectangle,
+			circle,
 			text,
 			image
 		};

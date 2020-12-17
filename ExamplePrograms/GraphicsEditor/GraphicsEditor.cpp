@@ -7,6 +7,7 @@
 #include "Tools\Line.h"
 #include "Tools\Polyline.h"
 #include "Tools\Rectangle.h"
+#include "Tools\Circle.h"
 
 
 
@@ -47,7 +48,7 @@ public:
 			usrInterface.desktop->Draw();
 			application.ProcessEvents();
 			double curTime = glfwGetTime();
-			std::cout << 1 / (curTime - prevTime) << '\n';
+			std::cout << static_cast<int>(1 / (curTime - prevTime)) << '\n';
 			prevTime = curTime;
 		}
 	}
@@ -62,6 +63,20 @@ public:
 
 private:
 
+
+	GUI::Container* DrawFilledContainer(GUI::Window* parent, const GUI::Vector2& pos,
+	                                    const GUI::Vector2& size, const GUI::Color& color) {
+
+		GUI::Container* res = dynamic_cast<GUI::Container*>(
+			parent->CreateWindow(GUI::Window::container, GUI::ContainerProps(), pos, size)
+		);
+
+		res->CreatePrimitive(GUI::Primitive::rectangle, GUI::RectangleProps(GUI::Vector2(0, 0), size, color));
+
+		return res;
+	}
+
+
 	void InitUsrInterface() {
 		const GUI::Vector2 toolbarPos(30, 50);
 		const GUI::Vector2 toolbarSize(70, 810);
@@ -69,25 +84,43 @@ private:
 		const GUI::Vector2 canvasPos(130, 50);
 		const GUI::Vector2 canvasSize(1440, 810);
 
-		usrInterface.toolbar = dynamic_cast<GUI::Container*>(
-			usrInterface.desktop->CreateWindow(GUI::Window::container,
-			                                   GUI::ContainerProps(), toolbarPos, toolbarSize)
-		);
-		usrInterface.toolbar->CreatePrimitive(
-			GUI::Primitive::rectangle, GUI::RectangleProps(
-				GUI::Vector2(0, 0), toolbarSize, GUI::Color(0.3, 0.3, 0.5)
-			)
-		);
+		usrInterface.canvas = DrawFilledContainer(usrInterface.desktop, canvasPos, canvasSize, GUI::Color("white"));
 
-		usrInterface.canvas = dynamic_cast<GUI::Container*>(
-			usrInterface.desktop->CreateWindow(GUI::Window::container,
-			                                   GUI::ContainerProps(), canvasPos, canvasSize)
-		);
-		usrInterface.canvas->CreatePrimitive(
-			GUI::Primitive::rectangle, GUI::RectangleProps(GUI::Vector2(0, 0), canvasSize, GUI::Color("white"))
-		);
+		DrawEnvironment(canvasPos, canvasSize);
+
+		usrInterface.toolbar = DrawFilledContainer(usrInterface.desktop, toolbarPos, toolbarSize, GUI::Color(0.3, 0.3, 0.5));
 
 		InitTools(usrInterface.toolbar, toolbarSize);
+	}
+
+
+	void DrawEnvironment(const GUI::Vector2& canvasPos, const GUI::Vector2& canvasSize) {
+		const GUI::Color envColor(0.2, 0.2, 0.4);
+
+		const size_t desktopWidth = usrInterface.desktop->Width();
+		const size_t desktopHeight = usrInterface.desktop->Height();
+
+		// top
+		GUI::Vector2 curPos(0, 0);
+		GUI::Vector2 curSize(desktopWidth, canvasPos.y);
+		DrawFilledContainer(usrInterface.desktop, curPos, curSize, envColor);
+
+		// left
+		curSize.x = canvasPos.x;
+		curSize.y = desktopHeight;
+		DrawFilledContainer(usrInterface.desktop, curPos, curSize, envColor);
+
+		// right
+		curPos.x = canvasPos.x + canvasSize.x;
+		curSize.x = desktopWidth - curPos.x;
+		DrawFilledContainer(usrInterface.desktop, curPos, curSize, envColor);
+
+		// bottom
+		curPos.x = 0;
+		curPos.y = canvasPos.y + canvasSize.y;
+		curSize.x = desktopWidth;
+		curSize.y = desktopHeight - curPos.y;
+		DrawFilledContainer(usrInterface.desktop, curPos, curSize, envColor);
 	}
 
 
@@ -121,6 +154,11 @@ private:
 		curPos.y += iconSize + marginTop;
 
 		usrInterface.tools.push_back(new Tools::Rectangle(Tools::ToolProps(
+			toolbar, curPos, GUI::Vector2(iconSize, iconSize), "ToolsIcons/Rectangle.bmp", SelectTool, this
+		)));
+		curPos.y += iconSize + marginTop;
+
+		usrInterface.tools.push_back(new Tools::Circle(Tools::ToolProps(
 			toolbar, curPos, GUI::Vector2(iconSize, iconSize), "ToolsIcons/Rectangle.bmp", SelectTool, this
 		)));
 		curPos.y += iconSize + marginTop;
