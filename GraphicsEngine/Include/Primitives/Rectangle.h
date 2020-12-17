@@ -26,6 +26,8 @@ namespace GUI {
 
 		Rectangle(const Rectangle& other) = delete;
 
+		void ChangeSize(const Vector2& newSize);
+
 		virtual void Draw();
 
 	private:

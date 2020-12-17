@@ -12,7 +12,7 @@ namespace Tools {
 	struct ToolProps {
 
 		ToolProps(GUI::Container* iconContainer, const GUI::Vector2& iconPos, const GUI::Vector2& iconSize,
-		          const std::string& iconFileName, void (*OnIconClick)(Tool&, void*), void* callbackParam)
+		          const std::string& iconFileName, void (*OnIconClick)(Tool*, void*), void* callbackParam)
 			: iconContainer(iconContainer), iconPos(iconPos), iconSize(iconSize),
 			  iconFileName(iconFileName), OnIconClick(OnIconClick), callbackParam(callbackParam) {}
 
@@ -21,7 +21,7 @@ namespace Tools {
 		GUI::Vector2 iconPos;
 		GUI::Vector2 iconSize;
 		std::string iconFileName;
-		void (*OnIconClick)(Tool&, void*) = nullptr;
+		void (*OnIconClick)(Tool*, void*) = nullptr;
 		void* callbackParam = nullptr;
 	};
 
@@ -86,7 +86,7 @@ namespace Tools {
 			assert(voidThis != nullptr);
 
 			Tool* _this = static_cast<Tool*>(voidThis);
-			_this->props.OnIconClick(*_this, _this->props.callbackParam);
+			_this->props.OnIconClick(_this, _this->props.callbackParam);
 		}
 
 

@@ -26,7 +26,7 @@ namespace Tools {
 
 			curTrack = dynamic_cast<GUI::Polyline*>(
 				activeCanvas->CreatePrimitive(GUI::Primitive::polyline,
-			                                  GUI::PolylineProps({mousePos}, activeSize, activeColor))
+			                                  GUI::PolylineProps({ mousePos }, activeSize, activeColor))
 			);
 		}
 

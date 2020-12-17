@@ -17,7 +17,12 @@ namespace GUI {
 		: Primitive(window), props(props) {}
 
 
-	void Rectangle::Draw() {
+	void Rectangle::ChangeSize(const Vector2& newSize) {
+		props.size = newSize;
+	}
+
+
+    void Rectangle::Draw() {
 		GlCoordinates begPosGl =
 			OSWindowToGlCoords(osWindow, RelToAbsCoords(props.pos));
 		GlCoordinates endPosGl =

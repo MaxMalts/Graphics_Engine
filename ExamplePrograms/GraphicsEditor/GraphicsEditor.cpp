@@ -2,7 +2,11 @@
 #include <vector>
 #include <GraphicsEngine.h>
 #include "Tools\Tool.h"
+#include "Tools\Eraser.h"
 #include "Tools\Pencil.h"
+#include "Tools\Line.h"
+#include "Tools\Polyline.h"
+#include "Tools\Rectangle.h"
 
 
 
@@ -14,6 +18,7 @@ private:
 
 	GUI::Color curToolColor = GUI::Color("black");
 	size_t curToolSize = 1;
+	Tools::Tool* curTool = nullptr;
 
 	struct UsrInterface {
 
@@ -94,19 +99,44 @@ private:
 		const int marginTop = 30;
 
 		GUI::Vector2 curPos(marginLeft, marginTop);
-		int nTools = 0;
+
+		usrInterface.tools.push_back(new Tools::Eraser(Tools::ToolProps(
+			toolbar, curPos, GUI::Vector2(iconSize, iconSize), "ToolsIcons/Eraser.bmp", SelectTool, this
+		)));
+		curPos.y += iconSize + marginTop;
+
 		usrInterface.tools.push_back(new Tools::Pencil(Tools::ToolProps(
 			toolbar, curPos, GUI::Vector2(iconSize, iconSize), "ToolsIcons/Pencil.bmp", SelectTool, this
 		)));
-		++nTools;
+		curPos.y += iconSize + marginTop;
+
+		usrInterface.tools.push_back(new Tools::Line(Tools::ToolProps(
+			toolbar, curPos, GUI::Vector2(iconSize, iconSize), "ToolsIcons/Line.bmp", SelectTool, this
+		)));
+		curPos.y += iconSize + marginTop;
+
+		usrInterface.tools.push_back(new Tools::Polyline(Tools::ToolProps(
+			toolbar, curPos, GUI::Vector2(iconSize, iconSize), "ToolsIcons/Polyline.bmp", SelectTool, this
+		)));
+		curPos.y += iconSize + marginTop;
+
+		usrInterface.tools.push_back(new Tools::Rectangle(Tools::ToolProps(
+			toolbar, curPos, GUI::Vector2(iconSize, iconSize), "ToolsIcons/Rectangle.bmp", SelectTool, this
+		)));
+		curPos.y += iconSize + marginTop;
 	}
 
 
-	static void SelectTool(Tools::Tool& tool, void* voidThis) {
+	static void SelectTool(Tools::Tool* tool, void* voidThis) {
 		assert(voidThis != nullptr);
 
 		GraphicsEditor* _this = static_cast<GraphicsEditor*>(voidThis);
-		tool.SetActive(_this->usrInterface.canvas, _this->curToolSize, _this->curToolColor);
+
+		if (_this->curTool != nullptr) {
+			_this->curTool->SetInactive();
+		}
+		tool->SetActive(_this->usrInterface.canvas, _this->curToolSize, _this->curToolColor);
+		_this->curTool = tool;
 	}
 };
 

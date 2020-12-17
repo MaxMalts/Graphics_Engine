@@ -8,15 +8,15 @@
 
 namespace Tools {
 
-	class Line : public Tool {
+	class Eraser : public Tool {
 	public:
 
-		Line(const ToolProps& props) : Tool(props) {}
+		Eraser(const ToolProps& props) : Tool(props) {}
 
 
 		virtual void ToolMove(const GUI::Vector2& mousePos) {
 			if (isDown) {
-				curLine->MoveSecondPoint(mousePos);
+				curTrack->AddVertex(mousePos);
 			}
 		}
 
@@ -24,16 +24,16 @@ namespace Tools {
 		virtual void ToolDown(const GUI::Vector2& mousePos) {
 			isDown = true;
 
-			curLine = dynamic_cast<GUI::Line*>(
-				activeCanvas->CreatePrimitive(GUI::Primitive::line,
-			                                  GUI::LineProps(mousePos, mousePos, activeSize, activeColor))
+			curTrack = dynamic_cast<GUI::Polyline*>(
+				activeCanvas->CreatePrimitive(GUI::Primitive::polyline,
+			                                  GUI::PolylineProps({ mousePos }, activeSize, GUI::Color("white")))
 			);
 		}
 
 
 		virtual void ToolUp(const GUI::Vector2& mousePos) {
 			isDown = false;
-			curLine = nullptr;
+			curTrack = nullptr;
 		}
 
 
@@ -41,6 +41,6 @@ namespace Tools {
 
 		bool isDown = false;
 
-		GUI::Line* curLine = nullptr;
+		GUI::Polyline* curTrack = nullptr;
 	};
 }

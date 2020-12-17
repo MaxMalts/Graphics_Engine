@@ -134,6 +134,7 @@ namespace GUI {
 		for (auto& curListener : eventsListeners[type]) {
 			if (curListener.first == listener) {
 				eventsListeners[type].erase(curListener);
+				break;
 			}
 		}
 	}

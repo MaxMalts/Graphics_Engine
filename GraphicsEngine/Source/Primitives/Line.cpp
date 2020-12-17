@@ -16,6 +16,16 @@ namespace GUI {
 	Line::Line(Window& window, const LineProps& props) : Primitive(window), props(props) {}
 
 
+	void Line::MoveFirstPoint(const Vector2& newPos) {
+		props.firstPoint = newPos;
+	}
+
+
+	void Line::MoveSecondPoint(const Vector2& newPos) {
+		props.secondPoint = newPos;
+	}
+
+
 	void Line::Draw() {
 		GlCoordinates begPosGl = OSWindowToGlCoords(osWindow, RelToAbsCoords(props.firstPoint));
 		GlCoordinates endPosGl = OSWindowToGlCoords(osWindow, RelToAbsCoords(props.secondPoint));
