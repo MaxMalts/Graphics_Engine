@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include <set>
 #include <unordered_set>
 #include <unordered_map>
@@ -68,13 +69,13 @@ namespace GUI {
 		Vector2 pos;
 		Vector2 size;
 
-		std::unordered_set<Window*> windows;
-		std::unordered_set<Primitive*> primitives;
+		std::list<Window*> windows;
+		std::list<Primitive*> primitives;
 
 	private:
 
 		// Second element will be tranfered to listener
 		std::unordered_map<Event::Type,
-			std::set<std::pair<void (*)(Event&, void*), void*>>> eventsListeners;
+			std::list<std::pair<void (*)(Event&, void*), void*>>> eventsListeners;
 	};
 }

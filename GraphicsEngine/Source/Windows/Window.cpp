@@ -70,7 +70,7 @@ namespace GUI {
 			throw std::invalid_argument("Props type doesn't match to window type.");
 		}
 
-		windows.insert(newWindow);
+		windows.push_back(newWindow);
 		
 		return newWindow;
 	}
@@ -114,7 +114,7 @@ namespace GUI {
 			throw std::invalid_argument("Props type doesn't match to primitive type.");
 		}
 
-		primitives.insert(newPrimitive);
+		primitives.push_back(newPrimitive);
 
 		return newPrimitive;
 	}
@@ -122,14 +122,14 @@ namespace GUI {
 
 	void Window::RemoveWindow(Window* window) {
 		delete window;
-		windows.erase(window);
+		windows.remove(window);
 	}
 
 
 	void Window::AddEventListener(Event::Type type, void(*listener)(Event&, void*), void* additParam) {
 		assert(type != Event::Type::unknown);
 
-		eventsListeners[type].emplace(listener, additParam);
+		eventsListeners[type].emplace_back(listener, additParam);
 	}
 
 
@@ -138,7 +138,7 @@ namespace GUI {
 
 		for (auto& curListener : eventsListeners[type]) {
 			if (curListener.first == listener) {
-				eventsListeners[type].erase(curListener);
+				eventsListeners[type].remove(curListener);
 				break;
 			}
 		}
