@@ -189,11 +189,11 @@ namespace GEditor {
 
 
 		void InitSizeController() {
-			const int marginBottom = 15;
-			const int marginLeft = 15;
-			const int containerSize = 100;
+			const int marginBottom = 20;
+			const int marginLeft = 20;
+			const int containerSize = 90;
 			const GUI::Color bgdColor(0.7, 0.7, 0.9);
-			const int maxSize = 90;
+			const int maxSize = 63;
 			const GUI::Color previewColor(GUI::Color::black);
 
 			const GUI::Vector2 pos(marginLeft, usrInterface.desktop->Height() - marginBottom - containerSize);
@@ -203,8 +203,19 @@ namespace GEditor {
 
 			GUI::Vector2 innerPos((containerSize - maxSize) / 2, (containerSize - maxSize) / 2);
 			usrInterface.sizeController = new SizeController(
-				SizeControllerProps(container, innerPos, maxSize, 10, previewColor)
+				SizeControllerProps(container, innerPos, maxSize, 10, previewColor, UpdateSize, this)
 			);
+		}
+
+
+		static void UpdateSize(int newSize, void* voidThis) {
+			assert(voidThis != nullptr);
+
+			GraphicsEditor* _this = static_cast<GraphicsEditor*>(voidThis);
+
+			if (_this->curTool != nullptr) {
+				_this->curTool->ChangeSize(newSize);
+			}
 		}
 
 	};

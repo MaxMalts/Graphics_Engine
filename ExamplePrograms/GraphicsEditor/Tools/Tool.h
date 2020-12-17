@@ -68,6 +68,16 @@ namespace GEditor {
 		}
 
 
+		void ChangeSize(size_t newSize) {
+			activeSize = newSize;
+		}
+
+
+		void ChangeColor(const GUI::Color& newColor) {
+			activeColor = newColor;
+		}
+
+
 		void SetInactive() {
 			activeCanvas->RemoveEventListener(GUI::Event::mouse_move, MouseMoveListener);
 			activeCanvas->RemoveEventListener(GUI::Event::mouse_down, MouseDownListener);

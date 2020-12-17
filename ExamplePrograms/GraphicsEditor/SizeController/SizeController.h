@@ -12,10 +12,12 @@ namespace GEditor {
 
 		SizeControllerProps(GUI::Container* previewContainer, const GUI::Vector2& previewPos,
 		                    const int maxSize, const int initialSize = 5,
-		                    const GUI::Color& previewColor = GUI::Color(GUI::Color::grey))
+		                    const GUI::Color& previewColor = GUI::Color(GUI::Color::grey),
+		                    void (*OnSizeChange)(int, void*) = nullptr, void* callbackParam = nullptr)
 			: previewContainer(previewContainer), previewPos(previewPos),
 			  maxSize(maxSize < 1 ? 100 : maxSize), size(initialSize < 1 ? 10 : initialSize),
-			  previewColor(previewColor) {
+			  previewColor(previewColor),
+			  OnSizeChange(OnSizeChange), callbackParam(callbackParam) {
 			
 			assert(maxSize > 0);
 			assert(initialSize > 0);
@@ -30,7 +32,11 @@ namespace GEditor {
 		GUI::Vector2 previewPos;
 		GUI::Color previewColor;
 		int maxSize;
+
 		int size;
+
+		void (*OnSizeChange)(int, void*);
+		void* callbackParam;
 	};
 
 
@@ -97,6 +103,10 @@ namespace GEditor {
 			int scrollAmt = event.scrollProps.offset.y;
 
 			_this->ChangeSize(_this->props.size + scrollAmt * multiplier);
+
+			if (_this->props.OnSizeChange != nullptr) {
+				_this->props.OnSizeChange(_this->props.size, _this->props.callbackParam);
+			}
 		}
 
 
