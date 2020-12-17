@@ -115,10 +115,10 @@ Interface DrawInterface(GUI::DesktopWindow* desktop, const int maxArraySize) {
 	const int buttonsMarginTop = 0.1 * windowH;
 	const GUI::Vector2 buttonsSize((windowW - 5 * buttonsMarginLeft) / 4, 0.15 * windowH);
 
-	const GUI::Color bubbleColor("red");
-	const GUI::Color selectionColor("green");
-	const GUI::Color quickColor("blue");
-	const GUI::Color mergeColor("yellow");
+	const GUI::Color bubbleColor(GUI::Color::red);
+	const GUI::Color selectionColor(GUI::Color::green);
+	const GUI::Color quickColor(GUI::Color::blue);
+	const GUI::Color mergeColor(GUI::Color::yellow);
 
 	const size_t buttonsFontSize = 0.1 * buttonsSize.x;
 	const GUI::Vector2 buttonsLabelPos(10, (buttonsSize.y - buttonsFontSize) / 2);
@@ -280,7 +280,7 @@ int main() {
 	GUI::Text::SetFontFile("../Fonts/Ascii.bmp");
 
 	GUI::Application app;
-	GUI::OSWindow* window = app.CreateWindow(1280, 720, "Sorts Analyzer", GUI::Color("white"));
+	GUI::OSWindow* window = app.CreateWindow(1280, 720, "Sorts Analyzer", GUI::Color(GUI::Color::white));
 	GUI::DesktopWindow* desktop = window->GetDesktop();
 
 	Interface interface = DrawInterface(desktop, maxArraySize);

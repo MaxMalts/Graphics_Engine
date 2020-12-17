@@ -10,6 +10,7 @@
 #include "Tools\Ellipse.h"
 
 
+
 namespace GEditor {
 
 	class GraphicsEditor {
@@ -18,7 +19,7 @@ namespace GEditor {
 		GUI::Application application;
 		GUI::OSWindow* osWindow = nullptr;
 
-		GUI::Color curToolColor = GUI::Color("black");
+		GUI::Color curToolColor = GUI::Color(GUI::Color::black);
 		size_t curToolSize = 1;
 		Tool* curTool = nullptr;
 
@@ -86,11 +87,13 @@ namespace GEditor {
 			const GUI::Vector2 canvasPos(130, 50);
 			const GUI::Vector2 canvasSize(1440, 810);
 
-			usrInterface.canvas = DrawFilledContainer(usrInterface.desktop, canvasPos, canvasSize, GUI::Color("white"));
+			usrInterface.canvas = DrawFilledContainer(usrInterface.desktop, canvasPos, canvasSize,
+			                                          GUI::Color(GUI::Color::white));
 
 			DrawEnvironment(canvasPos, canvasSize);
 
-			usrInterface.toolbar = DrawFilledContainer(usrInterface.desktop, toolbarPos, toolbarSize, GUI::Color(0.3, 0.3, 0.5));
+			usrInterface.toolbar = DrawFilledContainer(usrInterface.desktop, toolbarPos, toolbarSize,
+			                                           GUI::Color(0.3, 0.3, 0.5));
 
 			InitTools(usrInterface.toolbar, toolbarSize);
 		}

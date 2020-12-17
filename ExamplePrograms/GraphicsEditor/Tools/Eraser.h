@@ -25,8 +25,8 @@ namespace GEditor {
 			isDown = true;
 
 			curTrack = dynamic_cast<GUI::Polyline*>(
-				activeCanvas->CreatePrimitive(GUI::Primitive::polyline,
-			                                  GUI::PolylineProps({ mousePos }, activeSize, GUI::Color("white")))
+				activeCanvas->CreatePrimitive(GUI::Primitive::polyline, GUI::PolylineProps({ mousePos },
+				                              activeSize, GUI::Color(GUI::Color::white)))
 			);
 		}
 

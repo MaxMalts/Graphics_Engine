@@ -37,6 +37,10 @@ namespace GUI {
 	class Color {
 	public:
 
+		enum SpecialColors {
+			black, red, green, blue, yellow, magenta, cyan, white
+		};
+
 		Color();
 
 		/*
@@ -47,7 +51,7 @@ namespace GUI {
 		/*
 		* Constructs Color. Possible strings are "red", "green", "blue", "black", "white".
 		*/
-		Color(const char* color);
+		Color(const SpecialColors color);
 
 		Color(const Color& other);
 
