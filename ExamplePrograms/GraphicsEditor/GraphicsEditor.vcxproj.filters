@@ -34,6 +34,9 @@
     <Filter Include="Header Files\Tools">
       <UniqueIdentifier>{c0512a9e-43e9-4031-acdc-6464e3b05fa0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SizeController">
+      <UniqueIdentifier>{9f3cb50e-a3f7-4bf2-ad3e-0d5c5b38cc07}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEditor.cpp">
@@ -166,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="Tools\Ellipse.h">
       <Filter>Header Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="SizeController\SizeController.h">
+      <Filter>Header Files\SizeController</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

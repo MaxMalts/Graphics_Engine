@@ -26,7 +26,15 @@ namespace GUI {
 
 		Rectangle(const Rectangle& other) = delete;
 
+
+		Vector2 GetPosition() const;
+
+		Vector2 GetSize() const;
+
+		void ChangePosition(const Vector2& newPos);
+
 		void ChangeSize(const Vector2& newSize);
+
 
 		virtual void Draw();
 

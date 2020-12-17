@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <vector>
 #include <GraphicsEngine.h>
+#include "SizeController\SizeController.h"
 #include "Tools\Tool.h"
 #include "Tools\Eraser.h"
 #include "Tools\Pencil.h"
@@ -20,7 +21,6 @@ namespace GEditor {
 		GUI::OSWindow* osWindow = nullptr;
 
 		GUI::Color curToolColor = GUI::Color(GUI::Color::black);
-		size_t curToolSize = 1;
 		Tool* curTool = nullptr;
 
 		struct UsrInterface {
@@ -29,7 +29,7 @@ namespace GEditor {
 			GUI::Container* canvas = nullptr;
 			GUI::Container* toolbar = nullptr;
 			std::vector<Tool*> tools;
-
+			SizeController* sizeController = nullptr;
 
 		} usrInterface;
 
@@ -51,7 +51,7 @@ namespace GEditor {
 				usrInterface.desktop->Draw();
 				application.ProcessEvents();
 				double curTime = glfwGetTime();
-				std::cout << static_cast<int>(1 / (curTime - prevTime)) << '\n';
+				//std::cout << static_cast<int>(1 / (curTime - prevTime)) << '\n';
 				prevTime = curTime;
 			}
 		}
@@ -61,6 +61,7 @@ namespace GEditor {
 			for (Tool* tool : usrInterface.tools) {
 				delete tool;
 			}
+			delete usrInterface.sizeController;
 		}
 
 
@@ -81,10 +82,11 @@ namespace GEditor {
 
 
 		void InitUsrInterface() {
-			const GUI::Vector2 toolbarPos(30, 50);
-			const GUI::Vector2 toolbarSize(70, 810);
+			const GUI::Vector2 toolbarPos(30, 30);
+			const GUI::Vector2 toolbarSize(70, 700);
+			const GUI::Color toolbarColor(0.3, 0.3, 0.5);
 
-			const GUI::Vector2 canvasPos(130, 50);
+			const GUI::Vector2 canvasPos(130, 30);
 			const GUI::Vector2 canvasSize(1440, 810);
 
 			usrInterface.canvas = DrawFilledContainer(usrInterface.desktop, canvasPos, canvasSize,
@@ -92,10 +94,12 @@ namespace GEditor {
 
 			DrawEnvironment(canvasPos, canvasSize);
 
-			usrInterface.toolbar = DrawFilledContainer(usrInterface.desktop, toolbarPos, toolbarSize,
-			                                           GUI::Color(0.3, 0.3, 0.5));
+			usrInterface.toolbar = DrawFilledContainer(usrInterface.desktop, toolbarPos,
+			                                           toolbarSize, toolbarColor);
 
 			InitTools(usrInterface.toolbar, toolbarSize);
+
+			InitSizeController();
 		}
 
 
@@ -178,9 +182,31 @@ namespace GEditor {
 			if (_this->curTool != nullptr) {
 				_this->curTool->SetInactive();
 			}
-			tool->SetActive(_this->usrInterface.canvas, _this->curToolSize, _this->curToolColor);
+			tool->SetActive(_this->usrInterface.canvas, _this->usrInterface.sizeController->GetSize(),
+			                _this->curToolColor);
 			_this->curTool = tool;
 		}
+
+
+		void InitSizeController() {
+			const int marginBottom = 15;
+			const int marginLeft = 15;
+			const int containerSize = 100;
+			const GUI::Color bgdColor(0.7, 0.7, 0.9);
+			const int maxSize = 90;
+			const GUI::Color previewColor(GUI::Color::black);
+
+			const GUI::Vector2 pos(marginLeft, usrInterface.desktop->Height() - marginBottom - containerSize);
+
+			GUI::Container* container = 
+				DrawFilledContainer(usrInterface.desktop, pos, GUI::Vector2(containerSize, containerSize), bgdColor);
+
+			GUI::Vector2 innerPos((containerSize - maxSize) / 2, (containerSize - maxSize) / 2);
+			usrInterface.sizeController = new SizeController(
+				SizeControllerProps(container, innerPos, maxSize, 10, previewColor)
+			);
+		}
+
 	};
 }
 

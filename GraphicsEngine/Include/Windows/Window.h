@@ -53,7 +53,7 @@ namespace GUI {
 
 		size_t Height() const;
 
-		Vector2 Pos() const;
+		Vector2 Position() const;
 
 
 		virtual ~Window();

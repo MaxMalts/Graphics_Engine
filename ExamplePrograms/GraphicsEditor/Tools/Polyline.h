@@ -15,13 +15,12 @@ namespace GEditor {
 
 
 		virtual void ToolActivated() {
-			if (curPolyline == nullptr) {
-				curPolyline = dynamic_cast<GUI::Polyline*>(
-					activeCanvas->CreatePrimitive(GUI::Primitive::polyline,
-						GUI::PolylineProps(activeSize, activeColor))
-					);
-			}
+			curPolyline = dynamic_cast<GUI::Polyline*>(
+				activeCanvas->CreatePrimitive(GUI::Primitive::polyline,
+					GUI::PolylineProps(activeSize, activeColor))
+				);
 		}
+		
 
 
 		virtual void ToolUp(const GUI::Vector2& mousePos) {

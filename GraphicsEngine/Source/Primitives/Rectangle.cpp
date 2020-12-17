@@ -17,6 +17,21 @@ namespace GUI {
 		: Primitive(window), props(props) {}
 
 
+	Vector2 Rectangle::GetPosition() const {
+		return props.pos;
+	}
+
+
+	Vector2 Rectangle::GetSize() const {
+		return props.size;
+	}
+
+
+	void Rectangle::ChangePosition(const Vector2& newPos) {
+		props.pos = newPos;
+	}
+
+
 	void Rectangle::ChangeSize(const Vector2& newSize) {
 		props.size = newSize;
 	}

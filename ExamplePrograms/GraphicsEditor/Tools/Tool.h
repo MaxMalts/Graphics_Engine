@@ -6,7 +6,6 @@
 
 namespace GEditor {
 
-	class GraphicsEditor;
 	class Tool;
 
 	struct ToolProps {
@@ -14,7 +13,18 @@ namespace GEditor {
 		ToolProps(GUI::Container* iconContainer, const GUI::Vector2& iconPos, const GUI::Vector2& iconSize,
 		          const std::string& iconFileName, void (*OnIconClick)(Tool*, void*), void* callbackParam)
 			: iconContainer(iconContainer), iconPos(iconPos), iconSize(iconSize),
-			  iconFileName(iconFileName), OnIconClick(OnIconClick), callbackParam(callbackParam) {}
+			  iconFileName(iconFileName), OnIconClick(OnIconClick), callbackParam(callbackParam) {
+
+			if (iconContainer == nullptr) {
+				throw std::invalid_argument("The iconContainer was nullptr.");
+			}
+			if (iconFileName.empty()) {
+				throw std::invalid_argument("The iconFileName was empty.");
+			}
+			if (OnIconClick == nullptr) {
+				throw std::invalid_argument("The OnIconClick was nullptr.");
+			}
+		}
 
 
 		GUI::Container* iconContainer;

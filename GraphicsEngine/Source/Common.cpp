@@ -45,6 +45,19 @@ namespace GUI {
 		return Vector2(x - right.x, y - right.y);
 	}
 
+	Vector2 Vector2::operator*(const double right) const {
+		return Vector2(x * right, y * right);
+	}
+
+	Vector2 operator*(const double left, const Vector2& right) {
+		return Vector2(right.x * left, right.y * left);
+
+	}
+
+	Vector2 Vector2::operator/(const double right) const {
+		return Vector2(x / right, y / right);
+	}
+
 
 
 	/* Color */
@@ -66,13 +79,14 @@ namespace GUI {
 	Color::Color(const SpecialColors color) {
 		const std::unordered_map<SpecialColors, const RGB_t> colorsMap {
 			{black, RGB_t{0.0, 0.0, 0.0}},
+			{white, RGB_t{1.0, 1.0, 1.0}},
+			{grey, RGB_t{0.5, 0.5, 0.5}},
 			{red, RGB_t{1.0, 0.0, 0.0}},
 			{green, RGB_t{0.0, 1.0, 0.0}},
 			{blue, RGB_t{0.0, 0.0, 1.0}},
 			{yellow, RGB_t{1.0, 1.0, 0.0}},
 			{magenta, RGB_t{1.0, 0.0, 1.0}},
 			{cyan, RGB_t{0.0, 1.0, 1.0}},
-			{white, RGB_t{1.0, 1.0, 1.0}},
 		};
 
 		bool colorFound = false;

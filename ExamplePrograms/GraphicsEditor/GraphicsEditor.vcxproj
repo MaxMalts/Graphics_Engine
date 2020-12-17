@@ -183,6 +183,7 @@
     <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Desktop.h" />
     <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Graph.h" />
     <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Window.h" />
+    <ClInclude Include="SizeController\SizeController.h" />
     <ClInclude Include="Tools\Ellipse.h" />
     <ClInclude Include="Tools\Eraser.h" />
     <ClInclude Include="Tools\Line.h" />

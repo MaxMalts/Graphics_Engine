@@ -11,6 +11,6 @@ namespace GUI {
 
 
 	Vector2 Primitive::RelToAbsCoords(const Vector2& coords) const {
-		return coords + window.Pos();
+		return coords + window.Position();
 	}
 }

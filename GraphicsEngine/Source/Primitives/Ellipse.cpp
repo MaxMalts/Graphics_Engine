@@ -21,6 +21,21 @@ namespace GUI {
 		: Primitive(window), props(props) {}
 
 
+	Vector2 Ellipse::GetPosition() const {
+		return props.pos;
+	}
+
+
+	Vector2 Ellipse::GetSize() const {
+		return props.size;
+	}
+
+
+	void Ellipse::ChangePosition(const Vector2& newPos) {
+		props.pos = newPos;
+	}
+
+
 	void Ellipse::ChangeSize(const Vector2& newSize) {
 		props.size = newSize;
 	}
@@ -28,19 +43,29 @@ namespace GUI {
 
     void Ellipse::Draw() {
 
-		int coeff = M_PI * std::max(abs(props.size.x), abs(props.size.y));
-		int nVerteces = 5 * sqrt(coeff) + 10;
+		int maxAxe = std::max(std::abs(props.size.x), std::abs(props.size.y));
+		int nVerteces = 10 * std::sqrt(maxAxe) + 10;
 
 		osWindow.SetActive();
 
 		glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
 
+		if (maxAxe > 0) {
+			Vector2 center(props.pos.x + props.size.x / 2, props.pos.y + props.size.y / 2);
+			GlCoordinates centerGl =
+				OSWindowToGlCoords(osWindow, RelToAbsCoords(center));
+
+			glBegin(GL_POINTS);
+			glVertex2f(centerGl.x, centerGl.y);  // To draw at least one point if size != 0
+			glEnd();
+		}
+
 		glBegin(GL_POLYGON);
 		for (int i = 0; i < nVerteces; ++i) {
-			int curX = props.size.x / 2 * cosf((2 * M_PI / nVerteces) * i) + (props.pos.x + props.size.x / 2);
-			int curY = props.size.y / 2 * sinf((2 * M_PI / nVerteces) * i) + (props.pos.y + props.size.y / 2);
+			float curX = props.size.x / 2 * std::cosf((2 * M_PI / nVerteces) * i) + (props.pos.x + props.size.x / 2);
+			float curY = props.size.y / 2 * std::sinf((2 * M_PI / nVerteces) * i) + (props.pos.y + props.size.y / 2);
 			GlCoordinates curVertGl =
-				OSWindowToGlCoords(osWindow, RelToAbsCoords(Vector2(curX, curY)));
+				OSWindowToGlCoords(osWindow, RelToAbsCoords(Vector2(Round(curX), Round(curY))));
 
 			glVertex2f(curVertGl.x, curVertGl.y);
 		}

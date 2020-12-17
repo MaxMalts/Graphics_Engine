@@ -210,7 +210,7 @@ namespace GUI {
 	}
 
 
-	Vector2 Window::Pos() const {
+	Vector2 Window::Position() const {
 		return pos;
 	}
 

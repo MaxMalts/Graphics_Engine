@@ -29,6 +29,12 @@ namespace GUI {
 
 		Vector2 operator-(const Vector2& right) const;
 
+		Vector2 operator*(const double right) const;
+
+		friend Vector2 operator*(const double left, const Vector2& right);
+
+		Vector2 operator/(const double right) const;
+
 		int x = 0;
 		int y = 0;
 	};
@@ -38,7 +44,7 @@ namespace GUI {
 	public:
 
 		enum SpecialColors {
-			black, red, green, blue, yellow, magenta, cyan, white
+			black, white, grey, red, green, blue, yellow, magenta, cyan
 		};
 
 		Color();
