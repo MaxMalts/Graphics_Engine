@@ -10,7 +10,7 @@
 #include "Include\Primitives\Line.h"
 #include "Include\Primitives\Polyline.h"
 #include "Include\Primitives\Rectangle.h"
-#include "Include\Primitives\Circle.h"
+#include "Include\Primitives\Ellipse.h"
 #include "Include\Primitives\Text.h"
 #include "Include\Primitives\Image.h"
 
@@ -94,8 +94,8 @@ namespace GUI {
 				newPrimitive = new Rectangle(*this, dynamic_cast<const RectangleProps&>(props));
 				break;
 
-			case Primitive::Type::circle:
-				newPrimitive = new Circle(*this, dynamic_cast<const CircleProps&>(props));
+			case Primitive::Type::ellipse:
+				newPrimitive = new Ellipse(*this, dynamic_cast<const EllipseProps&>(props));
 				break;
 
 			case Primitive::Type::text:

@@ -150,7 +150,7 @@
     <ClCompile Include="..\..\GraphicsEngine\Source\Common.cpp" />
     <ClCompile Include="..\..\GraphicsEngine\Source\Event.cpp" />
     <ClCompile Include="..\..\GraphicsEngine\Source\Extra.cpp" />
-    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Circle.cpp" />
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Ellipse.cpp" />
     <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Image.cpp" />
     <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Line.cpp" />
     <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Polyline.cpp" />
@@ -171,7 +171,7 @@
     <ClInclude Include="..\..\GraphicsEngine\Include\Common.h" />
     <ClInclude Include="..\..\GraphicsEngine\Include\Event.h" />
     <ClInclude Include="..\..\GraphicsEngine\Include\Extra.h" />
-    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Circle.h" />
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Ellipse.h" />
     <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Image.h" />
     <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Line.h" />
     <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Polyline.h" />
@@ -183,7 +183,7 @@
     <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Desktop.h" />
     <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Graph.h" />
     <ClInclude Include="..\..\GraphicsEngine\Include\Windows\Window.h" />
-    <ClInclude Include="Tools\Circle.h" />
+    <ClInclude Include="Tools\Ellipse.h" />
     <ClInclude Include="Tools\Eraser.h" />
     <ClInclude Include="Tools\Line.h" />
     <ClInclude Include="Tools\Pencil.h" />

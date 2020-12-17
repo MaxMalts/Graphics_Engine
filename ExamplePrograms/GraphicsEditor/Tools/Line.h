@@ -6,7 +6,7 @@
 #include "Tool.h"
 
 
-namespace Tools {
+namespace GEditor {
 
 	class Line : public Tool {
 	public:

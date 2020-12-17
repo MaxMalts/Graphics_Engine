@@ -4,7 +4,7 @@
 #include <GraphicsEngine.h>
 
 
-namespace Tools {
+namespace GEditor {
 
 	class GraphicsEditor;
 	class Tool;
@@ -53,6 +53,8 @@ namespace Tools {
 			activeCanvas->AddEventListener(GUI::Event::mouse_move, MouseMoveListener, this);
 			activeCanvas->AddEventListener(GUI::Event::mouse_down, MouseDownListener, this);
 			activeCanvas->AddEventListener(GUI::Event::mouse_up, MouseUpListener, this);
+
+			ToolActivated();
 		}
 
 
@@ -62,6 +64,8 @@ namespace Tools {
 			activeCanvas->RemoveEventListener(GUI::Event::mouse_up, MouseUpListener);
 
 			activeCanvas = nullptr;
+
+			ToolDeactivated();
 		}
 
 
@@ -90,15 +94,17 @@ namespace Tools {
 		}
 
 
-		virtual void ToolMove(const GUI::Vector2& mousePos) = 0;
+		virtual void ToolActivated() {};
 
+		virtual void ToolMove(const GUI::Vector2& mousePos) {};
 
-		virtual void ToolDown(const GUI::Vector2& mousePos) = 0;
+		virtual void ToolDown(const GUI::Vector2& mousePos) {};
 
+		virtual void ToolUp(const GUI::Vector2& mousePos) {};
 
-		virtual void ToolUp(const GUI::Vector2& mousePos) = 0;
-
-
+		virtual void ToolDeactivated() {};
+		
+		
 		static void MouseMoveListener(GUI::Event& event, void* voidThis) {
 			assert(voidThis != nullptr);
 

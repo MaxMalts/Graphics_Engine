@@ -87,7 +87,7 @@
     <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Image.cpp">
       <Filter>Source Files\GraphicsEngine\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Circle.cpp">
+    <ClCompile Include="..\..\GraphicsEngine\Source\Primitives\Ellipse.cpp">
       <Filter>Source Files\GraphicsEngine\Primitives</Filter>
     </ClCompile>
   </ItemGroup>
@@ -161,10 +161,10 @@
     <ClInclude Include="Tools\Eraser.h">
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Circle.h">
+    <ClInclude Include="..\..\GraphicsEngine\Include\Primitives\Ellipse.h">
       <Filter>Header Files\GraphicsEngine\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Tools\Circle.h">
+    <ClInclude Include="Tools\Ellipse.h">
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
   </ItemGroup>
