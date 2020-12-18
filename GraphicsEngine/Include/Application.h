@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+#include <vector>
 #include <unordered_set>
 #include <assert.h>
 #include <GL/glew.h>
@@ -21,8 +23,14 @@ namespace GUI {
 
 		Application(const Application& other) = delete;
 
-		OSWindow* CreateWindow(const int width = 640, const int height = 420, const char* name = "Window",
+
+		OSWindow* CreateWindow(const int width = 640, const int height = 420,
+		                       const std::string& title = "Window",
 		                       const Color& backgroundColor = Color(0, 0, 0));
+
+        OSWindow* CreateWindow(const Vector2& size, const std::string& title = "Window",
+		                       const Color& backgroundColor = Color(0, 0, 0));
+
 
 		size_t WindowsOpened() const;
 
@@ -30,13 +38,22 @@ namespace GUI {
 
 		void CloseWindow(OSWindow& window);
 
-		void ProcessEventsWait() const;
 
-		void ProcessEvents() const;
+		void UpdateAllWindows();
+
+
+		void ProcessEventsWait();
+
+		void ProcessEvents();
+
 
 		~Application();
 
 	private:
+
+		void ClosePended();
+
+		std::vector<OSWindow*> pendingClose;
 
 		std::unordered_set<OSWindow*> osWindows;
 	};
@@ -46,7 +63,7 @@ namespace GUI {
 	public:
 
 		OSWindow(Application& application, const int width = 640, const int height = 420,
-		         const char* name = "Window", const Color& desktopColor = Color(0, 0, 0));
+		         const std::string& title = "Window", const Color& desktopColor = Color(0, 0, 0));
 
 		OSWindow(const OSWindow& other) = delete;
 
@@ -193,6 +210,6 @@ namespace GUI {
 
 		size_t width = 0;
 		size_t height = 0;
-		char* name = nullptr;
+		std::string title;
 	};
 }

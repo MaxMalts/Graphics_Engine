@@ -142,7 +142,7 @@ namespace GUI {
 	}
 
 
-	void Window::HandleEvent(Event event) {
+	bool Window::HandleEvent(Event event) {  // returns true is stopped
 		event.SetTarget(this);
 
 		Event::Type type = event.GetType();
@@ -171,7 +171,7 @@ namespace GUI {
 					curListener.first(event, curListener.second);
 
 					if (event.Stopped()) {
-						return;
+						return true;
 					}
 				}
 			}
@@ -181,18 +181,22 @@ namespace GUI {
 				curListener.first(event, curListener.second);
 
 				if (event.Stopped()) {
-					return;
+					return true;
 				}
 			}
 		}
 
 		for (Window* curWindow : windows) {
-			curWindow->HandleEvent(event);
+			if (curWindow->HandleEvent(event)) {
+				return true;
+			}
 
 			if (event.Stopped()) {
-				return;
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 

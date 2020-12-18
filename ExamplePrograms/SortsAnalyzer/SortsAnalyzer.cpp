@@ -94,13 +94,14 @@ struct Buttons {
 
 
 struct Interface {
+	GUI::OSWindow* osWindow = nullptr;
 	GUI::DesktopWindow* desktop = nullptr;
 	Graphs graphs = {};
 	Buttons buttons = {};
 };
 
 
-Interface DrawInterface(GUI::DesktopWindow* desktop, const int maxArraySize) {
+void DrawInterface(GUI::DesktopWindow* desktop, const int maxArraySize, Interface& interface) {
 	assert(desktop != nullptr);
 
 	const int windowW = desktop->Width();
@@ -123,7 +124,7 @@ Interface DrawInterface(GUI::DesktopWindow* desktop, const int maxArraySize) {
 	const size_t buttonsFontSize = 0.1 * buttonsSize.x;
 	const GUI::Vector2 buttonsLabelPos(10, (buttonsSize.y - buttonsFontSize) / 2);
 
-	Interface interface = { desktop };
+	interface.desktop = desktop;
 
 
 	/* Creating graphs */
@@ -176,8 +177,6 @@ Interface DrawInterface(GUI::DesktopWindow* desktop, const int maxArraySize) {
 				buttonsSize)
 		);
 	interface.buttons.merge->AddLabel("merge", GUI::FontProps(buttonsFontSize));
-
-	return interface;
 }
 
 
@@ -198,7 +197,7 @@ void AnalyseSort(const Interface& interface, const int maxCount,
 
 		comparesDiagram->AddData(curCount, StatsFuncs::ComparatorCount());
 		swapsDiagram->AddData(curCount, StatsFuncs::SwapCount());
-		interface.desktop->Draw();
+		interface.osWindow->Update();
 
 		StatsFuncs::ResetComparator();
 		StatsFuncs::ResetSwap();
@@ -280,18 +279,19 @@ int main() {
 	GUI::Text::SetFontFile("../Fonts/Ascii.bmp");
 
 	GUI::Application app;
-	GUI::OSWindow* window = app.CreateWindow(1280, 720, "Sorts Analyzer", GUI::Color(GUI::Color::white));
-	GUI::DesktopWindow* desktop = window->GetDesktop();
+	GUI::OSWindow* osWindow = app.CreateWindow(1280, 720, "Sorts Analyzer", GUI::Color(GUI::Color::white));
+	GUI::DesktopWindow* desktop = osWindow->GetDesktop();
 
-	Interface interface = DrawInterface(desktop, maxArraySize);
+	Interface interface = { osWindow };
+	DrawInterface(desktop, maxArraySize, interface);
 
 	AddButtonsListeners(interface, maxArraySize);
 
-	desktop->AddEventListener(GUI::Event::window_close, GUI::CloseWindow);
+	desktop->AddEventListener(GUI::Event::window_close, GUI::OSWindowCloseListener);
 
 	double prevTime = glfwGetTime();
 	while (app.WindowsOpened() > 0) {
-		desktop->Draw();
+		osWindow->Update();
 		app.ProcessEvents();
 		double curTime = glfwGetTime();
 		//std::cout << 1 / (curTime - prevTime) << '\n';

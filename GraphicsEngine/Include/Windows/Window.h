@@ -47,7 +47,7 @@ namespace GUI {
 
 		void RemoveEventListener(Event::Type type, void(*listener)(Event&, void*));
 
-		void HandleEvent(Event event);
+		bool HandleEvent(Event event);
 
 
 		int Width() const;

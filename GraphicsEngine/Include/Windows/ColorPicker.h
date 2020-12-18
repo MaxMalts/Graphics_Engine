@@ -18,8 +18,8 @@ namespace GUI {
 	struct ColorPickerProps : public WindowProps {
 	public:
 
-		ColorPickerProps(const Color& bgColor = Color(0.8, 0.8, 0.8),
-		                 const Color& applyColor = Color(1.0, 1.0, 1.0),
+		ColorPickerProps(const Color& bgColor = Color(0.85, 0.85, 0.85),
+		                 const Color& applyColor = Color(0.7, 0.7, 0.7),
 		                 const std::string& applyLabel = "Apply");
 
 		Color bgColor;

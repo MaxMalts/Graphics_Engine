@@ -28,8 +28,8 @@ int main() {
 	GUI::Text::SetFontFile("../Fonts/Ascii.bmp");
 
 	GUI::Application app;
-	GUI::OSWindow* window = app.CreateWindow(1080, 720, "Hello", GUI::Color(GUI::Color::green));
-	GUI::DesktopWindow* desktop = window->GetDesktop();
+	GUI::OSWindow* osWindow = app.CreateWindow(1080, 720, "Hello", GUI::Color(GUI::Color::green));
+	GUI::DesktopWindow* desktop = osWindow->GetDesktop();
 
 
 	GUI::Line* line = dynamic_cast<GUI::Line*>(desktop->CreatePrimitive(GUI::Primitive::Type::line,
@@ -75,11 +75,11 @@ int main() {
 	desktop->CreateWindow(GUI::Window::color_picker, GUI::ColorPickerProps(), GUI::Vector2(300, 200), GUI::Vector2(300, 200));
 
 
-	desktop->AddEventListener(GUI::Event::window_close, GUI::CloseWindow);
+	desktop->AddEventListener(GUI::Event::window_close, GUI::OSWindowCloseListener);
 
 	double prevTime = glfwGetTime();
 	while (app.WindowsOpened() > 0) {
-		desktop->Draw();
+		osWindow->Update();
 		app.ProcessEvents();
 		double curTime = glfwGetTime();
 		std::cout << 1 / (curTime - prevTime) << '\n';

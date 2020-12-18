@@ -6,12 +6,13 @@
 
 
 namespace GUI {
+
 	class OSWindow;
 
 
 	/* Close handler for user to use */
 
-	void CloseWindow(GUI::Event& closeEvent, void*);
+	void OSWindowCloseListener(GUI::Event& closeEvent, void*);
 
 
 	class DesktopWindow : public Window {

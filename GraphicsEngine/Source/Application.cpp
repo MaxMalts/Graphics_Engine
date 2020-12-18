@@ -1,3 +1,4 @@
+#include <string>
 #include <stdexcept>
 #include <assert.h>
 #include <GL/glew.h> 
@@ -19,16 +20,22 @@ namespace GUI {
 	}
 
 
-	OSWindow* Application::CreateWindow(const int width, const int height, const char* name,
+	OSWindow* Application::CreateWindow(const int width, const int height, const std::string& title,
 	                                    const Color& backgroundColor) {
 		assert(width >= 0);
 		assert(height >= 0);
-		assert(name != nullptr);
 
-		OSWindow* newWindow = new OSWindow(*this, width, height, name, backgroundColor);
+		OSWindow* newWindow = new OSWindow(*this, width, height, title, backgroundColor);
 		osWindows.insert(newWindow);
 
 		return newWindow;
+	}
+
+
+	OSWindow* Application::CreateWindow(const Vector2& size, const std::string& title,
+	                                    const Color& backgroundColor) {
+
+		return CreateWindow(size.x, size.y, title, backgroundColor);
 	}
 
 
@@ -47,8 +54,7 @@ namespace GUI {
 			throw std::invalid_argument("Passed window not found.");
 		}
 
-		delete *windowIter;
-		osWindows.erase(windowIter);
+		pendingClose.push_back(*windowIter);
 	}
 
 	void Application::CloseWindow(OSWindow& window) {
@@ -56,12 +62,21 @@ namespace GUI {
 	}
 
 
-	void Application::ProcessEventsWait() const {
+	void Application::UpdateAllWindows() {
+		for (auto& osWindow : osWindows) {
+			osWindow->Update();
+		}
+	}
+
+
+	void Application::ProcessEventsWait() {
+		ClosePended();
 		glfwWaitEvents();
 	}
 
 
-	void Application::ProcessEvents() const {
+	void Application::ProcessEvents() {
+		ClosePended();
 		glfwPollEvents();
 	}
 
@@ -77,19 +92,28 @@ namespace GUI {
 	}
 
 
+	void Application::ClosePended() {
+		for (auto osWindow : pendingClose) {
+			delete osWindow;
+			osWindows.erase(osWindow);
+		}
+
+		pendingClose.clear();
+	}
+
+
 
 	/* OSWindow */
 
 	OSWindow::OSWindow(Application& application, const int width, const int height,
-	                   const char* name, const Color& desktopColor)
-		: application(application), width(width), height(height) {
+	                   const std::string& title, const Color& desktopColor)
+		: application(application), width(width), height(height), title(title) {
 
 		assert(width >= 0);
 		assert(height >= 0);
-		assert(name != nullptr);
 
 		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
-		glfwWindow = glfwCreateWindow(width, height, name, NULL, NULL);
+		glfwWindow = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 		if (glfwWindow == nullptr) {
 			glfwTerminate();
 			throw bad_init("Error occurred while creating the window");
@@ -101,9 +125,6 @@ namespace GUI {
 		glEnable(GL_POINT_SMOOTH);
 
 		InitCallbacks();
-
-		this->name = new char[strlen(name) + 1];
-		strcpy(this->name, name);
 
 		desktop = new DesktopWindow(*this, Vector2(0, 0), Vector2(width, height), desktopColor);
 		desktop->Draw();
@@ -215,6 +236,7 @@ namespace GUI {
 
 	void OSWindow::Update() {
 		SetActive();
+		desktop->Draw();
 		glfwSwapBuffers(glfwWindow);
 	}
 
