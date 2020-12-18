@@ -63,7 +63,7 @@ namespace GUI {
 			}
 		}
 
-		palette->AddEventListener(Event::mouse_down, PaletteListener, this);
+		palette->AddEventListener(Event::mouse_move, PaletteListener, this);
 	}
 
 
