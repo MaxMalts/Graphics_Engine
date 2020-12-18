@@ -10,17 +10,23 @@ namespace GUI {
 	}
 
 
-	Event::Event(Type type, const MouseButtonProps& mouseButtonProps) : type(type), mouseButtonProps(mouseButtonProps) {
+	Event::Event(Type type, const MouseButtonProps& mouseButtonProps)
+		: type(type), mouseButtonProps(mouseButtonProps) {
+
 		assert(mouse_up == type || mouse_down == type);
 	}
 
 
-	Event::Event(Type type, const MouseMoveProps& mouseMoveProps) : type(type), mouseMoveProps(mouseMoveProps) {
+	Event::Event(Type type, const MouseMoveProps& mouseMoveProps)
+		: type(type), mouseMoveProps(mouseMoveProps) {
+
 		assert(mouse_move == type);
 	}
 
 
-	Event::Event(Type type, const MouseHoverProps& mouseHoverProps) : type(type), mouseHoverProps(mouseHoverProps) {
+	Event::Event(Type type, const MouseHoverProps& mouseHoverProps)
+		: type(type), mouseHoverProps(mouseHoverProps) {
+
 		assert(mouse_hover == type);
 	}
 
@@ -32,6 +38,10 @@ namespace GUI {
 
 	Event::Event(Type type, const ScrollProps& scrollProps) : type(type), scrollProps(scrollProps) {
 		assert(scroll == type);
+	}
+
+	Event::Event(Type type, const ColorPickProps& colorPickProps) : type(type), scrollProps(scrollProps) {
+		assert(color_pick == type);
 	}
 
 

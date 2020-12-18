@@ -22,7 +22,7 @@ namespace GUI {
 		: startX(startX), rangeX(rangeX), startY(startY), rangeY(rangeY) {}
 
 
-	Graph::Diagram::Diagram(Graph& graph, OSWindow& window, const size_t width, const Color& color)
+	Graph::Diagram::Diagram(Graph& graph, const size_t width, const Color& color)
 		: graph(graph), polyline(graph, PolylineProps(width, color)) {}
 
 
@@ -34,7 +34,7 @@ namespace GUI {
 			(value - graph.props.startY) / static_cast<float>(graph.props.rangeY) * graph.innerSize.y;
 
 		data.push_back(DiagramData(column, value));
-		polyline.AddVertex(Vector2(curVertexX, curVertexY) - graph.pos);
+		polyline.AddVertex(Vector2(curVertexX, curVertexY) - graph.AbsPosition());
 	}
 
 
@@ -43,10 +43,8 @@ namespace GUI {
 	}
 
 
-	Graph::Graph(OSWindow& osWindow, const GraphProps& props, const Vector2& pos, const Vector2& size)
-		: Window(osWindow, pos, size), props(props) {
-
-		const size_t axesWidth = 3;
+	Graph::Graph(OSWindow& osWindow, Window* parent, const GraphProps& props, const Vector2& pos, const Vector2& size)
+		: Window(osWindow, parent, pos, size), props(props) {
 
 		background = new Rectangle(*this, RectangleProps(Vector2(0, 0), size, props.bgColor));
 
@@ -58,7 +56,7 @@ namespace GUI {
 
 	Graph::Diagram* Graph::CreateDiagram(const size_t lineWidth, const Color& color) {
 
-		Diagram* newDiag = new Diagram(*this, osWindow, lineWidth, color);
+		Diagram* newDiag = new Diagram(*this, lineWidth, color);
 
 		diagrams.push_back(newDiag);
 
@@ -83,7 +81,7 @@ namespace GUI {
 		char tempBuf1[maxIntStrLen + 1] = "";
 		char tempBuf2[maxIntStrLen + 1] = "";
 
-		const int innerPadding = size.x / 15;
+		const int innerPadding = Width() / 15;
 		const int arrowFrontOffset = innerPadding / 1.3;
 		const int arrowSideOffset = arrowFrontOffset / 3;
 
@@ -94,13 +92,13 @@ namespace GUI {
 			strlen(itoa(props.startX + props.rangeX, tempBuf2, 10))) *
 			props.fontSize + props.fontSize * 2;
 
-		innerPos.x = pos.x + std::max(strlen(itoa(props.startY, tempBuf1, 10)),
+		innerPos.x = AbsPosition().x + std::max(strlen(itoa(props.startY, tempBuf1, 10)),
 			strlen(itoa(props.startY + props.rangeY, tempBuf2, 10))) * props.fontSize +
 			props.hatchSize;
 
-		innerSize.x = size.x - (innerPos.x - pos.x) - innerPadding;
-		innerPos.y = pos.y + innerPadding;
-		innerSize.y = size.y - props.fontSize - props.hatchSize - innerPadding;
+		innerSize.x = Width() - (innerPos.x - AbsPosition().x) - innerPadding;
+		innerPos.y = AbsPosition().y + innerPadding;
+		innerSize.y = Height() - props.fontSize - props.hatchSize - innerPadding;
 
 		InitArrows(arrowFrontOffset, arrowSideOffset);
 
@@ -113,18 +111,18 @@ namespace GUI {
 		Vector2 innerEndPos(innerPos.x + innerSize.x, innerPos.y + innerSize.y);
 
 		axes = new Polyline(*this, PolylineProps(props.axesWidth, props.axesColor));
-		axes->AddVertex(Vector2(innerPos.x, innerPos.y) - pos);
-		axes->AddVertex(Vector2(innerPos.x - arrowSideOffset, innerPos.y) - pos);
-		axes->AddVertex(Vector2(innerPos.x, innerPos.y - arrowFrontOffset) - pos);
-		axes->AddVertex(Vector2(innerPos.x + arrowSideOffset, innerPos.y) - pos);
-		axes->AddVertex(Vector2(innerPos.x, innerPos.y) - pos);
-		axes->AddVertex(Vector2(innerPos.x, innerEndPos.y) - pos);
+		axes->AddVertex(Vector2(innerPos.x, innerPos.y) - AbsPosition());
+		axes->AddVertex(Vector2(innerPos.x - arrowSideOffset, innerPos.y) - AbsPosition());
+		axes->AddVertex(Vector2(innerPos.x, innerPos.y - arrowFrontOffset) - AbsPosition());
+		axes->AddVertex(Vector2(innerPos.x + arrowSideOffset, innerPos.y) - AbsPosition());
+		axes->AddVertex(Vector2(innerPos.x, innerPos.y) - AbsPosition());
+		axes->AddVertex(Vector2(innerPos.x, innerEndPos.y) - AbsPosition());
 
-		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y) - pos);
-		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y - arrowSideOffset) - pos);
-		axes->AddVertex(Vector2(innerEndPos.x + arrowFrontOffset, innerEndPos.y) - pos);
-		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y + arrowSideOffset) - pos);
-		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y) - pos);
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y) - AbsPosition());
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y - arrowSideOffset) - AbsPosition());
+		axes->AddVertex(Vector2(innerEndPos.x + arrowFrontOffset, innerEndPos.y) - AbsPosition());
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y + arrowSideOffset) - AbsPosition());
+		axes->AddVertex(Vector2(innerEndPos.x, innerEndPos.y) - AbsPosition());
 	}
 
 
@@ -139,11 +137,14 @@ namespace GUI {
 
 			int curYWindow = innerPos.y + innerSize.y - curY;
 
-			Text* curLabel = new Text(*this, TextProps(itoa(curLabelVal, tempBuf, 10),
-				Vector2(pos.x, curYWindow) - pos, props.fontSize, props.fontColor));
+			Text* curLabel = new Text(*this,
+				TextProps(itoa(curLabelVal, tempBuf, 10),
+				Vector2(AbsPosition().x, curYWindow) - AbsPosition(),
+				FontProps(props.fontSize, props.fontColor)));
 
-			Line* curHatch = new Line(*this, LineProps(Vector2(innerPos.x, curYWindow + props.fontSize / 2) - pos,
-				Vector2(innerPos.x - props.hatchSize, curYWindow + props.fontSize / 2) - pos,
+			Line* curHatch = new Line(*this,
+				LineProps(Vector2(innerPos.x, curYWindow + props.fontSize / 2) - AbsPosition(),
+				Vector2(innerPos.x - props.hatchSize, curYWindow + props.fontSize / 2) - AbsPosition(),
 				props.axesWidth, props.axesColor));
 
 			labels.push_back(curLabel);
@@ -160,11 +161,11 @@ namespace GUI {
 
 			int curXWindow = innerPos.x + curX;
 			Text* curLabel = new Text(*this, TextProps(itoa(curLabelVal, tempBuf, 10),
-				Vector2(curXWindow, pos.y + size.y - props.fontSize) - pos,
-				props.fontSize, props.fontColor));
+				Vector2(curXWindow, AbsPosition().y + Height() - props.fontSize) - AbsPosition(),
+				FontProps(props.fontSize, props.fontColor)));
 
-			Line* curHatch = new Line(*this, LineProps(Vector2(curXWindow, innerPos.y + innerSize.y) - pos,
-				Vector2(curXWindow, innerPos.y + innerSize.y + props.hatchSize) - pos,
+			Line* curHatch = new Line(*this, LineProps(Vector2(curXWindow, innerPos.y + innerSize.y) - AbsPosition(),
+				Vector2(curXWindow, innerPos.y + innerSize.y + props.hatchSize) - AbsPosition(),
 				props.axesWidth, props.axesColor));
 
 			labels.push_back(curLabel);

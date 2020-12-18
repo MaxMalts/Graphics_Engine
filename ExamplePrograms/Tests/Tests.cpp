@@ -36,16 +36,18 @@ int main() {
 		GUI::LineProps(GUI::Vector2(500, 500), GUI::Vector2(1000, 100), 5, GUI::Color(GUI::Color::black))));
 
 
-	GUI::Text* text = dynamic_cast<GUI::Text*>(desktop->CreatePrimitive(GUI::Primitive::Type::text,
-		GUI::TextProps("Test text", GUI::Vector2(50, 100), 32, GUI::Color(GUI::Color::green))));
+	GUI::Text* text = dynamic_cast<GUI::Text*>(
+		desktop->CreatePrimitive(GUI::Primitive::Type::text, GUI::TextProps(
+			"Test text", GUI::Vector2(50, 100), GUI::FontProps(32, GUI::Color(GUI::Color::green))
+		))
+	);
 
 
 	GUI::Button* button = dynamic_cast<GUI::Button*>(desktop->CreateWindow(GUI::Window::Type::button,
 		GUI::ButtonProps(), GUI::Vector2(50, 50)));
-	button->AddLabel("test", GUI::Vector2(10, 10), 30, GUI::Color(GUI::Color::red));
+	button->AddLabel("test", GUI::Vector2(10, 10), GUI::FontProps(30, GUI::Color(GUI::Color::red)));
 	button->AddEventListener(GUI::Event::mouse_down, MousedownListener);
 	button->AddEventListener(GUI::Event::mouse_hover, HoverListener);
-
 
 	GUI::GraphProps props(-100, 100, -50, 100);
 	props.axesWidth = 3;
@@ -69,6 +71,8 @@ int main() {
 
 
 	desktop->CreatePrimitive(GUI::Primitive::image, GUI::ImageProps("Cat.bmp", GUI::Vector2(750, 720 - 94)));
+
+	desktop->CreateWindow(GUI::Window::color_picker, GUI::ColorPickerProps(), GUI::Vector2(300, 200), GUI::Vector2(300, 200));
 
 
 	desktop->AddEventListener(GUI::Event::window_close, GUI::CloseWindow);

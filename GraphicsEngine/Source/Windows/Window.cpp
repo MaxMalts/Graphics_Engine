@@ -7,6 +7,7 @@
 #include "Include\Event.h"
 
 #include "Include\Primitives\Primitive.h"
+#include "Include\Primitives\Point.h"
 #include "Include\Primitives\Line.h"
 #include "Include\Primitives\Polyline.h"
 #include "Include\Primitives\Rectangle.h"
@@ -17,49 +18,41 @@
 #include "Include\Windows\Window.h"
 #include "Include\Windows\Container.h"
 #include "Include\Windows\Button.h"
+#include "Include\Windows\ColorPicker.h"
 #include "Include\Windows\Graph.h"
 
 
 
 namespace GUI {
 
-	Window::Window(OSWindow& osWindow, const Vector2& pos, const Vector2& size)
-		: Element(osWindow), pos(pos), size(size) {}
+	Window::Window(OSWindow& osWindow, Window* parent, const Vector2& pos, const Vector2& size)
+		: Element(osWindow), parent(parent), pos(pos), size(size) {
+
+		RecalcAbsPos();
+	}
 
 
 	Window* Window::CreateWindow(const Type type, const WindowProps& props,
 	                             const Vector2& pos, const Vector2& size) {
 
-		Vector2 absPos = pos + this->pos;
 		Window* newWindow = nullptr;
 
 		try {
 			switch (type) {
 			case container:
-				try {
-					newWindow = new Container(osWindow, dynamic_cast<const ContainerProps&>(props), absPos, size);
-
-				} catch (std::bad_cast&) {
-					throw std::invalid_argument("Container is to create but props are not of ContainerProps type.");
-				}
+				newWindow = new Container(osWindow, this, dynamic_cast<const ContainerProps&>(props), pos, size);
 				break;
 
 			case button:
-				try {
-					newWindow = new Button(osWindow, dynamic_cast<const ButtonProps&>(props), absPos, size);
+				newWindow = new Button(osWindow, this, dynamic_cast<const ButtonProps&>(props), pos, size);
+				break;
 
-				} catch (std::bad_cast&) {
-					throw std::invalid_argument("Button is to create but props are not of ButtonProps type.");
-				}
+			case color_picker:
+				newWindow = new ColorPicker(osWindow, this, dynamic_cast<const ColorPickerProps&>(props), pos, size);
 				break;
 
 			case graph:
-				try {
-					newWindow = new Graph(osWindow, dynamic_cast<const GraphProps&>(props), absPos, size);
-
-				} catch (std::bad_cast&) {
-					throw std::invalid_argument("Button is to create but props are not of ButtonProps type.");
-				}
+				newWindow = new Graph(osWindow, this, dynamic_cast<const GraphProps&>(props), pos, size);
 				break;
 
 			default:
@@ -82,6 +75,10 @@ namespace GUI {
 
 		try {
 			switch (type) {
+			case Primitive::Type::point:
+				newPrimitive = new Point(*this, dynamic_cast<const PointProps&>(props));
+				break;
+
 			case Primitive::Type::line:
 				newPrimitive = new Line(*this, dynamic_cast<const LineProps&>(props));
 				break;
@@ -153,28 +150,27 @@ namespace GUI {
 		    Event::mouse_move == type || Event::scroll == type) {
 
 			Vector2 mousePos;
-			Event relEvent(event);
 			if (Event::scroll == type) {
+				event.scrollProps.pos -= pos;
 				mousePos = event.scrollProps.pos;
-				relEvent.scrollProps.pos = mousePos - pos;
 
 			} else if (Event::mouse_move == type) {
+				event.mouseMoveProps.pos -= pos;
 				mousePos = event.mouseMoveProps.pos;
-				relEvent.mouseMoveProps.pos = mousePos - pos;
 
-				HandleHoverEvent(relEvent.mouseMoveProps);
+				HandleHoverEvent(event.mouseMoveProps);
 
 			} else {
+				event.mouseButtonProps.pos -= pos;
 				mousePos = event.mouseButtonProps.pos;
-				relEvent.mouseButtonProps.pos = mousePos - pos;
 			}
 
-			if (mousePos.x >= pos.x && mousePos.x <= pos.x + size.x &&
-				mousePos.y >= pos.y && mousePos.y <= pos.y + size.y) {
+			if (mousePos.x >= 0 && mousePos.x < size.x &&
+				mousePos.y >= 0 && mousePos.y < size.y) {
 				for (auto& curListener : eventsListeners[type]) {
-					curListener.first(relEvent, curListener.second);
+					curListener.first(event, curListener.second);
 
-					if (relEvent.Stopped()) {
+					if (event.Stopped()) {
 						return;
 					}
 				}
@@ -200,13 +196,22 @@ namespace GUI {
 	}
 
 
-	size_t Window::Width() const {
+	int Window::Width() const {
 		return size.x;
 	}
 
 
-	size_t Window::Height() const {
+	int Window::Height() const {
 		return size.y;
+	}
+
+    Vector2 Window::Size() const {
+        return size;
+    }
+
+
+	Vector2 Window::AbsPosition() const {
+		return absPos;
 	}
 
 
@@ -255,6 +260,15 @@ namespace GUI {
 					return;
 				}
 			}
+		}
+	}
+
+
+	void Window::RecalcAbsPos() {
+		if (parent == nullptr) {
+			absPos = Vector2(0, 0);
+		} else {
+			absPos = parent->absPos + pos;
 		}
 	}
 

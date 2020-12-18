@@ -9,21 +9,25 @@
 
 namespace GUI {
 
+	struct FontProps {
+
+		FontProps(const int fontSize = 16, const Color& color = Color(0, 0, 0));
+
+		int fontSize;
+		Color color;
+	};
+
+
 	struct TextProps : public PrimitiveProps {
 	public:
 
 		TextProps(const std::string& content = "text", const Vector2& pos = Vector2(0, 0),
-		          const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
+		          const FontProps& fontProps = FontProps());
 
 
 		std::string content = nullptr;
 		Vector2 pos;
-		size_t fontSize;
-		Color color;
-
-	private:
-
-		int contentLen = 0;
+		FontProps fontProps;
 	};
 
 
@@ -33,6 +37,10 @@ namespace GUI {
 		Text(Window& window, const TextProps& props = TextProps());
 
 		Text(const Text& other) = delete;
+
+		Vector2 GetSize() const;
+
+		void ChangePosition(const Vector2& newPos);
 
 		virtual void Draw();
 
@@ -54,6 +62,9 @@ namespace GUI {
 
 
 		TextProps props;
+		FontProps& fontProps;
+
+		int contentLen = 0;
 
 		static std::string fontFileName;
 		static size_t instanceCount;

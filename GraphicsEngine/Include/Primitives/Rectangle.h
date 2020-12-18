@@ -35,6 +35,8 @@ namespace GUI {
 
 		void ChangeSize(const Vector2& newSize);
 
+		void ChangeColor(const Color& newColor);
+
 
 		virtual void Draw();
 

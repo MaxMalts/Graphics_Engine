@@ -16,12 +16,12 @@ namespace GUI {
 	Line::Line(Window& window, const LineProps& props) : Primitive(window), props(props) {}
 
 
-	void Line::MoveFirstPoint(const Vector2& newPos) {
+	void Line::ChangeFirstPoint(const Vector2& newPos) {
 		props.firstPoint = newPos;
 	}
 
 
-	void Line::MoveSecondPoint(const Vector2& newPos) {
+	void Line::ChangeSecondPoint(const Vector2& newPos) {
 		props.secondPoint = newPos;
 	}
 

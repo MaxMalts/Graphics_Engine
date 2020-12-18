@@ -27,9 +27,9 @@ namespace GUI {
 
 		Line(const Line& other) = delete;
 
-		void MoveFirstPoint(const Vector2& newPos);
+		void ChangeFirstPoint(const Vector2& newPos);
 
-		void MoveSecondPoint(const Vector2& newPos);
+		void ChangeSecondPoint(const Vector2& newPos);
 
 		virtual void Draw();
 

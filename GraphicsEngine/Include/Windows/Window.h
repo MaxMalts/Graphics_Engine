@@ -27,10 +27,11 @@ namespace GUI {
 		enum Type {
 			container,
 			button,
+			color_picker,
 			graph
 		};
 
-		Window(OSWindow& osWindow, const Vector2& pos, const Vector2& size);
+		Window(OSWindow& osWindow, Window* parent, const Vector2& pos, const Vector2& size);
 
 		Window* CreateWindow(const Type type, const WindowProps& props, const Vector2& pos = Vector2(10, 10),
 		                     const Vector2& size = Vector2(100, 50));
@@ -49,33 +50,44 @@ namespace GUI {
 		void HandleEvent(Event event);
 
 
-		size_t Width() const;
+		int Width() const;
 
-		size_t Height() const;
+		int Height() const;
+
+		Vector2 Size() const;
+
+		Vector2 AbsPosition() const;
 
 		Vector2 Position() const;
 
 
 		virtual ~Window();
 
+
 	protected:
 
 		void DrawInsides();
 
-		void HandleHoverEvent(const MouseMoveProps& mouseMoveProps);
+
+	private:
 
 		bool hovered = false;
+		void HandleHoverEvent(const MouseMoveProps& mouseMoveProps);
+
+		void RecalcAbsPos();
+
 
 		Vector2 pos;
+		Vector2 absPos;
 		Vector2 size;
 
 		std::list<Window*> windows;
 		std::list<Primitive*> primitives;
 
-	private:
-
 		// Second element will be tranfered to listener
 		std::unordered_map<Event::Type,
 			std::list<std::pair<void (*)(Event&, void*), void*>>> eventsListeners;
+
+		Window* parent = nullptr;
 	};
 }

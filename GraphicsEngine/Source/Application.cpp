@@ -236,6 +236,29 @@ namespace GUI {
 	}
 
 
+	bool OSWindow::MouseButtonPressed(const MouseButton button) {
+		int glfwButton = 0;
+		switch (button) {
+		case MouseButton::left:
+			glfwButton = GLFW_MOUSE_BUTTON_LEFT;
+			break;
+
+		case MouseButton::right:
+			glfwButton = GLFW_MOUSE_BUTTON_RIGHT;
+			break;
+
+		case MouseButton::middle:
+			glfwButton = GLFW_MOUSE_BUTTON_MIDDLE;
+			break;
+
+		default:
+			return false;
+		}
+
+		return (glfwGetMouseButton(glfwWindow, glfwButton) == GLFW_PRESS);
+	}
+
+
 	Application& OSWindow::GetApplication() const {
 		return application;
 	}
@@ -255,14 +278,12 @@ namespace GUI {
 	}
 
 
-	OSWindow::~OSWindow() {
-		//DeleteArrayElements(lines);
-		//DeleteArrayElements(polylines);
-		//DeleteArrayElements(rectangles);
-		//DeleteArrayElements(texts);
-		//DeleteArrayElements(buttons);
-		//DeleteArrayElements(graphs);
+	void OSWindow::StartEvent(Event& event) {
+		desktop->HandleEvent(event);
+	}
 
+
+	OSWindow::~OSWindow() {
 		delete desktop;
 		glfwDestroyWindow(glfwWindow);
 	}

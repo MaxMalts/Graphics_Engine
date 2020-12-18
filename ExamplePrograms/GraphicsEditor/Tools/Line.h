@@ -16,7 +16,7 @@ namespace GEditor {
 
 		virtual void ToolMove(const GUI::Vector2& mousePos) {
 			if (isDown) {
-				curLine->MoveSecondPoint(mousePos);
+				curLine->ChangeSecondPoint(mousePos);
 			}
 		}
 

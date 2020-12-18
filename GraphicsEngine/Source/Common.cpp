@@ -41,6 +41,20 @@ namespace GUI {
 		return Vector2(x + right.x, y + right.y);
 	}
 
+    Vector2& Vector2::operator+=(const Vector2& right) {
+		x += right.x;
+		y += right.y;
+
+		return *this;
+    }
+
+	Vector2& Vector2::operator-=(const Vector2& right) {
+		x -= right.x;
+		y -= right.y;
+
+		return *this;
+	}
+
 	Vector2 Vector2::operator-(const Vector2& right) const {
 		return Vector2(x - right.x, y - right.y);
 	}
@@ -101,18 +115,6 @@ namespace GUI {
 		if (!colorFound) {
 			throw std::invalid_argument("Invalid value of color argument");
 		}
-	}
-
-
-	Color::Color(const Color & other) {
-		RGB = other.RGB;
-	}
-
-
-	Color& Color::operator=(const Color & other) {
-		RGB = other.RGB;
-
-		return *this;
 	}
 
 

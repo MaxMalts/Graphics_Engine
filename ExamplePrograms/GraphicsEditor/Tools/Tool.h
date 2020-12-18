@@ -136,7 +136,7 @@ namespace GEditor {
 		static void MouseDownListener(GUI::Event& event, void* voidThis) {
 			assert(voidThis != nullptr);
 
-			if (event.mouseButtonProps.button == GUI::MouseButtonProps::left) {
+			if (event.mouseButtonProps.button == GUI::MouseButton::left) {
 				Tool* _this = static_cast<Tool*>(voidThis);
 				_this->ToolDown(event.mouseButtonProps.pos);
 			}
@@ -146,7 +146,7 @@ namespace GEditor {
 		static void MouseUpListener(GUI::Event& event, void* voidThis) {
 			assert(voidThis != nullptr);
 
-			if (event.mouseButtonProps.button == GUI::MouseButtonProps::left) {
+			if (event.mouseButtonProps.button == GUI::MouseButton::left) {
 				Tool* _this = static_cast<Tool*>(voidThis);
 				_this->ToolUp(event.mouseButtonProps.pos);
 			}

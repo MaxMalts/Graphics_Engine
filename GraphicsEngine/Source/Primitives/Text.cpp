@@ -13,8 +13,12 @@
 
 namespace GUI {
 
-	TextProps::TextProps(const std::string& content, const Vector2& pos, const size_t fontSize, const Color& color)
-		: content(content), pos(pos), fontSize(fontSize), color(color) {}
+	FontProps::FontProps(const int fontSize, const Color& color)
+		: fontSize(fontSize), color(color) {}
+
+
+	TextProps::TextProps(const std::string& content, const Vector2& pos, const FontProps& fontProps)
+		: content(content), pos(pos), fontProps(fontProps) {}  // No problems with order due to declaration order
 
 	std::string Text::fontFileName = "Fonts/ASCII.bmp";
 	size_t Text::instanceCount = 0;
@@ -22,7 +26,8 @@ namespace GUI {
 	size_t Text::charWidth = 0;
 	size_t Text::charHeight = 0;
 
-	Text::Text(Window& window, const TextProps& props) : Primitive(window), props(props) {
+	Text::Text(Window& window, const TextProps& props)
+		: Primitive(window), props(props), fontProps(this->props.fontProps) {
 
 		if (0 == instanceCount) {
 			const size_t charWidth = 16;
@@ -48,14 +53,14 @@ namespace GUI {
 
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);*/
 
-		float scale = static_cast<float>(props.fontSize) / charWidth;
+		float scale = static_cast<float>(fontProps.fontSize) / charWidth;
 
 		glPointSize(1.0);
-		glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
+		glColor3f(fontProps.color.Redness(), fontProps.color.Greenness(), fontProps.color.Blueness());
 
 		glBegin(GL_POINTS);
 		for (int curY = 0; curY < charHeight * scale; ++curY) {
-			for (int curX = 0; curX < props.fontSize; ++curX) {
+			for (int curX = 0; curX < fontProps.fontSize; ++curX) {
 
 				int pxOffsetX = Round(curX / scale);
 				int pxOffsetY = Round(curY / scale);
@@ -80,6 +85,16 @@ namespace GUI {
 	}
 
 
+	Vector2 Text::GetSize() const {
+		return Vector2(props.content.size() * fontProps.fontSize, fontProps.fontSize);
+	}
+
+
+	void Text::ChangePosition(const Vector2& newPos) {
+		props.pos = newPos;
+	}
+
+
 	void Text::Draw() {
 		osWindow.SetActive();
 
@@ -88,7 +103,7 @@ namespace GUI {
 			char curChar = props.content[i];
 
 			DrawChar(curChar, curPos);
-			curPos.x += props.fontSize;
+			curPos.x += fontProps.fontSize;
 		}
 	}
 

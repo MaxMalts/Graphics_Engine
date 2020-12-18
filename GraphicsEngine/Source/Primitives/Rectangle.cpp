@@ -37,6 +37,11 @@ namespace GUI {
 	}
 
 
+	void Rectangle::ChangeColor(const Color& newColor) {
+		props.color = newColor;
+	}
+
+
     void Rectangle::Draw() {
 		GlCoordinates begPosGl =
 			OSWindowToGlCoords(osWindow, RelToAbsCoords(props.pos));

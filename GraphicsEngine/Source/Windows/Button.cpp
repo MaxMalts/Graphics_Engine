@@ -12,18 +12,36 @@ namespace GUI {
 	ButtonProps::ButtonProps(const Color& color) : color(color) {}
 
 
-	Button::Button(OSWindow& osWindow, const ButtonProps& props,
+	Button::Button(OSWindow& osWindow, Window* parent, const ButtonProps& props,
 	               const Vector2& pos, const Vector2& size)
-		: Window(osWindow, pos, size), props(props) {
+		: Window(osWindow, parent, pos, size), props(props) {
 		
-		rectangle = new Rectangle(*this, RectangleProps(Vector2(0, 0), size, props.color));
+		rectangle = dynamic_cast<Rectangle*>(
+			CreatePrimitive(Primitive::rectangle,RectangleProps(Vector2(0, 0), size, props.color))
+		);
 	}
 
 
-	Text* Button::AddLabel(const std::string label, const Vector2& labelPos,
-	                       const size_t fontSize, const Color& labelColor) {
+	Text* Button::AddLabel(const std::string& label, const Vector2& labelPos,
+	                       const FontProps& fontProps) {
 
-		this->label = new Text(*this, TextProps(label, labelPos, fontSize, labelColor));
+		this->label = dynamic_cast<Text*>(
+			CreatePrimitive(Primitive::text, TextProps(label, labelPos, fontProps))
+		);
+
+		return this->label;
+	}
+
+
+	Text* Button::AddLabel(const std::string label, FontProps fontProps) {
+		this->label = dynamic_cast<Text*>(
+			CreatePrimitive(Primitive::text, TextProps(label, Vector2(0, 0), fontProps))
+		);
+
+		Vector2 textSize = this->label->GetSize();
+
+		Vector2 labelCenterPos = (Size() - textSize) / 2;
+		this->label->ChangePosition(labelCenterPos);
 
 		return this->label;
 	}
@@ -51,8 +69,5 @@ namespace GUI {
 	}
 
 
-	Button::~Button() {
-		delete rectangle;
-		delete label;
-	}
+	Button::~Button() = default;
 }

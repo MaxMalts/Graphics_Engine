@@ -154,28 +154,28 @@ Interface DrawInterface(GUI::DesktopWindow* desktop, const int maxArraySize) {
 			desktop->CreateWindow(GUI::Window::button, GUI::ButtonProps(bubbleColor), GUI::Vector2(buttonsMarginLeft,
 				graphsMarginTop + graphsSize.y + buttonsMarginTop), buttonsSize)
 		);
-	interface.buttons.bubble->AddLabel("bubble", buttonsLabelPos, buttonsFontSize);
+	interface.buttons.bubble->AddLabel("bubble", GUI::FontProps(buttonsFontSize));
 
 	interface.buttons.selection = dynamic_cast<GUI::Button*>(
 			desktop->CreateWindow(GUI::Window::button, GUI::ButtonProps(selectionColor),
 				GUI::Vector2(2 * buttonsMarginLeft + buttonsSize.x, graphsMarginTop + graphsSize.y + buttonsMarginTop),
 				buttonsSize)
 		);
-	interface.buttons.selection->AddLabel("selection", buttonsLabelPos, buttonsFontSize);
+	interface.buttons.selection->AddLabel("selection", GUI::FontProps(buttonsFontSize));
 
 	interface.buttons.quick = dynamic_cast<GUI::Button*>(
 			desktop->CreateWindow(GUI::Window::button, GUI::ButtonProps(quickColor),
 				GUI::Vector2(3 * buttonsMarginLeft + 2 * buttonsSize.x, graphsMarginTop + graphsSize.y + buttonsMarginTop),
 				buttonsSize)
 		);
-	interface.buttons.quick->AddLabel("quick", buttonsLabelPos, buttonsFontSize);
+	interface.buttons.quick->AddLabel("quick", GUI::FontProps(buttonsFontSize));
 
 	interface.buttons.merge = dynamic_cast<GUI::Button*>(
 			desktop->CreateWindow(GUI::Window::button, GUI::ButtonProps(mergeColor),
 				GUI::Vector2(4 * buttonsMarginLeft + 3 * buttonsSize.x, graphsMarginTop + graphsSize.y + buttonsMarginTop),
 				buttonsSize)
 		);
-	interface.buttons.merge->AddLabel("merge", buttonsLabelPos, buttonsFontSize);
+	interface.buttons.merge->AddLabel("merge", GUI::FontProps(buttonsFontSize));
 
 	return interface;
 }

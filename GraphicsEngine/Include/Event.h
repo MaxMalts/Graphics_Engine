@@ -7,12 +7,8 @@
 namespace GUI {
 
 	struct MouseButtonProps {
-		enum Buttons {
-			unknown, left, right, middle
-		};
-
 		Vector2 pos;
-		Buttons button;
+		MouseButton button;
 	};
 
 
@@ -32,27 +28,18 @@ namespace GUI {
 
 
 	struct KeyProps {
-		enum Keys {
-			unknown,
-			q, w, e, r, t, y, u, i, o, p, a, s, d, f, g, h, j, k, l, z, x, c, v, b, n, m,
-			n0, n1, n2, n3, n4, n5, n6, n7, n8, n9,
-			ctr, alt, shift, space, tab, enter, backspace, caps,
-			num_lock, num0, num1, num2, num3, num4, num5, num6, num7, num8, num9, num_div,
-			num_mul, num_minus, num_plus, num_enter, num_comma,
-			escape, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12,
-			semicolon, quote, comma, period, slash, backslash, square_bracket_open, quare_bracket_close,
-			acute, hyphen, equal,
-			print_screen, scroll_lock, insert, del, home, end, page_up, page_down,
-			arrow_up, arrow_down, arros_left, arrow_right,
-		};
-
-		Keys key;
+		KeyboardKey key;
 	};
 
 
 	struct ScrollProps {
 		Vector2 offset;
 		Vector2 pos;
+	};
+
+
+	struct ColorPickProps {
+		Color color;
 	};
 
 
@@ -71,7 +58,8 @@ namespace GUI {
 			key_up,
 			key_repeat,
 			scroll,
-			window_close
+			window_close,
+			color_pick
 		};
 
 		Event(Type type);
@@ -86,6 +74,8 @@ namespace GUI {
 
 		Event(Type type, const ScrollProps& scrollProps);
 
+		Event(Type type, const ColorPickProps& colorPickProps);
+
 
 		union {
 			MouseButtonProps mouseButtonProps;
@@ -93,6 +83,7 @@ namespace GUI {
 			MouseHoverProps mouseHoverProps;
 			KeyProps keyProps;
 			ScrollProps scrollProps;
+			ColorPickProps colorPickProps;
 		};
 
 		void Stop();

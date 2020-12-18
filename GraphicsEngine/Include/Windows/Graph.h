@@ -32,7 +32,7 @@ namespace GUI {
 		class Diagram {
 		public:
 
-			Diagram(Graph& graph, OSWindow& window, const size_t width = 1, const Color& color = Color(0, 0, 0));
+			Diagram(Graph& graph, const size_t width = 1, const Color& color = Color(0, 0, 0));
 
 			void AddData(int column, int value);
 
@@ -58,8 +58,8 @@ namespace GUI {
 		};
 
 
-		Graph(OSWindow& window, const GraphProps& props,
-			const Vector2& pos, const Vector2& size);
+		Graph(OSWindow& osWindow, Window* parent, const GraphProps& props,
+		      const Vector2& pos, const Vector2& size);
 
 		Graph(const Graph& other) = delete;
 
@@ -90,7 +90,7 @@ namespace GUI {
 		std::vector<Text*> labels;
 		std::vector<Line*> hatches;
 
-		Vector2 innerPos;    // Position without axes and labels
+		Vector2 innerPos;    // AbsPosition without axes and labels
 		Vector2 innerSize;    // Size of graph without axes and labels
 	};
 }

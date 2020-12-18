@@ -22,13 +22,18 @@ namespace GUI {
 	class Button : public Window {
 	public:
 
-		Button(OSWindow& window, const ButtonProps& buttonProps,
+		Button(OSWindow& osWindow, Window* parent, const ButtonProps& buttonProps,
 		       const Vector2& pos, const Vector2& size);
 
 		Button(const Button& other) = delete;
 
-		Text* AddLabel(const std::string label, const Vector2& labelPos = Vector2(10, 10),
-			const size_t fontSize = 16, const Color& labelColor = Color(0, 0, 0));
+		Text* AddLabel(const std::string& label, const Vector2& labelPos = Vector2(10, 10),
+		               const FontProps& fontProps = FontProps());
+
+		/* 
+		Adds label and places it in the center
+		*/
+		Text* AddLabel(const std::string label, FontProps fontProps = FontProps());
 
 		Color GetColor() const;
 

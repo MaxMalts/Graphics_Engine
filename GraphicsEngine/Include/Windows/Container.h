@@ -14,7 +14,7 @@ namespace GUI {
 	class Container : public Window {
 	public:
 
-		Container(OSWindow& window, const ContainerProps& containerProps,
+		Container(OSWindow& osWindow, Window* parent, const ContainerProps& containerProps,
 		          const Vector2& pos, const Vector2& size);
 
 		Container(const Container& other) = delete;

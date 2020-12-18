@@ -22,6 +22,7 @@ namespace GUI {
 	public:
 
 		enum Type {
+			point,
 			line,
 			polyline,
 			rectangle,

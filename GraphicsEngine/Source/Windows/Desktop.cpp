@@ -16,7 +16,7 @@ namespace GUI {
 
 
 	DesktopWindow::DesktopWindow(OSWindow& osWindow, const Vector2& pos, const Vector2& size, const Color& color)
-		: Window(osWindow, pos, size), color(color) {}
+		: Window(osWindow, nullptr, pos, size), color(color) {}
 
 
 	void DesktopWindow::Draw() {

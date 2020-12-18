@@ -51,7 +51,7 @@ namespace GEditor {
 				usrInterface.desktop->Draw();
 				application.ProcessEvents();
 				double curTime = glfwGetTime();
-				//std::cout << static_cast<int>(1 / (curTime - prevTime)) << '\n';
+				std::cout << static_cast<int>(1 / (curTime - prevTime)) << '\n';
 				prevTime = curTime;
 			}
 		}

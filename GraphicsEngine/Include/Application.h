@@ -50,33 +50,10 @@ namespace GUI {
 
 		OSWindow(const OSWindow& other) = delete;
 
+
 		size_t Width() const;
 
 		size_t Height() const;
-
-
-		/*Rectangle* CreateRectangle(const Vector2& pos = Vector2(0, 0),
-								   const Vector2& size = Vector2(200, 100), const Color& color = Color(0, 0, 0));
-
-		Button* CreateButton(const Vector2& pos = Vector2(0, 0),
-							 const Vector2& size = Vector2(100, 50), const Color& color = Color(0.7, 0.7, 0.7));
-
-		Line* CreateLine(const Vector2& begPos = Vector2(10, 10),
-						 const Vector2& endPos = Vector2(100, 10),
-						 const size_t width = 1, const Color& color = Color(0, 0, 0));
-
-		Polyline* CreatePolyline(const std::vector<Vector2>& verteces, const size_t width = 1,
-								 const Color& color = Color(0, 0, 0));
-
-		Polyline* CreatePolyline(const size_t width = 1, const Color& color = Color(0, 0, 0));
-
-		Text* CreateText(const char* content, const Vector2& pos = Vector2(0, 0),
-						 const size_t fontSize = 16, const Color& color = Color(0, 0, 0));
-
-		Graph* CreateGraph(const GraphProps& props = GraphProps(),
-						   const Vector2& pos = Vector2(0, 0),
-						   const Vector2& size = Vector2(100, 100),
-						   const Color& bgColor = Color(0.9, 0.9, 0.9));*/
 
 
 		void Update();
@@ -85,6 +62,10 @@ namespace GUI {
 
 
 		Vector2 CursorPos() const;
+
+		bool MouseButtonPressed(const MouseButton button);
+
+		void StartEvent(Event& event);
 
 
 		Application& GetApplication() const;
@@ -99,6 +80,7 @@ namespace GUI {
 
 		void InitCallbacks();
 
+
 		static void WindowCloseCallback(GLFWwindow* glfwWindow) {
 			assert(glfwWindow != nullptr);
 
@@ -108,7 +90,7 @@ namespace GUI {
 			Event closeEvent(Event::window_close);
 
 			if (!closeEvent.Stopped()) {
-				window->desktop->HandleEvent(closeEvent);
+				window->StartEvent(closeEvent);
 			}
 		}
 
@@ -122,25 +104,25 @@ namespace GUI {
 			MouseButtonProps mouseProps{ window->CursorPos() };
 			switch (button) {
 			case GLFW_MOUSE_BUTTON_LEFT:
-				mouseProps.button = MouseButtonProps::left;
+				mouseProps.button = MouseButton::left;
 				break;
 
 			case GLFW_MOUSE_BUTTON_RIGHT:
-				mouseProps.button = MouseButtonProps::right;
+				mouseProps.button = MouseButton::right;
 				break;
 
 			case GLFW_MOUSE_BUTTON_MIDDLE:
-				mouseProps.button = MouseButtonProps::middle;
+				mouseProps.button = MouseButton::middle;
 				break;
 
 			default:
-				mouseProps.button = MouseButtonProps::unknown;
+				mouseProps.button = MouseButton::unknown;
 			}
 
 			Event mouseEvent((GLFW_RELEASE == action ? Event::mouse_up : Event::mouse_down), mouseProps);
 
 			if (!mouseEvent.Stopped()) {
-				window->desktop->HandleEvent(mouseEvent);
+				window->StartEvent(mouseEvent);
 			}
 		}
 
@@ -156,7 +138,7 @@ namespace GUI {
 			Event mouseEvent(Event::mouse_move, mousePosProps);
 
 			if (!mouseEvent.Stopped()) {
-				window->desktop->HandleEvent(mouseEvent);
+				window->StartEvent(mouseEvent);
 			}
 		}
 
@@ -167,14 +149,14 @@ namespace GUI {
 			OSWindow* window = static_cast<OSWindow*>(glfwGetWindowUserPointer(glfwWindow));
 			assert(window != nullptr);
 
-			KeyProps keyProps{ static_cast<KeyProps::Keys>(key) };
+			KeyProps keyProps{ static_cast<KeyboardKey>(key) };
 
 			Event keyEvent((GLFW_RELEASE == action ? Event::key_up :
 				(GLFW_PRESS == action ? Event::key_down : Event::key_repeat)),
 				keyProps);
 
 			if (!keyEvent.Stopped()) {
-				window->desktop->HandleEvent(keyEvent);
+				window->StartEvent(keyEvent);
 			}
 		}
 
@@ -191,7 +173,7 @@ namespace GUI {
 			Event scrollEvent(Event::scroll, scrollProps);
 
 			if (!scrollEvent.Stopped()) {
-				window->desktop->HandleEvent(scrollEvent);
+				window->StartEvent(scrollEvent);
 			}
 		}
 
