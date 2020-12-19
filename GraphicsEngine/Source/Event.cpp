@@ -40,7 +40,7 @@ namespace GUI {
 		assert(scroll == type);
 	}
 
-	Event::Event(Type type, const ColorPickProps& colorPickProps) : type(type), scrollProps(scrollProps) {
+	Event::Event(Type type, const ColorPickProps& colorPickProps) : type(type), colorPickProps(colorPickProps) {
 		assert(color_pick == type);
 	}
 

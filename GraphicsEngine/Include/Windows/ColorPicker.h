@@ -19,12 +19,12 @@ namespace GUI {
 	public:
 
 		ColorPickerProps(const Color& bgColor = Color(0.85, 0.85, 0.85),
-		                 const Color& applyColor = Color(0.7, 0.7, 0.7),
-		                 const std::string& applyLabel = "Apply");
+		                 const Color& applyColor = Color(0.7, 0.7, 0.7));
 
 		Color bgColor;
 		Color applyColor;
-		std::string applyLabel;
+		std::string applyLabel = "Apply";
+		Color initialColor = Color(0, 0, 0);
 	};
 
 

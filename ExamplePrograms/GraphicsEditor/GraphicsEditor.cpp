@@ -271,11 +271,10 @@ namespace GEditor {
 
 			GUI::DesktopWindow* desktop = pickerWindow->GetDesktop();
 
+			GUI::ColorPickerProps pickerProps(bgColor, appplyColor);
+			pickerProps.initialColor = activeColor;
 			GUI::ColorPicker* picker = dynamic_cast<GUI::ColorPicker*>(
-				desktop->CreateWindow(
-					GUI::Window::color_picker,
-					GUI::ColorPickerProps(bgColor, appplyColor),
-					GUI::Vector2(0, 0), size)
+				desktop->CreateWindow(GUI::Window::color_picker, pickerProps, GUI::Vector2(0, 0), size)
 			);
 
 			desktop->AddEventListener(GUI::Event::window_close, ColorPkrClose, this);
@@ -302,7 +301,10 @@ namespace GEditor {
 
 			GraphicsEditor* _this = static_cast<GraphicsEditor*>(voidThis);
 			_this->activeColor = event.colorPickProps.color;
-			_this->activeTool->ChangeColor(_this->activeColor);
+			if (_this->activeTool != nullptr) {
+				_this->activeTool->ChangeColor(_this->activeColor);
+			}
+			_this->usrInterface.colorPicker.button->ChangeColor(_this->activeColor);
 		}
 
 

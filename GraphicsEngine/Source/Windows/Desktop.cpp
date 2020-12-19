@@ -11,7 +11,6 @@ namespace GUI {
 	void OSWindowCloseListener(GUI::Event& closeEvent, void*) {
 		GUI::OSWindow& window = closeEvent.GetTarget()->GetOSWindow();
 		window.GetApplication().CloseWindow(window);
-		closeEvent.Stop();
 	}
 
 

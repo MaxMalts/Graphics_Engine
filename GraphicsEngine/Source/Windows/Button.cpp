@@ -52,6 +52,11 @@ namespace GUI {
 	}
 
 
+    void Button::ChangeColor(const GUI::Color& newColor) {
+		rectangle->ChangeColor(newColor);
+    }
+
+
 	//void Button::AddLeftMouseUpListener(void(*Listener)(void*), void* addParam) {
 	//	leftMouseUpListeners.push_back(std::pair<void (*)(void*), void*>(Listener, addParam));
 	//}

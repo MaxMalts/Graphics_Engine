@@ -37,6 +37,9 @@ namespace GUI {
 
 		Color GetColor() const;
 
+		void ChangeColor(const GUI::Color& newColor);
+
+
 		virtual void Draw();
 
 

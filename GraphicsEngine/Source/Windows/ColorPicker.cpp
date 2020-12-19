@@ -12,14 +12,15 @@
 
 namespace GUI {
 
-	ColorPickerProps::ColorPickerProps(const Color& bgColor, const Color& applyColor,
-	                                   const std::string& applyLabel)
-		: bgColor(bgColor), applyColor(applyColor), applyLabel(applyLabel) {}
+	ColorPickerProps::ColorPickerProps(const Color& bgColor, const Color& applyColor)
+		: bgColor(bgColor), applyColor(applyColor) {}
 
 
 	ColorPicker::ColorPicker(OSWindow& osWindow, Window* parent, const ColorPickerProps& props,
 	                         const Vector2& pos, const Vector2& size)
 		: Window(osWindow, parent, pos, size), props(props) {
+
+		selectedColor = appliedColor = props.initialColor;
 
 		background = dynamic_cast<Rectangle*>(
 			CreatePrimitive(Primitive::rectangle, RectangleProps(Vector2(0, 0), size, props.bgColor))
