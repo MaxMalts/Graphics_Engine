@@ -35,7 +35,7 @@ namespace GUI {
 			//						static_cast<size_t>(pointRange[1]) });
 			//printf("%f %f %d\n", lineRange[0], lineRange[1], props.width);
 
-			glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
+			glColor3f(props.color.Red(), props.color.Green(), props.color.Blue());
 			glLineWidth(static_cast<GLfloat>(props.width));
 			glPointSize(static_cast<GLfloat>(props.width));
 

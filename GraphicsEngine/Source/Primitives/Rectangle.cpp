@@ -50,7 +50,7 @@ namespace GUI {
 
 		osWindow.SetActive();
 
-		glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
+		glColor3f(props.color.Red(), props.color.Green(), props.color.Blue());
 
 		glBegin(GL_QUADS);
 		glVertex2f(begPosGl.x, begPosGl.y);

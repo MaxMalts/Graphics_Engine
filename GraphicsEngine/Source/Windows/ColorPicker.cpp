@@ -56,8 +56,8 @@ namespace GUI {
 		/* Drawing palette */
 		for (int x = 0; x < paletteSize; ++x) {
 			for (int y = 0; y < paletteSize; ++y) {
-				Color curColor = ColorMap(static_cast<float>(x) / (paletteSize - 1),
-				                          static_cast<float>(y) / (paletteSize - 1));
+				Color curColor = ColorMap(1.0f * x / (paletteSize - 1),
+				                          1.0f * y / (paletteSize - 1));
 
 				palette->CreatePrimitive(Primitive::point, PointProps(Vector2(x, y), 1, curColor));
 			}
@@ -104,7 +104,39 @@ namespace GUI {
 
 
 	Color ColorPicker::ColorMap(double x, double y) const {
-		return Color();
+		assert(x >= 0.0 && x <= 1.0);
+		assert(y >= 0.0 && y <= 1.0);
+
+		std::vector<Color> colorsOrder{
+			Color(1, 0, 0),
+			Color(0, 1, 0),
+			Color(0, 0, 1),
+		};
+		int nColors = colorsOrder.size();
+		double halfInterval = 1.0 / (2 * nColors);
+
+		int prevColor = static_cast<int>(x * nColors) % nColors;
+		int curColor = (prevColor + 1) % nColors;
+		double brightness = (0.5 - y) * 2;
+
+		double intervalX = std::fmod(x, halfInterval * 2);
+		double prevAmt = intervalX < halfInterval ? 1 : (-2 * nColors * intervalX + 2);
+		double curAmt = intervalX < halfInterval ? (2 * nColors * intervalX) : 1 ;
+		Color hue = prevAmt * colorsOrder.at(prevColor) + curAmt * colorsOrder.at(curColor);
+
+		if (brightness < 0) {
+			return hue * (brightness + 1.0);
+
+		} else {
+			Color inverted(1.0 - hue.Red(), 1.0 - hue.Green(), 1.0 - hue.Blue());
+			return Color(1.0 - inverted.Red() * (-brightness + 1.0),
+			             1.0 - inverted.Green() * (-brightness + 1.0),
+			             1.0 - inverted.Blue() * (-brightness + 1.0));
+		}
+		//float red = (-nColors * std::fmodf(x, 1.0 / nColors) + 1.0) * colorsOrder.at(prevColor).Red() + nColors * std::fmodf(x, 1.0 / nColors) * colorsOrder.at(curColor).Red() + brightness;
+		//float green = (-nColors * std::fmodf(x, 1.0 / nColors) + 1.0) * colorsOrder.at(prevColor).Green() + nColors * std::fmodf(x, 1.0 / nColors) * colorsOrder.at(curColor).Green() + brightness;
+		//float blue = (-nColors * std::fmodf(x, 1.0 / nColors) + 1.0) * colorsOrder.at(prevColor).Blue() + nColors * std::fmodf(x, 1.0 / nColors) * colorsOrder.at(curColor).Blue() + brightness;
+
 	}
 
 

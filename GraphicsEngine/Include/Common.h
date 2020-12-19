@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 
 
 namespace GUI {
@@ -44,13 +46,15 @@ namespace GUI {
 
 		Vector2(int x, int y);
 
+		Vector2& operator=(const Vector2& other) = default;
+
 		Vector2 operator+(const Vector2& right) const;
 
 		Vector2& operator+=(const Vector2& right);
 
-		Vector2& operator-=(const Vector2& right);
-
 		Vector2 operator-(const Vector2& right) const;
+
+		Vector2& operator-=(const Vector2& right);
 
 		Vector2 operator*(const double right) const;
 
@@ -86,19 +90,49 @@ namespace GUI {
 
 		Color& operator=(const Color& other) = default;
 
+		Color operator+(const Color& right) const;
+
+		Color& operator+=(const Color& right);
+
+		Color operator-(const Color& right) const;
+
+		Color& operator-=(const Color& right);
+
+		Color operator*(const double right) const;
+
+		friend Color operator*(const double left, const Color& right);
+
+		Color operator/(const double right) const;
+
 		/*
 		* Returns specified color amount. Posiigble argument values are "red", "R", "green", "G", "blue", "B".
 		*/
-		float operator[](const char* color) const;
+		float& operator[](const std::string& color);
+
+		float operator[](const std::string& color) const;
+
+		float& operator[](const char color);
+
+		float operator[](const char color) const;
 
 
-		float Redness() const;
+		float& Red();
 
-		float Greenness() const;
+		float& Green();
 
-		float Blueness() const;
+		float& Blue();
+
+		float Red() const;
+
+		float Green() const;
+
+		float Blue() const;
+
 
 	private:
+
+		void Normalize();
+
 
 		struct RGB_t {
 			float red = 0.0, green = 0.0, blue = 0.0;

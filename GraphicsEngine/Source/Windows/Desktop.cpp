@@ -22,7 +22,7 @@ namespace GUI {
 	void DesktopWindow::Draw() {
 		osWindow.SetActive();
 
-		glClearColor(color.Redness(), color.Greenness(), color.Blueness(), 1.0);
+		glClearColor(color.Red(), color.Green(), color.Blue(), 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		DrawInsides();

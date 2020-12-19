@@ -48,7 +48,7 @@ namespace GUI {
 
 		osWindow.SetActive();
 
-		glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
+		glColor3f(props.color.Red(), props.color.Green(), props.color.Blue());
 
 		if (maxAxe > 0) {
 			Vector2 center(props.pos.x + props.size.x / 2, props.pos.y + props.size.y / 2);

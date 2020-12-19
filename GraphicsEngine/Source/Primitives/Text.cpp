@@ -56,7 +56,7 @@ namespace GUI {
 		float scale = static_cast<float>(fontProps.fontSize) / charWidth;
 
 		glPointSize(1.0);
-		glColor3f(fontProps.color.Redness(), fontProps.color.Greenness(), fontProps.color.Blueness());
+		glColor3f(fontProps.color.Red(), fontProps.color.Green(), fontProps.color.Blue());
 
 		glBegin(GL_POINTS);
 		for (int curY = 0; curY < charHeight * scale; ++curY) {

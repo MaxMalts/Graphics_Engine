@@ -32,7 +32,7 @@ namespace GUI {
 
 		osWindow.SetActive();
 		
-		glColor3f(props.color.Redness(), props.color.Greenness(), props.color.Blueness());
+		glColor3f(props.color.Red(), props.color.Green(), props.color.Blue());
 		glLineWidth(static_cast<GLfloat>(props.width));
 
 		glBegin(GL_LINES);

@@ -65,7 +65,10 @@ namespace GUI {
 			bool mouseDown = _this->osWindow.MouseButtonPressed(MouseButton::left);
 			if (mouseDown) {
 				Vector2 mousePos = event.mouseMoveProps.pos;
-				_this->selectedColor = _this->ColorMap(mousePos.x / _this->Width(), mousePos.y / _this->Height());
+				_this->selectedColor = _this->ColorMap(1.0f * mousePos.x / _this->palette->Width(),
+				                                       1.0f * mousePos.y / _this->palette->Height());
+
+				_this->selectedPreview->ChangeColor(_this->selectedColor);
 			}
 		}
 
@@ -83,10 +86,10 @@ namespace GUI {
 		Rectangle* background = nullptr;
 		Container* palette = nullptr;
 		Button* applyBtn = nullptr;
-		Rectangle* appliedPreview = nullptr;
 		Rectangle* selectedPreview = nullptr;
+		Rectangle* appliedPreview = nullptr;
 
-		Color appliedColor;
 		Color selectedColor;
+		Color appliedColor;
 	};
 }
