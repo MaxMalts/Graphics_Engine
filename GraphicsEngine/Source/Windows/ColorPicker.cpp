@@ -130,14 +130,8 @@ namespace GUI {
 
 		} else {
 			Color inverted(1.0 - hue.Red(), 1.0 - hue.Green(), 1.0 - hue.Blue());
-			return Color(1.0 - inverted.Red() * (-brightness + 1.0),
-			             1.0 - inverted.Green() * (-brightness + 1.0),
-			             1.0 - inverted.Blue() * (-brightness + 1.0));
+			return Color(1.0, 1.0, 1.0) - inverted * (-brightness + 1.0);
 		}
-		//float red = (-nColors * std::fmodf(x, 1.0 / nColors) + 1.0) * colorsOrder.at(prevColor).Red() + nColors * std::fmodf(x, 1.0 / nColors) * colorsOrder.at(curColor).Red() + brightness;
-		//float green = (-nColors * std::fmodf(x, 1.0 / nColors) + 1.0) * colorsOrder.at(prevColor).Green() + nColors * std::fmodf(x, 1.0 / nColors) * colorsOrder.at(curColor).Green() + brightness;
-		//float blue = (-nColors * std::fmodf(x, 1.0 / nColors) + 1.0) * colorsOrder.at(prevColor).Blue() + nColors * std::fmodf(x, 1.0 / nColors) * colorsOrder.at(curColor).Blue() + brightness;
-
 	}
 
 
