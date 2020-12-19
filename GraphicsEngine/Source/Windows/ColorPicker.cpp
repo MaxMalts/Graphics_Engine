@@ -22,11 +22,14 @@ namespace GUI {
 
 		selectedColor = appliedColor = props.initialColor;
 
+		const int paletteSize = std::min(0.7 * Width(), 0.9 * Height());
+		PrecalcColorMap(paletteSize, paletteSize);
+
 		background = dynamic_cast<Rectangle*>(
 			CreatePrimitive(Primitive::rectangle, RectangleProps(Vector2(0, 0), size, props.bgColor))
 		);
 
-		InitPalette();
+		InitPalette(paletteSize);
 
 		InitApplyBtn();
 
@@ -44,8 +47,23 @@ namespace GUI {
 	}
 
 
-	void ColorPicker::InitPalette() {
-		const int paletteSize = std::min(0.7 * Width(), 0.9 * Height());
+	void ColorPicker::PrecalcColorMap(const int width, const int height) {
+		assert(width > 0);
+		assert(height > 0);
+
+		colorMap.assign(width, std::vector<Color>(0));
+
+		for (int x = 0; x < width; ++x) {
+			for (int y = 0; y < height; ++y) {
+				Color curColor = CalcColorByPoint(1.0f * x / (width - 1),
+				                                  1.0f * y / (height - 1));
+
+				colorMap.at(x).push_back(curColor);
+			}
+		}
+	}
+
+	void ColorPicker::InitPalette(const int paletteSize) {
 		const int posX = 10;
 		const int posY = (Height() - paletteSize) / 2;
 
@@ -57,10 +75,8 @@ namespace GUI {
 		/* Drawing palette */
 		for (int x = 0; x < paletteSize; ++x) {
 			for (int y = 0; y < paletteSize; ++y) {
-				Color curColor = ColorMap(1.0f * x / (paletteSize - 1),
-				                          1.0f * y / (paletteSize - 1));
-
-				palette->CreatePrimitive(Primitive::point, PointProps(Vector2(x, y), 1, curColor));
+				palette->CreatePrimitive(Primitive::point, PointProps(Vector2(x, y),
+				                         1, colorMap.at(x).at(y)));
 			}
 		}
 
@@ -104,7 +120,7 @@ namespace GUI {
 	}
 
 
-	Color ColorPicker::ColorMap(double x, double y) const {
+	Color ColorPicker::CalcColorByPoint(double x, double y) const {
 		assert(x >= 0.0 && x <= 1.0);
 		assert(y >= 0.0 && y <= 1.0);
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "Include\Common.h"
 #include "Include\Application.h"
 #include "Include\Event.h"
@@ -45,13 +46,15 @@ namespace GUI {
 
 	private:
 
-		void InitPalette();
+		Color CalcColorByPoint(double x, double y) const;
+
+		void PrecalcColorMap(const int width, const int height);
+
+		void InitPalette(const int paletteSize);
 
 		void InitApplyBtn();
 
 		void InitPreview();
-
-		Color ColorMap(double x, double y) const;
 
 		void ApplyColor();
 
@@ -65,8 +68,7 @@ namespace GUI {
 			bool mouseDown = _this->osWindow.MouseButtonPressed(MouseButton::left);
 			if (mouseDown) {
 				Vector2 mousePos = event.mouseMoveProps.pos;
-				_this->selectedColor = _this->ColorMap(1.0f * mousePos.x / _this->palette->Width(),
-				                                       1.0f * mousePos.y / _this->palette->Height());
+				_this->selectedColor = _this->colorMap.at(mousePos.x).at(mousePos.y);
 
 				_this->selectedPreview->ChangeColor(_this->selectedColor);
 			}
@@ -91,5 +93,7 @@ namespace GUI {
 
 		Color selectedColor;
 		Color appliedColor;
+
+		std::vector<std::vector<Color>> colorMap;
 	};
 }
