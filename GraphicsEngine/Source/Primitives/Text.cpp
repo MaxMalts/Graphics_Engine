@@ -144,7 +144,7 @@ namespace GUI {
 
 		std::ifstream bitmapFile(fontFileName, std::ios::binary);
 		if (!bitmapFile.is_open()) {
-			throw bad_init("Error while initializing font");
+			throw bad_init("Unable to open font file.");
 		}
 
 		bitmapImg = new BMP_Img(bitmapFile);
