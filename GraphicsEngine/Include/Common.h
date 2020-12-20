@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <GL/glew.h> 
+#include <GLFW/glfw3.h>
 
 
 
@@ -28,9 +30,10 @@ namespace GUI {
 
 	enum class KeyboardKey {
 		unknown,
-		q, w, e, r, t, y, u, i, o, p, a, s, d, f, g, h, j, k, l, z, x, c, v, b, n, m,
+		q, w, e, r, t, y, u, i, o, p, a, s, d, f, g, h, j, k, l, z = GLFW_KEY_Z, x, c, v, b, n, m,
 		n0, n1, n2, n3, n4, n5, n6, n7, n8, n9,
-		ctr, alt, shift, space, tab, enter, backspace, caps,
+		ctr_left = GLFW_KEY_LEFT_CONTROL, alt_left, shift_left, space, tab, enter, backspace, caps,
+		ctrl_right, alt_right, shift_right,
 		num_lock, num0, num1, num2, num3, num4, num5, num6, num7, num8, num9, num_div,
 		num_mul, num_minus, num_plus, num_enter, num_comma,
 		escape, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12,

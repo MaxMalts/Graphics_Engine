@@ -56,6 +56,8 @@ namespace GEditor {
 
 			usrInterface.desktop->AddEventListener(GUI::Event::window_close, GUI::OSWindowCloseListener);
 			InitUsrInterface();
+
+			usrInterface.canvas->AddEventListener(GUI::Event::key_down, UndoListener, this);
 		}
 
 
@@ -65,7 +67,7 @@ namespace GEditor {
 				application.UpdateAllWindows();
 				application.ProcessEvents();
 				double curTime = glfwGetTime();
-				std::cout << static_cast<int>(1 / (curTime - prevTime)) << '\n';
+				//std::cout << static_cast<int>(1 / (curTime - prevTime)) << '\n';
 				prevTime = curTime;
 			}
 		}
@@ -87,7 +89,7 @@ namespace GEditor {
 
 			GUI::Container* res = dynamic_cast<GUI::Container*>(
 				parent->CreateWindow(GUI::Window::container, GUI::ContainerProps(), pos, size)
-				);
+			);
 
 			res->CreatePrimitive(GUI::Primitive::rectangle, GUI::RectangleProps(GUI::Vector2(0, 0), size, color));
 
@@ -286,13 +288,15 @@ namespace GEditor {
 		static void ColorButtonListener(GUI::Event& event, void* voidThis) {
 			assert(voidThis != nullptr);
 
-			GraphicsEditor* _this = static_cast<GraphicsEditor*>(voidThis);
+			if (event.mouseButtonProps.button == GUI::MouseButton::left) {
+				GraphicsEditor* _this = static_cast<GraphicsEditor*>(voidThis);
 
-			if (_this->usrInterface.colorPicker.osWindow != nullptr) {
-				return;
+				if (_this->usrInterface.colorPicker.osWindow != nullptr) {
+					return;
+				}
+
+				_this->OpenColorPicker();
 			}
-			
-			_this->OpenColorPicker();
 		}
 
 
@@ -311,9 +315,24 @@ namespace GEditor {
 		static void ColorPkrClose(GUI::Event& event, void* voidThis) {
 			assert(voidThis != nullptr);
 
-			GraphicsEditor* _this = static_cast<GraphicsEditor*>(voidThis);;
+			GraphicsEditor* _this = static_cast<GraphicsEditor*>(voidThis);
 			_this->usrInterface.colorPicker.osWindow = nullptr;
 			GUI::OSWindowCloseListener(event, nullptr);
+		}
+
+
+		static void UndoListener(GUI::Event& event, void* voidThis) {
+			assert(voidThis != nullptr);
+
+			if (event.keyProps.key == GUI::KeyboardKey::z) {
+				GraphicsEditor* _this = static_cast<GraphicsEditor*>(voidThis);
+
+				std::list<GUI::Primitive*> canvasElems = _this->usrInterface.canvas->GetPrimitives();
+
+				if (canvasElems.size() > 1) {
+					_this->usrInterface.canvas->RemovePrimitive(canvasElems.back());
+				}
+			}
 		}
 	};
 }

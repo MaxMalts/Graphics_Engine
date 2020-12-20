@@ -33,12 +33,20 @@ namespace GUI {
 
 		Window(OSWindow& osWindow, Window* parent, const Vector2& pos, const Vector2& size);
 
+
 		Window* CreateWindow(const Type type, const WindowProps& props, const Vector2& pos = Vector2(10, 10),
 		                     const Vector2& size = Vector2(100, 50));
 
 		Primitive* CreatePrimitive(const Primitive::Type type, const PrimitiveProps& props);
 
 		void RemoveWindow(Window* window);
+
+		void RemovePrimitive(Primitive* primitive);
+
+		std::list<Window*> GetWindows() const;
+
+		std::list<Primitive*> GetPrimitives() const;
+
 
 		virtual void Draw() = 0;
 

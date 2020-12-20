@@ -80,7 +80,7 @@ namespace GUI {
 
 		Vector2 CursorPos() const;
 
-		bool MouseButtonPressed(const MouseButton button);
+		bool MouseButtonPressed(const MouseButton button) const;
 
 		void StartEvent(Event& event);
 

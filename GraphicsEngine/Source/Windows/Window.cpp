@@ -118,8 +118,24 @@ namespace GUI {
 
 
 	void Window::RemoveWindow(Window* window) {
-		delete window;
 		windows.remove(window);
+		delete window;
+	}
+
+
+	void Window::RemovePrimitive(Primitive* primitive) {
+		primitives.remove(primitive);
+		delete primitive;
+	}
+
+
+	std::list<Window*> Window::GetWindows() const {
+		return windows;
+	}
+
+
+	std::list<Primitive*> Window::GetPrimitives() const {
+		return primitives;
 	}
 
 

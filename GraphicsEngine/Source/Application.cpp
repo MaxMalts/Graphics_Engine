@@ -84,7 +84,7 @@ namespace GUI {
 	Application::~Application() {
 		std::unordered_set<OSWindow*>::iterator windowsIter = osWindows.begin();
 		while (windowsIter != osWindows.end()) {
-			delete* windowsIter;
+			delete *windowsIter;
 			++windowsIter;
 		}
 
@@ -94,8 +94,8 @@ namespace GUI {
 
 	void Application::ClosePended() {
 		for (auto osWindow : pendingClose) {
-			delete osWindow;
 			osWindows.erase(osWindow);
+			delete osWindow;
 		}
 
 		pendingClose.clear();
@@ -258,7 +258,7 @@ namespace GUI {
 	}
 
 
-	bool OSWindow::MouseButtonPressed(const MouseButton button) {
+	bool OSWindow::MouseButtonPressed(const MouseButton button) const {
 		int glfwButton = 0;
 		switch (button) {
 		case MouseButton::left:
