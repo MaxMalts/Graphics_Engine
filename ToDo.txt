@@ -2,3 +2,4 @@
 - Change enum class KeyboardKey to struct Key with fields representing enum and glfw types of key.
 Similary for MouseButton
 - Saturation slider for ColorPicker
+- Fix crash when undoing a polyline and trying to draw a new vertex (we are adding vertex to deleted polyline)
