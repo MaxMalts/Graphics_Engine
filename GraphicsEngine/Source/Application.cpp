@@ -109,8 +109,8 @@ namespace GUI {
 	                   const std::string& title, const Color& desktopColor)
 		: application(application), width(width), height(height), title(title) {
 
-		assert(width >= 0);
-		assert(height >= 0);
+		assert(width > 0);
+		assert(height > 0);
 
 		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 		glfwWindow = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);

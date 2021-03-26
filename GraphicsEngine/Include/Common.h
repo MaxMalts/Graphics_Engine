@@ -47,15 +47,19 @@ namespace GUI {
 	struct Vector2 {
 		Vector2() = default;
 
-		Vector2(int x, int y);
+		Vector2(long long x, long long y);
 
 		Vector2& operator=(const Vector2& other) = default;
 
 		Vector2 operator+(const Vector2& right) const;
 
+		Vector2 operator+() const;
+
 		Vector2& operator+=(const Vector2& right);
 
 		Vector2 operator-(const Vector2& right) const;
+		
+		Vector2 operator-() const;
 
 		Vector2& operator-=(const Vector2& right);
 
@@ -65,8 +69,8 @@ namespace GUI {
 
 		Vector2 operator/(const double right) const;
 
-		int x = 0;
-		int y = 0;
+		long long x = 0;
+		long long y = 0;
 	};
 
 

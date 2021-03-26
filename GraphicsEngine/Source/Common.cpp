@@ -34,12 +34,16 @@ namespace GUI {
 
 	/* Vector2 */
 
-	Vector2::Vector2(int x, int y) : x(x), y(y) {}
+	Vector2::Vector2(long long x, long long y) : x(x), y(y) {}
 
 
 	Vector2 Vector2::operator+(const Vector2& right) const {
 		return Vector2(x + right.x, y + right.y);
 	}
+
+    Vector2 Vector2::operator+() const {
+		return *this;
+    }
 
     Vector2& Vector2::operator+=(const Vector2& right) {
 		x += right.x;
@@ -50,6 +54,10 @@ namespace GUI {
 
 	Vector2 Vector2::operator-(const Vector2& right) const {
 		return Vector2(x - right.x, y - right.y);
+	}
+
+	Vector2 Vector2::operator-() const {
+		return GUI::Vector2(-x, -y);
 	}
 
 	Vector2& Vector2::operator-=(const Vector2& right) {
