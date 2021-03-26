@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "ExamplePrograms\Te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsEditor", "ExamplePrograms\GraphicsEditor\GraphicsEditor.vcxproj", "{08E94A63-BF51-4664-968A-6A7D4A747CD3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Universe", "ExamplePrograms\Universe\Universe\Universe.vcxproj", "{C5996EC9-0A01-4A06-8A54-E0DADF0C8AF6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Universe", "ExamplePrograms\Universe\Universe.vcxproj", "{C5996EC9-0A01-4A06-8A54-E0DADF0C8AF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
